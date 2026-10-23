@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+# Veri ve gizli bilgiler
+data/
+.env
+.env.*
+*.credentials.json
+# Claude Code yerel ayarları
+.claude/settings.local.json
+# Deney spike'ları (yerel)
+spikes/**/output/
