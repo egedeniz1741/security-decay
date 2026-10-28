@@ -12,7 +12,7 @@ Bu fazda kod yazılmaz. İzin verilen tek kod: hook spike denemeleri (`spikes/`)
 
 ## Her oturumun başında
 1. Oku: `docs/plan/PROGRESS.md`, `docs/plan/00_GENEL_BAKIS.md`, `docs/plan/03_IS_PAKETLERI.md`, `docs/plan/DECISIONS.md`.
-2. Bugünün tarihini al, en yakın kapıya ve son tarihe kaç gün kaldığını hesapla ve `08_IS_BOLUMU_VE_KOORDINASYON.md` §4'teki teslim noktalarına (G0 8 Kasım, sözleşmeler 11 Kasım, G1 29 Kasım).
+2. Bugünün tarihini al; en yakın kapıya ve `08_IS_BOLUMU_VE_KOORDINASYON.md` §4'teki teslim noktalarına (G0 8 Kasım, sözleşmeler 11 Kasım, G1 29 Kasım) kaç gün kaldığını hesapla.
 3. Ortamı tespit et: kullanıcının WSL2 makinesi mi (ajan CLI'ları ve Docker var), bulut oturumu mu (yalnızca belge işi ve web araştırması). Gerçek ajan denemeleri yalnızca kullanıcının makinesinde.
 4. Sıradaki işi seç: aktif kapının eksikleri → `PROGRESS.md` "sıradaki 3 iş" → açık kararlar.
 
