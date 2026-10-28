@@ -1,6 +1,6 @@
 # 03 · İş paketleri, kapılar ve takvim
 
-> Durum: taslak v0.1 · Sahibi: `sd-sef-muhendis` skill'i · Kişi A: derleyici, hook'lar, CI · Kişi B: deney düzeneği, istatistik, panel (yol haritasındaki iş bölümü)
+> Durum: taslak v0.2 (29 Ekim: TÜBİTAK çıkarıldı, iş bölümü işlendi) · Sahibi: `sd-sef-muhendis` skill'i · **Ege**: DevSecOps ve güvenlik · **B**: uygulama ve araştırma altyapısı · Ayrıntılı iş bölümü: `08_IS_BOLUMU_VE_KOORDINASYON.md`
 
 ## 1. Kapılar (git / gitme noktaları)
 
@@ -22,38 +22,37 @@ Bir kapıdan geçilmeden sonraki fazın riskli işine başlanmaz. Kapıyı geçm
 
 | WP | Ad | Çıktı | Sahip | Bağımlı | Dönem | Kabul ölçütü |
 |---|---|---|---|---|---|---|
-| WP0 | Yönetim + TÜBİTAK | Plan, haftalık durum, 2209-A başvurusu | A+B | — | 26 Eki → | Başvuru yapılacaksa 11 Kas 17:30'dan önce danışman onaylı gönderim |
-| WP1 | Ortam ve iskelet | WSL2 + Docker + uv; repo iskeleti; CI (ruff, mypy, pytest, Gitleaks); pre-commit | A | — | 26 Eki – 8 Kas | Temiz klonda `uv run pytest` yeşil |
-| WP2 | Ajan entegrasyonu spike'ı | Her iki ajan için hook yetenek matrisi, çalışan minimal hook örnekleri | A | WP1 | 26 Eki – 8 Kas | **G0** |
-| WP3 | Derleyici | `sdguard compile`, IR şeması, 3 katman çevirici, doğrulayıcı, onarım döngüsü | A | WP2 | Kas (dilim) → Oca | Geliştirme diliminde doğrulanmış kural oranı ve kesinlik raporu |
-| WP4 | Invariant defteri | Çıkarıcı (5 invariant ailesi), high-water mark defteri, diff, bulgu mesajı biçimi | A (B destek) | WP2 | Kas (dilim) → Oca | Mutant seti C geliştirme diliminde ≥ %80 |
-| WP5 | Adaptörler | Claude Code ve Antigravity adaptörleri, sözleşme testleri | A | WP2, WP3, WP4 | Ara – Oca | Kayıtlı gerçek hook girdileriyle "altın" testler geçiyor |
-| WP6 | Deney düzeneği | Runner, konteyner imajları, koşul klasörleri, 6 senaryo × 5 tur istemi, yeni tur exploit'leri | B | WP1, WP2 | Kas → Oca | **G1**, exploit'ler G3'te kilitli |
-| WP7 | Korpus B (RQ1) | GitHub'dan ~1.000 CLAUDE.md / AGENTS.md, güvenlik kuralı çıkarımı, 150 kural çift etiket | B (etiket A+B) | WP3 sınıflandırıcı | Ara – Oca | Cohen's κ raporlu; RQ1 sonucu Ocak sonu |
-| WP8 | Mutant seti C (RQ3) | `libcst` tabanlı mutasyon operatörleri, ~200 mutant + temiz değişiklikler | B | WP4 çıkarıcı | Ara | Etiketler otomatik, %10'u elle kontrol |
-| WP9 | Ana deney | 150 oturum (+ isteğe bağlı K1b/K2b) | B (A koşum desteği) | G3 | Şub – 15 Mar | **G4** |
-| WP10 | Analiz | R betikleri: karma lojistik, Kaplan–Meier / Cox, güç simülasyonu, grafikler | B | WP9 | Oca (simülasyon) → Mar | Ön kayıttaki tüm analizler tek komutla üretiliyor |
-| WP11 | CI Action | `sdguard check --sarif`, kompozit GitHub Action, örnek repo | A | WP3 | Şub – Mar | Örnek PR'da kırmızı/yeşil demo |
+| WP0 | Yönetim | Plan, haftalık durum, kapı kararları | Ege+B | — | 26 Eki → | Her pazartesi `PROGRESS.md` güncel |
+| WP1 | Ortam ve iskelet | WSL2 + Docker + uv; repo iskeleti; CI (ruff, mypy, pytest, Gitleaks); pre-commit; dal koruma | Ege | — | 26 Eki – 1 Kas | Temiz klonda `uv run pytest` yeşil |
+| WP2 | Ajan entegrasyonu spike'ı | Her iki ajan için hook yetenek matrisi, çalışan minimal hook örnekleri | Ege (Claude Code), B (Antigravity) | WP1 | 2 – 8 Kas | **G0** |
+| WP3 | Derleyici | `sdguard compile`, IR şeması, 3 katman çevirici, doğrulayıcı, onarım döngüsü | Ege | WP2 | Kas (dilim) → Oca | Geliştirme diliminde doğrulanmış kural oranı; kesinliği B ölçer |
+| WP4 | Çekirdek motor + invariant defteri | Olay/karar şeması, çıkarıcı (5 invariant ailesi), high-water mark defteri, diff, bulgu mesajı biçimi | B | WP2 | Kas (dilim) → Oca | Ege'nin mutant setinde ≥ %80 |
+| WP5 | Adaptörler | Claude Code ve Antigravity adaptörleri, sözleşme testleri | B | WP2, WP3, WP4 | Kas – Oca | Kayıtlı gerçek hook girdileriyle altın testler geçiyor |
+| WP6 | Deney düzeneği | Runner, konteyner imajları, koşul klasörleri, senaryo/tur istemleri (B); exploit'ler ve izolasyon sertleştirme (Ege) | B + Ege | WP1, WP2 | Kas → Oca | **G1**, exploit'ler G3'te kilitli |
+| WP7 | Korpus B (RQ1) | GitHub'dan ~1.000 CLAUDE.md / AGENTS.md (Ege toplar), 150 kural çift etiket (ikisi bağımsız), κ (B) | Ege + B | WP3 sınıflandırıcı | Ara – Oca | Cohen's κ raporlu; RQ1 sonucu Ocak sonu |
+| WP8 | Mutant seti C (RQ3) | `libcst` tabanlı mutasyon operatörleri, ~200 mutant + temiz değişiklikler | Ege | WP4 çıkarıcı arayüzü | Ara | 20 Ara B'ye teslim; etiketler otomatik, %10'u elle kontrol |
+| WP9 | Ana deney | 150 oturum (+ isteğe bağlı K1b/K2b); bloklar ikiye bölünür | Ege + B | G3 | Şub – 15 Mar | **G4** |
+| WP10 | Analiz | R betikleri: karma lojistik, Kaplan–Meier / Cox, güç simülasyonu, grafikler | B | WP9 | Ara (simülasyon) → Mar | Ön kayıttaki tüm analizler tek komutla üretiliyor |
+| WP11 | CI Action + v1.0 | `sdguard check --sarif`, kompozit GitHub Action, örnek repo, PyPI sürümü | Ege | WP3 | Şub – Nis | Örnek PR'da kırmızı/yeşil demo |
 | WP12 | Panel | Oturum zaman çizelgesi raporu | B | WP9 kayıt şeması | Mar – Nis | Demo oturumu görselleştiriliyor |
-| WP13 | Yazım ve savunma | Ön baskı, tez, demo videosu, sunum | A+B | hepsi | Şub → Haz | **G5**, savunma |
+| WP13 | Yazım ve savunma | Ön baskı, tez, demo videosu, sunum; herkes kendi bileşeninin bölümünü yazar | Ege + B | hepsi | Şub → Haz | **G5**, savunma |
 
-## 3. Haftalık takvim (ilk 6 hafta ayrıntılı, sonrası aylık)
+## 3. Haftalık takvim
 
-| Hafta | Tarih | Kişi A | Kişi B | Kapı |
-|---|---|---|---|---|
-| H1 | 26 Eki – 1 Kas | WSL2/Docker/uv kurulumu, repo iskeleti, CI; Claude Code hook spike'ı | BaxBench kurulumu, tek dosya kısıtı kontrolü, senaryo seçimi; TÜBİTAK formu taslağı | — |
-| H2 | 2 – 8 Kas | Antigravity hook spike'ı, adaptör eşleme tablosunu doğrulama | Runner iskeleti, konteyner imajı, parmak izi kontrolü; TÜBİTAK danışman onayı | **G0** (8 Kas) |
-| H3 | 9 – 15 Kas | Dikey dilim: derleyici 3 kural (izin, Semgrep, pytest) | 1 geliştirme senaryosunun 5 tur istemi + exploit'leri | TÜBİTAK son gün 11 Kas |
-| H4 | 16 – 22 Kas | Dikey dilim: defterde `auth` invariant'ı, K4 Claude Code'da çalışıyor | Ölçüm hattı (test, exploit, Semgrep, ölçüm defteri), kayıt şeması | — |
-| H5 | 23 – 29 Kas | Hata düzeltme, süre ölçümü | Pilot koşumu (50 tur), kota ölçümü | **G1** (29 Kas) |
-| H6 | 30 Kas – 6 Ara | Derleyici v1'e geçiş (tüm kategoriler) | Korpus toplama betiği, mutasyon operatörleri | — |
-| Aralık | | Derleyici v1, defter 5 invariant, adaptör sözleşme testleri | Korpus B toplama, mutant seti C, kalan senaryo istemleri | — |
-| Ocak | | (finaller nedeniyle kapasite ~%50 planlandı) G2 düzeltmeleri, dondurma | Korpus etiketleme (A+B), güç simülasyonu, ön kayıt | **G2** 17 Oca, **G3** 31 Oca |
-| Şubat | | Koşum desteği, CI Action | Ana deney koşumu | — |
-| Mart | | CI Action, ön baskı yazımı | Deney biter, analiz | **G4** 15 Mar, **G5** 31 Mar |
-| Nisan | | v1.0 sürüm, Antigravity belgeleri | Panel, analiz cilası | **G6** 30 Nis |
-| Mayıs | | Tez yazımı | Tez yazımı | — |
-| Haziran | | Demo, savunma | Demo, savunma | Savunma |
+Hafta hafta kimin ne yapacağı ve teslim noktaları `08_IS_BOLUMU_VE_KOORDINASYON.md` §3–4'te. Özet:
+
+| Dönem | Ege | B | Kapı |
+|---|---|---|---|
+| 26 Eki – 1 Kas | Kurulum, repo iskeleti, CI | Kurulum, BaxBench, çok dosya kontrolü | — |
+| 2 – 8 Kas | Claude Code hook spike'ı | Antigravity hook spike'ı | **G0** (8 Kas) |
+| 9 – 15 Kas | IR şeması, derleyici dilimi, senaryo 1 exploit'leri | Olay/karar şeması, motor + runner iskeleti, senaryo 1 tur istemleri | Sözleşmeler 11 Kas |
+| 16 – 22 Kas | Kural doğrulama, izin katmanı, izolasyon sertleştirme | `auth` invariant'ı, Claude Code adaptörü, ölçüm hattı | — |
+| 23 – 29 Kas | K2–K4 koşulları, pilot yarısı | K0–K1 koşulları, pilot yarısı, kota ölçümü | **G1** (29 Kas) |
+| Aralık | Derleyici v1, korpus toplama, mutant seti | Defter v1, Antigravity adaptörü, kalan tur istemleri, güç simülasyonu | — |
+| Ocak (%50) | Test exploit'leri, etiketleme, defteri ölçme | Ön kayıt, etiketleme, κ, derleyiciyi ölçme | **G2** 17 Oca, **G3** 31 Oca |
+| Şubat – Mart | Koşum yarısı, CI Action, ön baskı | Koşum yarısı, veri hattı, analiz | **G4** 15 Mar, **G5** 31 Mar |
+| Nisan | v1.0 sürümü | Panel | **G6** 30 Nis |
+| Mayıs – Haziran | Tez, demo | Tez, demo | Savunma |
 
 ## 4. Kritik yol
 WP2 (G0) → WP3/WP4 dikey dilim → WP6 pilot (G1) → WP3/WP4 v1 (G2) → dondurma (G3) → WP9 (G4) → WP10 → WP13 (G5).
@@ -61,7 +60,8 @@ WP2 (G0) → WP3/WP4 dikey dilim → WP6 pilot (G1) → WP3/WP4 v1 (G2) → dond
 En fazla bolluk WP11 ve WP12'de; zaman kaybında ilk kesilecekler bunlar (v1.0'ın kapsamı daralır, araştırma etkilenmez).
 
 ## 5. Haftalık ritim
-- Pazartesi: `PROGRESS.md` güncellenir, sıradaki 3 iş seçilir (`sd-sef-muhendis`).
-- Çarşamba: `literatur-gozcusu` taraması (rakip çalışma çıktı mı).
+Toplantı ve GitHub düzeni `08_IS_BOLUMU_VE_KOORDINASYON.md` §5'te. Ajan rutini:
+- Pazartesi: `PROGRESS.md` güncellenir, her kişi için sıradaki 3 iş seçilir (`sd-sef-muhendis`).
+- Çarşamba: `literatur-gozcusu` taraması (haftalar dönüşümlü: Ege / B).
 - Cuma: `plan-denetcisi` o hafta değişen plan dosyalarını bağımsız okur; tutarsızlık listesi.
 - Her kapı öncesi: `guvenlik-denetcisi` + `plan-denetcisi` birlikte.

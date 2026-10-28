@@ -16,7 +16,7 @@
 | `kaynak-planlayici` | sonnet | `docs/` | `KOTA_PLANI.md` | Pilot sonrası ve aylık |
 | `guvenlik-denetcisi` | opus | `docs/` | `TEHDIT_MODELI.md`, `docs/reviews/guvenlik-*` | Her kapı öncesi |
 | `plan-denetcisi` | opus | `docs/reviews/` | `plan-denetimi-*` | Haftalık (cuma) + kapı öncesi |
-| `yayin-planlayici` | sonnet | `docs/` | `YAYIN_PLANI.md`, `TUBITAK_2209A_TASLAK.md` | Hemen (TÜBİTAK), sonra aylık |
+| `yayin-planlayici` | sonnet | `docs/` | `YAYIN_PLANI.md` | Şubat'tan itibaren aylık |
 
 **Neden bu ayrım?** Her ajan bir plan dosyasının sahibi; iki ajan aynı dosyaya yazmaz. Yazan ve denetleyen ayrı: `plan-denetcisi` ve `guvenlik-denetcisi` hiçbir belgeyi kendileri yazmaz, yalnızca rapor üretir.
 
@@ -45,7 +45,7 @@
 4. `plan-denetcisi` → G0 belgelerini denetle.
 5. Kullanıcı: G0 kararı.
 
-**TÜBİTAK (bu hafta):**
-1. `yayin-planlayici` → form başlıkları + taslak.
-2. `plan-denetcisi` → taslak ile plan arasında tutarlılık.
-3. Kullanıcı: danışmanla görüşme ve gönderim.
+**Pilot haftası (23–29 Kasım):**
+1. `kaynak-planlayici` → B'nin pilot verisinden kota ölçümü ve takvim.
+2. `plan-denetcisi` → G1 ölçütleri tek tek.
+3. Ege + B: G1 kararı ve iş yükü yeniden dengeleme (`08_IS_BOLUMU_VE_KOORDINASYON.md` §6).

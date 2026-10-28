@@ -13,6 +13,8 @@
 | ADR-0007 | 2026-10-24 | İstatistik analizi R (`lme4`/`glmmTMB`) ile | Önerildi | — | Karma lojistik modeller Python'da zayıf |
 | ADR-0008 | 2026-10-24 | Senaryo bölmesi: 2 geliştirme / 4 test; araç G3'te dondurulur | Önerildi | — | Aşırı uyum (R10) |
 | ADR-0009 | 2026-10-24 | Güvenlik hook'ları fail-closed (`onFailure: "block"`), Claude Code sürümü sabit | Önerildi | — | Varsayılan fail-open (R6) |
-| ADR-0010 | 2026-10-24 | TÜBİTAK 2209-A başvurusu | **Açık** | Son gün 11 Kas 2026 17:30, danışman onayı gerekli | 12.000 TL'ye kadar destek; özgeçmişe katkı |
+| ADR-0010 | 2026-10-29 | TÜBİTAK 2209-A başvurusu | Reddedildi | Başvuru yapılmayacak | Ekip kararı |
 | ADR-0011 | 2026-10-24 | İkinci ajan yedeği (Antigravity G0'ı geçemezse) | **Açık** | Codex CLI ya da Copilot CLI; G0 sonrası karar | Hook olgunluğu ve abonelik erişimi |
 | ADR-0012 | 2026-10-24 | Araç adı | **Açık** | Çalışma adı `sdguard` | — |
+| ADR-0013 | 2026-10-29 | İş bölümü: Ege DevSecOps ve güvenlik (derleyici, exploit'ler, mutant seti, izolasyon, korpus toplama, CI/Action), B uygulama ve araştırma altyapısı (motor + defter, adaptörler, deney düzeneği, istatistik, panel); yaklaşık %50 / %50 | Kabul | `08_IS_BOLUMU_VE_KOORDINASYON.md` | Ege'nin DevSecOps deneyimi; çapraz doğrulama (kimse kendi bileşenini ölçmez) |
+| ADR-0014 | 2026-10-29 | Çalışma kuralları: korumalı `main`, PR + 1 onay, sözleşmeler iki onayla, Conventional Commits, Claude co-author satırı yok | Kabul | `08_IS_BOLUMU_VE_KOORDINASYON.md` §5 | İki kişilik ekipte çakışmayı önlemek |

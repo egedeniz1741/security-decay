@@ -63,8 +63,8 @@ Hook çökerse ya da zaman aşımına uğrarsa işlem devam eder. Güvenlik kap�
 ### 3.6 Takvim çakışması: Ocak finalleri ve araç dondurma
 Yol haritasına göre ana deney Şubat–Mart, yani araç en geç **Ocak sonunda dondurulmalı**. Derleyici ve defter için yalnızca Aralık–Ocak var ve Ocak'ta final sınavları var. Plan bu yüzden derleyici ve defterin "dikey dilim" olarak Kasım'da başlamasını öneriyor (bkz. `03_IS_PAKETLERI.md`).
 
-### 3.7 TÜBİTAK 2209-A son günü 11 Kasım 2026, 17:30
-Bugünden 18 gün sonra. Başvuru yapılacaksa danışman onayı dahil hazırlık **bu hafta** başlamalı. İş paketi WP0.
+### 3.7 TÜBİTAK 2209-A
+Başvuru yapılmayacak (29 Ekim kararı, ADR-0010). Bütçe sıfır olarak kalıyor.
 
 ## 4. Deney tasarımına yönelik mühendislik eleştirileri
 
@@ -82,11 +82,10 @@ Türkçe prompt sorusu, GitHub saha çalışması (AIDev), Python dışı diller
 
 ## 6. Karar bekleyen konular
 Ayrıntı ve öneriler `DECISIONS.md` içinde "Açık" durumundaki kayıtlarda. Özet:
-1. TÜBİTAK 2209-A başvurusu (son gün 11 Kasım).
-2. K2b (`security-guidance` eklentisi) ve K1b (kural yeniden enjeksiyonu) koşulları eklensin mi, eklenirse tekrar sayısı nasıl dengelenir?
-3. Antigravity G0 testinden geçemezse ikinci ajan: Codex CLI mı Copilot CLI mı?
-4. Panel teknolojisi (statik HTML raporu mu, Streamlit mi, React mi).
-5. Araç adı.
+1. K2b (`security-guidance` eklentisi) ve K1b (kural yeniden enjeksiyonu) koşulları eklensin mi, eklenirse tekrar sayısı nasıl dengelenir?
+2. Antigravity G0 testinden geçemezse ikinci ajan: Codex CLI mı Copilot CLI mı?
+3. Panel teknolojisi (statik HTML raporu mu, Streamlit mi, React mi).
+4. Araç adı.
 
 ## 7. Dosya haritası
 
@@ -100,5 +99,6 @@ Ayrıntı ve öneriler `DECISIONS.md` içinde "Açık" durumundaki kayıtlarda. 
 | `05_RISKLER.md` | Risk kaydı | hepsi, plan-denetcisi denetler |
 | `06_CLAUDE_ARAC_SETI.md` | Claude'u bu projede verimli kullanmak için araçlar | — |
 | `07_AJAN_EKIBI.md` | Planlayıcı ajanlar ve faz 2 ajanları | sd-sef-muhendis |
+| `08_IS_BOLUMU_VE_KOORDINASYON.md` | Ege / B iş bölümü, teslim noktaları, GitHub ve toplantı düzeni | Ege + B |
 | `DECISIONS.md` | ADR kayıtları | herkes ekler |
 | `PROGRESS.md` | Durum ve sıradaki işler | sd-sef-muhendis |
