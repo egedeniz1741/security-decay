@@ -4,7 +4,7 @@
 - **Faz:** Planlama (G0 öncesi)
 - **Aktif kapı:** G0 · Hook spike · 8 Kasım 2026
 - **Sonraki teslim noktası:** Sözleşmeler (IR şeması, olay/karar şeması) · 11 Kasım 2026
-- **Takvim durumu:** 26 Ekim haftasının kurulum işleri başlamadı; yaklaşık 1 hafta geride. G0'a kadar toparlanabilir.
+- **Takvim durumu:** Ege'nin kurulumu tamam (30 Ekim). B'nin kurulumu ve BaxBench denemesi bekleniyor. G0'a yetişilebilir.
 
 ## Kullanıcı kararı bekliyor
 1. K1b ve K2b koşulları eklensin mi? (ADR-0004, ADR-0005) — G1 (pilot) öncesi.
@@ -14,9 +14,9 @@
 ## Sıradaki 3 iş
 
 **Ege**
-1. WSL2 + Docker + `uv` + WSL2 içinde Claude Code kurulumu (`06_CLAUDE_ARAC_SETI.md` §1; güvenlik eklentileri yalnızca proje kapsamında).
-2. Repo ayarları: `main` dal koruması (PR + 1 onay), B'yi collaborator olarak ekleme, GitHub Projects panosu ve G0–G6 milestone'ları.
-3. Repo iskeleti ve CI iş akışı (ruff, mypy, pytest, Gitleaks), ardından Claude Code hook spike'ı (`hook-entegrasyon-analisti`).
+1. ~~Kurulum: WSL2, Docker, `uv`, Claude Code~~ (30 Ekim, tamam). ~~B'ye collaborator daveti~~ (gönderildi).
+2. `main` dal koruması (PR + 1 onay); isteğe bağlı GitHub Projects panosu ve G0, G1 milestone'ları.
+3. Proje iskeleti ve otomatik kontroller PR'ını (`ege/wp1-project-skeleton`) birleştirmek, ardından Claude Code hook denemeleri (2–8 Kasım).
 
 **B**
 1. Repoyu klonlama, aynı kurulum + Antigravity CLI.
@@ -24,6 +24,9 @@
 3. Antigravity hook spike'ı (`hook-entegrasyon-analisti`).
 
 ## Oturum günlüğü
+
+### 2026-10-30 oturumu
+Yapılanlar: Ege'nin WSL2 + Docker + uv + Claude Code kurulumu tamamlandı (Docker için kullanıcı `docker` grubuna eklendi). B'ye collaborator daveti gönderildi. Proje iskeleti ve CI iş akışı (ruff, mypy, pytest, Gitleaks) hazırlandı, ilk PR olarak açıldı.
 
 ### 2026-10-29 oturumu
 Yapılanlar: TÜBİTAK başvurusu plandan çıkarıldı (ADR-0010 reddedildi). Ege / B iş bölümü, teslim noktaları ve koordinasyon kuralları yazıldı (`08_IS_BOLUMU_VE_KOORDINASYON.md`, ADR-0013, ADR-0014); iş paketlerinin sahipleri, haftalık takvim, risk kaydı, ajan dosyaları ve orkestra şefi skill'i buna göre güncellendi.
