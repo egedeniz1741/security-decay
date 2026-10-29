@@ -23,7 +23,7 @@ Planlama. Ürün kodu G0 (8 Kasım 2026) kapısından sonra başlar. İzin veril
 - Commit yazarı her zaman geliştiricinin kendisi; `Co-Authored-By: Claude` satırı ekleme. `main`'e doğrudan push yok, PR ile.
 
 ## İş bölümü
-Ege: DevSecOps ve güvenlik (derleyici, exploit'ler, mutant seti, izolasyon, korpus toplama, CI/Action). B: motor + defter, adaptörler, deney düzeneği, istatistik, panel. Ayrıntı: `docs/plan/08_IS_BOLUMU_VE_KOORDINASYON.md`.
+Ege: derleyici, exploit'ler, mutant seti, izolasyon, korpus toplama, CI/Action. B: motor + defter, adaptörler, deney düzeneği, istatistik, panel. Ayrıntı: `docs/plan/08_IS_BOLUMU_VE_KOORDINASYON.md`.
 
 ## Ortam
 Windows + WSL2 (Ubuntu) + Docker. Claude Code ve Antigravity CLI WSL2 içinde. Python 3.12, `uv`.

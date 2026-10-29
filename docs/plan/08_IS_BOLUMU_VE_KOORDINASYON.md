@@ -1,7 +1,7 @@
 # 08 · İş bölümü ve koordinasyon
 
 > Durum: v1.0 · 29 Ekim 2026 · Karar: ADR-0013 (iş bölümü), ADR-0014 (çalışma kuralları)
-> **A = Ege** (DevSecOps ve güvenlik) · **B = ekip arkadaşı** (uygulama ve araştırma altyapısı; adı eklenecek)
+> **Ege** (derleyici, güvenlik testleri, CI) · **B = ekip arkadaşı** (motor, deney, istatistik; adı eklenecek)
 
 ## 1. İlke
 
@@ -15,7 +15,7 @@
 
 ## 2. Sahiplik tablosu
 
-### Ege · DevSecOps ve güvenlik
+### Ege · derleyici, güvenlik testleri, CI
 
 | Kod | İş | İş paketi | Kişi-hafta |
 |---|---|---|---|
@@ -29,7 +29,7 @@
 | E8 | GitHub Action + SARIF, v1.0 sürümü (PyPI, belgeler) | WP11 | 3 |
 | | **Toplam** | | **≈ 21,5** |
 
-### B · Uygulama ve araştırma altyapısı
+### B · motor, deney, istatistik
 
 | Kod | İş | İş paketi | Kişi-hafta |
 |---|---|---|---|

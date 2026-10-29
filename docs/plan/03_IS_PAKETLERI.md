@@ -1,6 +1,6 @@
 # 03 · İş paketleri, kapılar ve takvim
 
-> Durum: taslak v0.2 (29 Ekim: TÜBİTAK çıkarıldı, iş bölümü işlendi) · Sahibi: `sd-sef-muhendis` skill'i · **Ege**: DevSecOps ve güvenlik · **B**: uygulama ve araştırma altyapısı · Ayrıntılı iş bölümü: `08_IS_BOLUMU_VE_KOORDINASYON.md`
+> Durum: taslak v0.2 (29 Ekim: TÜBİTAK çıkarıldı, iş bölümü işlendi) · Sahibi: `sd-sef-muhendis` skill'i · **Ege**: derleyici, güvenlik testleri, CI · **B**: motor, deney, istatistik · Ayrıntılı iş bölümü: `08_IS_BOLUMU_VE_KOORDINASYON.md`
 
 ## 1. Kapılar (git / gitme noktaları)
 

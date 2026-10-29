@@ -131,7 +131,7 @@ Bu tablodaki her satır `hook-entegrasyon-analisti` ajanının G0 spike'ında ge
 | AST | `ast`, `libcst` | Konum koruyan dönüşüm, mutasyon operatörleri için de |
 | SAST | Semgrep CE (CLI), isteğe bağlı CodeQL CLI | Ücretsiz, `--test` ile kural testi |
 | Test | `pytest`, `hypothesis` (özellik tabanlı testler için) | — |
-| Kalite | `ruff`, `mypy`, `pre-commit`, Gitleaks | Kullanıcının alıştığı DevSecOps kapıları |
+| Kalite | `ruff`, `mypy`, `pre-commit`, Gitleaks | Ekibin bildiği kalite ve güvenlik kapıları |
 | Konteyner | Docker (WSL2 üstünde) | Claude Code sandbox'ı yerel Windows'ta çalışmıyor; deney izolasyonu |
 | Analiz | R (`lme4`, `glmmTMB`, `survival`) + Python (`pandas`, `duckdb`) | Karma etkili modeller R'da olgun |
 | Kayıt | JSONL (ham) → Parquet / DuckDB (analiz) | Basit, sürümlenebilir |
