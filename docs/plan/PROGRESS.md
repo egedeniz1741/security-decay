@@ -14,19 +14,20 @@
 ## Sıradaki 3 iş
 
 **Ege**
-1. ~~Kurulum: WSL2, Docker, `uv`, Claude Code~~ (30 Ekim, tamam). ~~B'ye collaborator daveti~~ (gönderildi).
-2. `main` dal koruması (PR + 1 onay); isteğe bağlı GitHub Projects panosu ve G0, G1 milestone'ları.
-3. Proje iskeleti ve otomatik kontroller PR'ını (`ege/wp1-project-skeleton`) birleştirmek, ardından Claude Code hook denemeleri (2–8 Kasım).
+1. Claude Code hook denemeleri (2–8 Kasım): engelleme, ajana mesaj verme, bitirmeyi engelleme, hook çökerse ne olduğu, insansız mod (`claude -p`). Sonuçlar `docs/plan/AJAN_ENTEGRASYON.md`'ye, örnek veriler `sdguard/tests/fixtures/claude/`'a.
+2. İsteğe bağlı: GitHub Projects panosu ve G0, G1 milestone'ları.
+3. B repoya katılınca CODEOWNERS dosyasını eklemek.
 
 **B**
-1. Repoyu klonlama, aynı kurulum + Antigravity CLI.
+1. Collaborator davetini kabul etme, repoyu klonlama, aynı kurulum (WSL2, Docker, uv, Claude Code) + Antigravity CLI. Kurulum adımları için iş bölümü sayfasındaki "Bu hafta" bölümüne bak.
 2. BaxBench kurulumu, örnek bir senaryoyu kendi koduyla test etme, çok dosyalı uygulama desteği kontrolü (R11).
 3. Antigravity hook spike'ı (`hook-entegrasyon-analisti`).
 
 ## Oturum günlüğü
 
 ### 2026-10-30 oturumu
-Yapılanlar: Ege'nin WSL2 + Docker + uv + Claude Code kurulumu tamamlandı (Docker için kullanıcı `docker` grubuna eklendi). B'ye collaborator daveti gönderildi. Proje iskeleti ve CI iş akışı (ruff, mypy, pytest, Gitleaks) hazırlandı, ilk PR olarak açıldı.
+Yapılanlar: Ege'nin WSL2 + Docker + uv + Claude Code kurulumu tamamlandı (Docker için kullanıcı `docker` grubuna eklendi). B'ye collaborator daveti gönderildi. Proje iskeleti ve otomatik kontroller (ruff, mypy, pytest, Gitleaks) PR #1 ile `main`'e girdi; bilgisayarda `uv run pytest` 2 testi geçiyor. `main` için "Merge Ruleset" aktif: doğrudan push yok, PR + 1 onay ve iki kontrolün geçmesi şart, dal silinemez.
+Not: Artık her değişiklik diğer kişinin onayını bekliyor. B katılana kadar Ege'nin PR'ları birleştirilemez.
 
 ### 2026-10-29 oturumu
 Yapılanlar: TÜBİTAK başvurusu plandan çıkarıldı (ADR-0010 reddedildi). Ege / B iş bölümü, teslim noktaları ve koordinasyon kuralları yazıldı (`08_IS_BOLUMU_VE_KOORDINASYON.md`, ADR-0013, ADR-0014); iş paketlerinin sahipleri, haftalık takvim, risk kaydı, ajan dosyaları ve orkestra şefi skill'i buna göre güncellendi.
