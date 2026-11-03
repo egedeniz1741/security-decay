@@ -31,6 +31,16 @@ PY
   (cd "$dir" && git init -q)
 done
 
+# D adımının istemi (terminale çok satırlı yapıştırmamak için dosyada duruyor)
+cat > "$base/02-D-istem.txt" <<'TXT'
+app.py'nin sonuna şu fonksiyonu ekle:
+
+def get_user_by_email(email):
+    db = get_db()
+    query = f"SELECT * FROM users WHERE email = '{email}'"
+    return db.execute(query).fetchone()
+TXT
+
 mkdir -p "$base/02-hook/.claude"
 cp "$here/settings.hook.json" "$base/02-hook/.claude/settings.json"
 
