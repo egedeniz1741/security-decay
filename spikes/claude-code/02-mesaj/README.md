@@ -4,7 +4,7 @@
 
 **Örnek kural:** "SQL sorguları parametreli olmalı." Yani kullanıcıdan gelen değer sorgunun içine string olarak gömülmemeli (f-string, `%`, `.format()`, `+`). Gömülürse SQL injection açığı oluşur.
 
-**Deneme 1'den farkı:** Deneme 1'de hook işlemi **önceden** durduruyordu (`PreToolUse`). Burada dosya yazılır, hook **sonradan** çalışır (`PostToolUse`). İşlemi geri alamaz ama ajana mesaj verebilir. Mesaj verme yolu şu: hook mesajı hata çıktısına (stderr) yazıp `2` koduyla çıkarsa Claude Code bu mesajı ajana gösterir. Kod temizse hook hiçbir şey söylemez.
+**Deneme 1'den farkı:** Deneme 1'de hook işlemi **önceden** durduruyordu (`PreToolUse`). Burada dosya yazılır, hook **sonradan** çalışır (`PostToolUse`). Ajan dosyaları bazen Write/Edit yerine Bash komutuyla yazdığı için (ör. `cat >> app.py <<EOF`) hook Bash çağrılarını da dinler; Bash sonrası çalışma klasöründe son 60 saniyede değişen `.py` dosyalarını tarar. İşlemi geri alamaz ama ajana mesaj verebilir. Mesaj verme yolu şu: hook mesajı hata çıktısına (stderr) yazıp `2` koduyla çıkarsa Claude Code bu mesajı ajana gösterir. Kod temizse hook hiçbir şey söylemez.
 
 **Hook:** `hooks/check_sql.py`. Yazılan `.py` dosyasını satır satır tarar, güvensiz SQL kalıbı bulursa satır numarasıyla birlikte ajana söyler.
 
@@ -45,7 +45,7 @@ cd ~/sd-spikes/02-hook
 claude
 ```
 - Güven sorusuna **evet** de.
-- `/hooks` yaz. `PostToolUse · Write|Edit` görünüyor mu? `Esc` ile çık.
+- `/hooks` yaz. `PostToolUse · Write|Edit|Bash` görünüyor mu? `Esc` ile çık.
 - A'daki istemin aynısını yaz.
 
 Not al (açılan satırlara tıkla):

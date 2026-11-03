@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """G0 deneme 2: ajan bir Python dosyası yazdıktan sonra SQL sorgusunu kontrol et, açık varsa ajana söyle.
 
-Claude Code bu betiği her Write / Edit işleminden SONRA (PostToolUse) çalıştırır.
+Claude Code bu betiği her Write / Edit / Bash işleminden SONRA (PostToolUse) çalıştırır.
 Betik:
 1. Gelen JSON'u ~/sd-spikes/logs/ altına kaydeder.
-2. Yazılan dosya .py ise içinde güvensiz SQL kalıbı arar
+2. Değişen .py dosyalarında güvensiz SQL kalıbı arar
    (f-string, % veya .format() ile kurulan ya da + ile birleştirilen sorgular).
 3. Bulursa mesajı stderr'e yazar ve 2 koduyla çıkar. Claude Code bu durumda mesajı ajana gösterir.
    Bulamazsa sessizce 0 ile çıkar.
@@ -54,14 +54,35 @@ def find_issues(path: Path) -> list[str]:
     return issues
 
 
+RECENT_SECONDS = 60
+
+
+def changed_files(data: dict) -> list[Path]:
+    """Bu araç çağrısında değişmiş olabilecek .py dosyaları.
+
+    Write / Edit: girdideki file_path.
+    Bash: komutun hangi dosyaya yazdığını güvenilir şekilde çıkaramıyoruz (ör. `cat >> app.py <<EOF`),
+    bu yüzden çalışma klasöründe son 60 saniyede değişen .py dosyalarına bakıyoruz.
+    """
+    tool_input = data.get("tool_input") or {}
+    if data.get("tool_name") == "Bash":
+        root = Path(data.get("cwd") or ".")
+        now = time.time()
+        return [
+            p
+            for p in root.rglob("*.py")
+            if ".git" not in p.parts and now - p.stat().st_mtime <= RECENT_SECONDS
+        ]
+    path = Path(tool_input.get("file_path", ""))
+    return [path] if path.suffix == ".py" and path.is_file() else []
+
+
 def main() -> int:
     data = json.load(sys.stdin)
     save_input(data)
-    file_path = (data.get("tool_input") or {}).get("file_path", "")
-    path = Path(file_path)
-    if path.suffix != ".py" or not path.is_file():
-        return 0
-    issues = find_issues(path)
+    issues = []
+    for path in changed_files(data):
+        issues.extend(find_issues(path))
     if not issues:
         return 0
     message = (
