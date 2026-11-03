@@ -50,6 +50,8 @@ runner.py --scenario S3 --condition K4 --agent claude --rep 2 --seed 1234
 | Exploit'ler dış dünyaya gider | Değerlendirme konteyneri `--network none` ya da yalnızca iç ağ | Docker ağ ayarı testte |
 | Ajanın ağ erişimi koşullara göre farklı | Tüm koşullarda aynı izinli alan listesi (PyPI dahil, paket kurulum kontrolü için) | Ayar dosyası hash'i |
 | Antigravity'de `--dangerously-skip-permissions` hook'ları kapatabilir | Bu bayrak yasak; `permissions.allow` ile sabit izin listesi | G0 testi |
+| Ajan çalışma klasöründeki `.claude/` ayarlarını görüp davranışını değiştirir (G0 Deneme 2'de ajan işe `ls -la .claude` ile başladı) | Hook ayarları ajanın çalışma klasörüne değil, kullanıcı düzeyi ayara ya da `--settings` ile dışarıdan verilir | Tur başında çalışma klasöründe `.claude/` yok |
+| İnsansız modda izin modu verilmezse ajan dosya değiştiremez (G0 Deneme 2 D1) | Tüm koşullarda aynı, açıkça belirtilmiş izin modu (ör. `--permission-mode acceptEdits`) ve sabit `--allowedTools` listesi | `permission_denials` alanı tur kaydında izlenir |
 
 Yerel Windows'ta Claude Code komut sandbox'ı çalışmıyor; deney ve geliştirme WSL2 + Docker üstünde yapılır.
 
