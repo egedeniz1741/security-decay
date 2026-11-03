@@ -46,6 +46,6 @@
 5. Kullanıcı: G0 kararı.
 
 **Pilot haftası (23–29 Kasım):**
-1. `kaynak-planlayici` → B'nin pilot verisinden kota ölçümü ve takvim.
+1. `kaynak-planlayici` → Deniz'in pilot verisinden kota ölçümü ve takvim.
 2. `plan-denetcisi` → G1 ölçütleri tek tek.
-3. Ege + B: G1 kararı ve iş yükü yeniden dengeleme (`08_IS_BOLUMU_VE_KOORDINASYON.md` §6).
+3. Ege + Deniz: G1 kararı ve iş yükü yeniden dengeleme (`08_IS_BOLUMU_VE_KOORDINASYON.md` §6).
