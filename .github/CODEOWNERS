@@ -12,7 +12,7 @@
 /.github/workflows/       @egedeniz1741
 /spikes/claude-code/      @egedeniz1741
 
-# B: ledger, adapters, experiment runner, analysis, Antigravity spikes
+# Deniz: ledger, adapters, experiment runner, analysis, Antigravity spikes
 /sdguard/ledger/          @Sternwarts1881
 /sdguard/adapters/        @Sternwarts1881
 /harness/runner/          @Sternwarts1881
