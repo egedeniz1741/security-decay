@@ -110,8 +110,6 @@ Ayrı bir adım gerekmedi. B1'de ajan güvenli (parametreli) sorgu yazdı ve hoo
 - Dosya hiç değişmedi, hook'a sıra gelmedi. `result`: ajan yazma izni olmadığını, koddaki SQL injection açığını ve parametreli sürümü anlattı; hangisini eklemek istendiğini sordu.
 - `num_turns`: 3, `total_cost_usd`: 0,15.
 
-![D1](ekran/D1-insansiz-izin-reddi.png)
-
 **Bulgular:**
 1. **Deney için kritik ayar:** Ana deneyde ajan insansız modda kod yazacak. İzin modu açıkça verilmezse ajan hiçbir dosyayı değiştiremez ve deney anlamsızlaşır. İzin modu her koşulda aynı ve açıkça belirtilmiş olmalı (ör. `--permission-mode acceptEdits`). Etkileşimli denemeler (`auto`) ile insansız denemeler (manual) bu yüzden birebir karşılaştırılamaz.
 2. Ajan, yazmadan önce bile kodun güvensiz olduğunu fark edip uyardı. Yine de karar kullanıcıya bırakıldı.
