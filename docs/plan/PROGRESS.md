@@ -9,14 +9,14 @@
 ## Kullanıcı kararı bekliyor
 1. K1b ve K2b koşulları eklensin mi? (ADR-0004, ADR-0005) — G1 (pilot) öncesi.
 2. Hoca toplantısındaki kararlar (kapsam, deney ölçeği, yayın hedefi) buraya işlenecek.
-3. B'nin adı ve GitHub kullanıcı adı (CODEOWNERS ve repo erişimi için).
+3. ~~B'nin GitHub kullanıcı adı~~: `Sternwarts1881` (CODEOWNERS eklendi).
 
 ## Sıradaki 3 iş
 
 **Ege**
 1. Claude Code hook denemeleri (2–8 Kasım): engelleme, ajana mesaj verme, bitirmeyi engelleme, hook çökerse ne olduğu, insansız mod (`claude -p`). Sonuçlar `docs/plan/AJAN_ENTEGRASYON.md`'ye, örnek veriler `sdguard/tests/fixtures/claude/`'a.
 2. İsteğe bağlı: GitHub Projects panosu ve G0, G1 milestone'ları.
-3. B repoya katılınca CODEOWNERS dosyasını eklemek.
+3. ~~CODEOWNERS dosyası~~ (eklendi, B: `Sternwarts1881`).
 
 **B**
 1. Collaborator davetini kabul etme, repoyu klonlama, aynı kurulum (WSL2, Docker, uv, Claude Code) + Antigravity CLI. Kurulum adımları için iş bölümü sayfasındaki "Bu hafta" bölümüne bak.
