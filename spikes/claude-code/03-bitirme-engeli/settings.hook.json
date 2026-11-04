@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/sd-spikes/hooks/stop_sql_gate.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
