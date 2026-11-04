@@ -2,7 +2,7 @@
 <!-- One or two sentences. Link the issue: Closes #… -->
 
 ## Work item
-<!-- e.g. E3 compiler, B4 adapters. Milestone: G0…G6 -->
+<!-- e.g. E3 compiler, D4 adapters. Milestone: G0…G6 -->
 
 ## How it was tested
 - [ ] `uv run ruff check` and `uv run mypy` pass

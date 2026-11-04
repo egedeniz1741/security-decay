@@ -1,0 +1,23 @@
+# GitHub asks the owner below to review any pull request that changes these paths.
+# See docs/plan/08_IS_BOLUMU_VE_KOORDINASYON.md for the work split.
+
+# Default: both of us
+*                         @egedeniz1741 @Sternwarts1881
+
+# Ege: compiler, exploits, mutants, CI / Action, Claude Code spikes
+/sdguard/compiler/        @egedeniz1741
+/harness/exploits/        @egedeniz1741
+/mutants/                 @egedeniz1741
+/action/                  @egedeniz1741
+/.github/workflows/       @egedeniz1741
+/spikes/claude-code/      @egedeniz1741
+
+# Deniz: ledger, adapters, experiment runner, analysis, Antigravity spikes
+/sdguard/ledger/          @Sternwarts1881
+/sdguard/adapters/        @Sternwarts1881
+/harness/runner/          @Sternwarts1881
+/analysis/                @Sternwarts1881
+/spikes/antigravity/      @Sternwarts1881
+
+# Shared contracts: both of us
+/sdguard/contracts/       @egedeniz1741 @Sternwarts1881

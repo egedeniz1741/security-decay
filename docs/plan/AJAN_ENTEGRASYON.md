@@ -9,7 +9,7 @@
 |---|---|---|
 | Sürüm | 2.1.312 → 2.1.317 (3 Kasım, otomatik güncellendi) | ⏳ |
 | Ortam | WSL2 Ubuntu | ⏳ |
-| Deneyi yapan | Ege | B |
+| Deneyi yapan | Ege | Deniz |
 
 ## Denemeler
 
