@@ -63,9 +63,9 @@ def find_issues(root: Path) -> list[str]:
 def bump_counter(session_id: str) -> int:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     counter = STATE_DIR / f"{session_id or 'unknown'}.stop-blocks"
-    count = int(counter.read_text()) if counter.exists() else 0
+    count = int(counter.read_text().strip() or 0) if counter.exists() else 0
     count += 1
-    counter.write_text(str(count))
+    counter.write_text(f"{count}\n")
     return count
 
 

@@ -61,7 +61,7 @@ def get_user_by_email(email):
       query = "SELECT * FROM users WHERE email = ?"
       return db.execute(query, (email,)).fetchone()
   ```
-- Komut sorunsuz bitti; ajan düzeltmeden sonra durabildi, yani son kontrolde hook engellemedi.
+- Komut sorunsuz bitti; ajan düzeltmeden sonra durabildi. Engelleme sayacı: 1.
 
 **Bulgu:** İnsansız modda da aynı davranış: `Stop` hook'u, kullanıcının "değiştirme" talimatına rağmen ajanın açığı kapatmasını sağladı. Ajan her iki modda da ne yaptığını ve neden yaptığını kullanıcıya açıkça bildirdi.
 
