@@ -22,8 +22,22 @@
 | 1E | İnsansız modda (`claude -p` / `agy -p`) engelleme çalışıyor mu? | ✅ Engellendi; JSON çıktısında `permission_denials` alanına kaydedildi | ⏳ | `SONUCLAR.md` §E |
 | 2 | Dosya yazıldıktan sonra ajana mesaj verilebiliyor mu, ajan düzeltiyor mu? | ✅ Mesaj ulaşıyor (PostToolUse + exit 2). Kullanıcı yasaklamadıysa ajan kendiliğinden düzeltiyor (D2); "değiştirme" dendiyse düzeltmiyor (B2) | ⏳ | Antigravity'de belgeye göre bu kanal yok |
 | 3 | Ajan "bitti" dediğinde hook onu devam ettirebiliyor mu? | ✅ Etkileşimli ve insansız modda tek engelleme yetti; ajan "değiştirme" talimatına rağmen açığı kapattı ve bunu bildirdi | ⏳ | `spikes/claude-code/03-bitirme-engeli/SONUCLAR.md` §A. Ajan hook mesajını kullanıcı talimatı saydı |
-| 4 | Hook çökerse ajan duruyor mu? (`onFailure: "block"`) | ⏳ hazırlandı (`spikes/claude-code/04-hook-cokmesi/`) | ⏳ | Belgeye göre Claude Code varsayılanda devam ediyor |
+| 4 | Hook çökerse ajan duruyor mu? (`onFailure: "block"`) | ✅ Varsayılan: hayır, işlem sessizce devam ediyor (çökme ve zaman aşımında). `onFailure: "block"` ile işlem duruyor | ⏳ | `spikes/claude-code/04-hook-cokmesi/SONUCLAR.md` |
 | 5 | `--dangerously-skip-permissions` hook'ları kapatıyor mu? | — | ⏳ | Yalnızca Antigravity |
 
+## Claude Code tarafının özeti (5 Kasım)
+
+Claude Code'da G0 için gereken dört yetenek de gerçek denemelerle gösterildi:
+
+| Yetenek | Sonuç | Dikkat edilecek nokta |
+|---|---|---|
+| Araç çağrısını engelleme (`PreToolUse`) | ✅ | Ad tabanlı kural dolaylı aramayla aşıldı (1D) |
+| Yazdıktan sonra ajana mesaj (`PostToolUse` + exit 2) | ✅ | Mesaj öneri olarak kalıyor; kullanıcı talimatı varsa ajan uymayabiliyor |
+| Bitirmeyi engelleme (`Stop` + `decision: block`) | ✅ | Ajan hook mesajını kullanıcı talimatı sayıyor; mesajlar koddan metin alıntılamamalı |
+| Hook çökerse durma (`onFailure: "block"`) | ✅ | Varsayılan fail-open; bütün güvenlik hook'ları bu ayarla tanımlanmalı |
+| İnsansız mod (`claude -p`) | ✅ | İzin modu açıkça verilmeli; engellemeler `permission_denials` alanından ölçülebiliyor |
+
+Genel ders: Ajan aynı işi farklı araçlarla yapıyor (aynı istekte bazen Bash, bazen Read/Edit) ve ekrandaki özetler gerçek aracı göstermiyor. Kontroller araç türüne değil, işlemin sonucuna (dosyanın son hali, okunan içerik) bakmalı; ölçüm hook kayıtlarından ve JSON çıktısından yapılmalı.
+
 ## G0 kararı (8 Kasım)
-⏳
+⏳ Antigravity CLI sonuçları bekleniyor.
