@@ -1,0 +1,8 @@
+step: 04C
+workspace: /home/user/sd-spikes/agy/04-cokme
+hooks.json: yes
+flags: --output-format stream-json 
+agy: 1.5.1
+exit: 0
+duration_s: 20.1
+prompt: app.py dosyasını oku ve içindeki fonksiyonun ne yaptığını tek cümleyle söyle.

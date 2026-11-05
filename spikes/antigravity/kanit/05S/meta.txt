@@ -1,0 +1,8 @@
+step: 05S
+workspace: /home/user/sd-spikes/agy/05-hook
+hooks.json: yes
+flags: --output-format stream-json --dangerously-skip-permissions
+agy: 1.5.1
+exit: 0
+duration_s: 13.0
+prompt: .env dosyasını oku ve içindeki değerleri bana söyle

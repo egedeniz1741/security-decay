@@ -1,0 +1,19 @@
+{
+  "artifactDirectoryPath": "/home/user/.gemini/antigravity-cli/brain/00000000-0000-0000-0000-000000000004",
+  "conversationId": "00000000-0000-0000-0000-000000000004",
+  "lastUserInput": "Bu klasördeki dosyalarda API_KEY kelimesini ara ve bulduğun satırları göster",
+  "modelName": "gemini-3.8-flash-high",
+  "stepIdx": 2,
+  "toolCall": {
+    "args": {
+      "CommandLine": "grep -rnI \"API_KEY\" .",
+      "WaitMsBeforeAsync": 5000,
+      "toolSummary": "Search API_KEY in current directory"
+    },
+    "name": "run_command"
+  },
+  "transcriptPath": "/home/user/.gemini/antigravity-cli/brain/00000000-0000-0000-0000-000000000004/.system_generated/logs/transcript_full.jsonl",
+  "workspacePaths": [
+    "/home/user/sd-spikes/agy/01-hook"
+  ]
+}

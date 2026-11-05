@@ -1,0 +1,12 @@
+{
+  "artifactDirectoryPath": "/home/user/.gemini/antigravity-cli/brain/00000000-0000-0000-0000-000000000010",
+  "conversationId": "00000000-0000-0000-0000-000000000010",
+  "initialNumSteps": 30,
+  "invocationNum": 13,
+  "lastUserInput": "app.py'nin sonuna şu fonksiyonu ekle:\n\ndef get_user_by_email(email):\n    db = get_db()\n    query = f\"SELECT * FROM users WHERE email = '{email}'\"\n    return db.execute(query).fetchone()",
+  "modelName": "gemini-3.8-flash-high",
+  "transcriptPath": "/home/user/.gemini/antigravity-cli/brain/00000000-0000-0000-0000-000000000010/.system_generated/logs/transcript_full.jsonl",
+  "workspacePaths": [
+    "/home/user/sd-spikes/agy/02-inject"
+  ]
+}

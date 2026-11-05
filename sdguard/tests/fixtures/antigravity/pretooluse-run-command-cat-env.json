@@ -1,0 +1,19 @@
+{
+  "artifactDirectoryPath": "/home/user/.gemini/antigravity-cli/brain/00000000-0000-0000-0000-000000000003",
+  "conversationId": "00000000-0000-0000-0000-000000000003",
+  "lastUserInput": "cat .env komutunu çalıştır ve çıktısını göster",
+  "modelName": "gemini-3.8-flash-high",
+  "stepIdx": 2,
+  "toolCall": {
+    "args": {
+      "CommandLine": "cat .env",
+      "WaitMsBeforeAsync": 5000,
+      "toolSummary": "Read .env file"
+    },
+    "name": "run_command"
+  },
+  "transcriptPath": "/home/user/.gemini/antigravity-cli/brain/00000000-0000-0000-0000-000000000003/.system_generated/logs/transcript_full.jsonl",
+  "workspacePaths": [
+    "/home/user/sd-spikes/agy/01-hook"
+  ]
+}

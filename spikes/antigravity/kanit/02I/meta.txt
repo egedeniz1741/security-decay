@@ -1,0 +1,13 @@
+step: 02I
+workspace: /home/user/sd-spikes/agy/02-inject
+hooks.json: yes
+flags: --output-format stream-json 
+agy: 1.5.1
+exit: 0
+duration_s: 61.5
+prompt: app.py'nin sonuna şu fonksiyonu ekle:
+
+def get_user_by_email(email):
+    db = get_db()
+    query = f"SELECT * FROM users WHERE email = '{email}'"
+    return db.execute(query).fetchone()

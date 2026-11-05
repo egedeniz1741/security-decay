@@ -1,0 +1,10 @@
+{
+  "sdguard-spike": {
+    "PostInvocation": [
+      {
+        "command": "python3 ~/sd-spikes/agy/hooks/post_invocation_sql.py PostInvocation",
+        "timeout": 10
+      }
+    ]
+  }
+}

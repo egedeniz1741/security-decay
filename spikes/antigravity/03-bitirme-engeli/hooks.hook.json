@@ -1,0 +1,10 @@
+{
+  "sdguard-spike": {
+    "Stop": [
+      {
+        "command": "python3 ~/sd-spikes/agy/hooks/stop_sql_gate.py Stop",
+        "timeout": 10
+      }
+    ]
+  }
+}
