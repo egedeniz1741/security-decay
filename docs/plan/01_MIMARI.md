@@ -108,14 +108,14 @@ class Decision(BaseModel):
 
 | Normalize | Claude Code | Antigravity CLI |
 |---|---|---|
-| `pre_tool` + `deny` | `PreToolUse` → `hookSpecificOutput.permissionDecision: "deny"` + gerekçe | `PreToolUse` → `decision: "deny"` + `reason` |
-| `post_tool` + `feedback` | `PostToolUse` → `hookSpecificOutput.additionalContext` (ya da exit 2 + stderr) | **Kanal yok**, `{}` dönmek zorunlu. Bulgu kuyruğa yazılır, tur sonunda verilir |
-| `turn_end` + `block_stop` | `Stop` → `decision: "block"` + `reason`; `stop_hook_active` ile döngü sınırı | `Stop` → `decision: "continue"` + `reason`; ardışık devam sınırı var |
-| `turn_end` + `feedback` | `Stop` hook'unda `systemMessage` ya da bir sonraki `UserPromptSubmit`'te bağlam | `Stop` / `PostInvocation.injectSteps` (G0'da doğrulanacak) |
-| Hook hatası | `"onFailure": "block"` | Belgelerde net değil, G0'da test |
-| Yapılandırma yeri | `.claude/settings.json` | `.agents/hooks.json` + `settings.json` izinleri |
+| `pre_tool` + `deny` | `PreToolUse` → `hookSpecificOutput.permissionDecision: "deny"` + gerekçe | `PreToolUse` → `decision: "deny"` + `reason` ✅ (G0). Karar yoksa `decision: "ask"`; `{}` ret sayılıyor |
+| `post_tool` + `feedback` | `PostToolUse` → `hookSpecificOutput.additionalContext` (ya da exit 2 + stderr) | **Kanal yok** ✅ (G0: çıktı ajana ulaşmadı). Bulgu kuyruğa yazılır, `PostInvocation` ya da `Stop` ile verilir |
+| `turn_end` + `block_stop` | `Stop` → `decision: "block"` + `reason`; `stop_hook_active` ile döngü sınırı | `Stop` → `decision: "continue"` + `reason` ✅ (G0); agy'nin kendi ardışık devam sınırı denenmedi, adaptör kendi sayacını tutar |
+| `turn_end` + `feedback` | `Stop` hook'unda `systemMessage` ya da bir sonraki `UserPromptSubmit`'te bağlam | `PostInvocation` → `injectSteps: [{ephemeralMessage}]` ✅ (G0, tur içinde) ya da `Stop` → `continue` |
+| Hook hatası | `"onFailure": "block"` | `PreToolUse`'da varsayılan fail-closed ✅ (G0: çökme, bozuk JSON, zaman aşımı). Çıktısız exit 0 izin sayılıyor, adaptör her yolda açık karar yazmalı |
+| Yapılandırma yeri | `.claude/settings.json` | `.agents/hooks.json` + `~/.gemini/antigravity-cli/settings.json` izinleri (`allow`/`ask`/`deny`, `action(target)`) |
 
-Bu tablodaki her satır `hook-entegrasyon-analisti` ajanının G0 spike'ında gerçek bir koşumla doğrulanmadan "kesin" sayılmaz.
+Bu tablodaki her satır `hook-entegrasyon-analisti` ajanının G0 spike'ında gerçek bir koşumla doğrulanmadan "kesin" sayılmaz. ✅ işaretli Antigravity satırları agy 1.5.1 / insansız modda doğrulandı (`spikes/antigravity/SONUCLAR.md`); Claude Code satırları için `docs/plan/AJAN_ENTEGRASYON.md`.
 
 ### 2.6 CI ve panel
 - `sdguard check --sarif out.sarif`: aynı derlenmiş Semgrep kurallarını ve güvenlik testlerini çalıştırır. GitHub Action kompozit eylem olarak paketlenir, `github/codeql-action/upload-sarif` ile Code Scanning'e yüklenir.
@@ -162,4 +162,4 @@ security-decay/
 ## 5. Açık mimari sorular
 1. Defter durumu dosyada mı (JSONL) yoksa SQLite'ta mı? İlk öneri JSONL; eşzamanlı yazım yok.
 2. Semgrep her `PostToolUse`'ta yeniden başlatılırsa süre (~1–3 sn) RQ4'ü zorlar. Alternatif: tur sonunda tek tarama + `PostToolUse`'ta yalnızca AST tabanlı hızlı kontroller. Pilotta ölçülecek.
-3. Antigravity'de `PostToolUse` aracın çıktısını vermiyor; değişen dosyaları bulmak için tur başı/sonu git anlık görüntüsü farkı kullanılmalı.
+3. Antigravity'de `PostToolUse` aracın çıktısını vermiyor; değişen dosyaları bulmak için tur başı/sonu git anlık görüntüsü farkı kullanılmalı. G0'da görüldü ki girdide `toolCall` (araç adı + argümanlar) var: `write_file` / `edit_file` için yol argümandan okunabiliyor, `run_command` için git farkı yine gerekli.

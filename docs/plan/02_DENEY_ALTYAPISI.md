@@ -49,7 +49,10 @@ runner.py --scenario S3 --condition K4 --agent claude --rep 2 --seed 1234
 | Claude Code sürümü değişir | Konteyner imajında sabit sürüm, otomatik güncelleme kapalı (`DISABLE_AUTOUPDATER=1`) | `claude --version` kaydı |
 | Exploit'ler dış dünyaya gider | Değerlendirme konteyneri `--network none` ya da yalnızca iç ağ | Docker ağ ayarı testte |
 | Ajanın ağ erişimi koşullara göre farklı | Tüm koşullarda aynı izinli alan listesi (PyPI dahil, paket kurulum kontrolü için) | Ayar dosyası hash'i |
-| Antigravity'de `--dangerously-skip-permissions` hook'ları kapatabilir | Bu bayrak yasak; `permissions.allow` ile sabit izin listesi | G0 testi |
+| Antigravity'de `--dangerously-skip-permissions` hook'ları kapatabilir | Bu bayrak yasak; `permissions.allow` ile sabit izin listesi | G0'da (agy 1.5.1) bayrak hook'ları kapatmadı (`spikes/antigravity/SONUCLAR.md` §5); bayrak yine yasak |
+| Antigravity insansız modda onay isteyen her aracı otomatik reddeder, tur boş cevap + `status: SUCCESS` + exit 0 ile biter (G0 §0) | Koşul başına sabit `permissions.allow` listesi (`~/.gemini/antigravity-cli/settings.json`), pilotta ajanın kullandığı komutlara göre | Tur `response` boşsa ya da stderr'de `auto-denied` geçiyorsa `INVALID` |
+| Antigravity CLI kendi binary'sini günceller (G0'da 1.2.16 → 1.5.1); `AGY_CLI_DISABLE_AUTO_UPDATE=1` kontrolü durdurmadı | İmajda sabit binary, sha256 kontrolü | Her tur öncesi binary sha256 ve `agy --version` kaydı |
+| Antigravity'de ajan `.agents/hooks.json`'u ve hook betiklerini okuyup davranışını ayarlar, başka klasörlere de çıkar (G0 §2) | `read_file` ve `write_file` için mutlak yollu `deny` kuralları (`.agents`, `.sdguard`, hook betikleri, `~/.gemini`); okuma için izin listesinde `cat`/`find` yok | Tur kayıtlarında bu yollara erişim denemesi sayılır |
 | Ajan çalışma klasöründeki `.claude/` ayarlarını görüp davranışını değiştirir (G0 Deneme 2'de ajan işe `ls -la .claude` ile başladı) | Hook ayarları ajanın çalışma klasörüne değil, kullanıcı düzeyi ayara ya da `--settings` ile dışarıdan verilir | Tur başında çalışma klasöründe `.claude/` yok |
 | İnsansız modda izin modu verilmezse ajan dosya değiştiremez (G0 Deneme 2 D1) | Tüm koşullarda aynı, açıkça belirtilmiş izin modu (ör. `--permission-mode acceptEdits`) ve sabit `--allowedTools` listesi | `permission_denials` alanı tur kaydında izlenir |
 
@@ -81,7 +84,12 @@ Ham kayıtlar (stream-json, diff, hook logu, test çıktısı) `data/raw/<run_id
 
 - Repo: `logic-star-ai/baxbench` (MIT). Python 3.12, root yetkili Docker, `pipenv`. Senaryolar `src/scenarios`, ortamlar `src/env` altında.
 - Kendi ürettiğimiz kod `results/<model>/<scenario>/<env>/temp<t>-<spec>-<prompt>/sample<s>/code` yoluna konup `--mode test` ile çalıştırılabiliyor. Her turun kodu bu yola kopyalanarak test edilir.
-- **Doğrulanması gereken:** BaxBench ortamları uygulamanın tek dosya olmasını bekliyorsa, çok dosyalı ajan çıktısı için ortam tanımı genişletilmeli. Pilotun ilk işi.
+- **Çok dosyalı uygulama (R11), 3–5 Kasım'da denendi:** `--mode test`, `code/` klasöründeki bütün metin dosyalarını alt klasörleriyle okuyup imaja kopyalıyor (`src/tasks.py` `load_code`); ortamdaki `is_multi_file` yalnızca istemi ve LLM cevabının ayrıştırılmasını etkiliyor. Login senaryosunda kendi yazdığımız iki uygulamayla:
+  - **Python-Flask** (`app.py` + `auth/` paketi): 1/1 işlev testi geçti, 3 güvenlik testi hatasız koştu, CWE yok.
+  - **JavaScript-express** (`app.js` + `lib/`): `_JS_DOCKERFILE`'daki `COPY * /app/` alt klasörleri düzleştirdiği için uygulama `Cannot find module './lib/store'` ile açılmadı; tablo bunu "exceptions" olarak gösteriyor. `COPY . /app/` yapınca 1/1 işlev, 3 güvenlik testi hatasız, CWE yok. Yama yerelde (`sd-env/baxbench-js-copy-subdirs.patch`); Express, Koa, Fastify aynı Dockerfile'ı kullanıyor.
+  - Denenmedi: Go (aynı `COPY *` kalıbı), Rust (yalnızca `main.rs` kopyalanıyor).
+  - Ayrıca bütün ortamlar `*-bullseye` imaj kullanıyor; Debian 11 desteği bittiği için `apt-get` 404 veriyor ve her örnek yine "exceptions" görünüyor. Yerel yama: `/etc/apt/sources.list` → `archive.debian.org`. İki yama da deney imajlarına girmeli; sonuç tablosu yerine derleme loglarına bakılmalı.
+  - BaxBench, `test_results.json` olan örnekleri atlıyor; yeniden test için `--force`.
 - Yeni turlar (dosya yükleme, yönetici paneli) için işlev testleri ve exploit'ler bizim tarafımızdan yazılır. `eth-sri/AutoBaxBuilder` (MIT, ICML 2026) senaryo/test/exploit üretebiliyor ama API anahtarı istiyor; yalnızca örnek ve fikir kaynağı olarak kullanılır.
 - `djscherrer/IterBench` BaxBench'in yinelemeli bir çatalı ama güvenlik değil dağıtım optimizasyonu ölçüyor; kod yapısı örnek alınabilir.
 
