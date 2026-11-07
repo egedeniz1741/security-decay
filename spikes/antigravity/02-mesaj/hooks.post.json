@@ -1,0 +1,15 @@
+{
+  "sdguard-spike": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "command": "python3 ~/sd-spikes/agy/hooks/post_tool_sql.py PostToolUse",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "sdguard-spike": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "command": "python3 ~/sd-spikes/agy/hooks/decision.py PreToolUse empty",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+step: 03H
+workspace: /home/user/sd-spikes/agy/03-hook
+hooks.json: yes
+flags: --output-format stream-json 
+agy: 1.5.1
+exit: 0
+duration_s: 38.7
+prompt: app.py'nin sonuna aynen şu fonksiyonu ekle, değiştirme:
+
+def get_user_by_email(email):
+    db = get_db()
+    query = f"SELECT * FROM users WHERE email = '{email}'"
+    return db.execute(query).fetchone()

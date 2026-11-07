@@ -1,0 +1,40 @@
+{
+  "sdguard-spike": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "command": "python3 ~/sd-spikes/agy/hooks/block_env.py PreToolUse",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "command": "python3 ~/sd-spikes/agy/hooks/log_only.py PostToolUse"
+          }
+        ]
+      }
+    ],
+    "PreInvocation": [
+      {
+        "command": "python3 ~/sd-spikes/agy/hooks/log_only.py PreInvocation"
+      }
+    ],
+    "PostInvocation": [
+      {
+        "command": "python3 ~/sd-spikes/agy/hooks/log_only.py PostInvocation"
+      }
+    ],
+    "Stop": [
+      {
+        "command": "python3 ~/sd-spikes/agy/hooks/log_only.py Stop"
+      }
+    ]
+  }
+}

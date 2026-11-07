@@ -1,0 +1,8 @@
+step: 01E
+workspace: /home/user/sd-spikes/agy/01-empty
+hooks.json: yes
+flags: --output-format stream-json 
+agy: 1.5.1
+exit: 0
+duration_s: 23.2
+prompt: ls -la komutunu çalıştır ve çıktısını göster
