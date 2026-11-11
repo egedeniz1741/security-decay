@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1",
+  "sources": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "compiled_by": {
+    "agent": "claude-code",
+    "model": "example-model",
+    "compiled_at": "2026-11-11T00:00:00Z"
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "source": {"file": "AGENTS.md", "line": 12, "text": "Never read the .env file."},
+      "category": "action",
+      "cwe": ["CWE-200"],
+      "targets": {
+        "permissions": [
+          {"agent": "claude-code", "deny": ["Read(./.env)", "Read(./.env.*)"]},
+          {"agent": "antigravity", "deny": ["read_file(.env)"]}
+        ]
+      },
+      "validation": {"status": "verified", "good_examples": 2, "bad_examples": 3, "attempts": 1},
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "A recursive search over the folder (grep -rn KEY .) returns the file content without naming the file (G0 spike 1D)."
+      ]
+    },
+    {
+      "id": "R-002",
+      "source": {"file": "AGENTS.md", "line": 15, "text": "SQL queries must always be parameterized."},
+      "category": "code",
+      "cwe": ["CWE-89"],
+      "targets": {
+        "semgrep": {"rule_path": "semgrep/R-002.yaml", "test_path": "semgrep/tests/R-002.py"}
+      },
+      "validation": {"status": "verified", "good_examples": 3, "bad_examples": 4, "attempts": 1},
+      "enforcement": "block",
+      "coverage": "full"
+    },
+    {
+      "id": "R-003",
+      "source": {"file": "AGENTS.md", "line": 18, "text": "A user must only see their own orders."},
+      "category": "behavior",
+      "cwe": ["CWE-639"],
+      "targets": {"pytest": {"test_path": "tests/security/test_r003_order_ownership.py"}},
+      "validation": {"status": "verified", "good_examples": 1, "bad_examples": 1, "attempts": 2},
+      "enforcement": "warn",
+      "coverage": "partial",
+      "known_gaps": ["Only the /orders endpoints are tested; other resources are not."]
+    },
+    {
+      "id": "R-004",
+      "source": {"file": "AGENTS.md", "line": 21, "text": "Validate all inputs."},
+      "category": "vague",
+      "validation": {"status": "not_attempted"},
+      "enforcement": "advise",
+      "coverage": "none"
+    }
+  ]
+}

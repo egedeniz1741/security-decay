@@ -1,0 +1,355 @@
+{
+  "$defs": {
+    "AgentName": {
+      "enum": [
+        "claude-code",
+        "antigravity"
+      ],
+      "title": "AgentName",
+      "type": "string"
+    },
+    "CompiledBy": {
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "$ref": "#/$defs/AgentName"
+        },
+        "compiled_at": {
+          "format": "date-time",
+          "title": "Compiled At",
+          "type": "string"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        }
+      },
+      "required": [
+        "agent",
+        "model",
+        "compiled_at"
+      ],
+      "title": "CompiledBy",
+      "type": "object"
+    },
+    "Coverage": {
+      "description": "How much of the written rule the compiled checks really enforce.",
+      "enum": [
+        "full",
+        "partial",
+        "none"
+      ],
+      "title": "Coverage",
+      "type": "string"
+    },
+    "Enforcement": {
+      "description": "What happens when the rule is violated.",
+      "enum": [
+        "block",
+        "warn",
+        "advise"
+      ],
+      "title": "Enforcement",
+      "type": "string"
+    },
+    "PermissionTarget": {
+      "additionalProperties": false,
+      "description": "Deny rules for one agent's own permission system.",
+      "properties": {
+        "agent": {
+          "$ref": "#/$defs/AgentName"
+        },
+        "deny": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Deny",
+          "type": "array"
+        }
+      },
+      "required": [
+        "agent",
+        "deny"
+      ],
+      "title": "PermissionTarget",
+      "type": "object"
+    },
+    "PytestTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "test_path": {
+          "minLength": 1,
+          "title": "Test Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "test_path"
+      ],
+      "title": "PytestTarget",
+      "type": "object"
+    },
+    "Rule": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/RuleCategory"
+        },
+        "coverage": {
+          "$ref": "#/$defs/Coverage"
+        },
+        "cwe": {
+          "items": {
+            "pattern": "^CWE-\\d+$",
+            "type": "string"
+          },
+          "title": "Cwe",
+          "type": "array"
+        },
+        "enforcement": {
+          "$ref": "#/$defs/Enforcement"
+        },
+        "id": {
+          "pattern": "^R-\\d{3,}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "known_gaps": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Known Gaps",
+          "type": "array"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceRef"
+        },
+        "targets": {
+          "$ref": "#/$defs/Targets"
+        },
+        "validation": {
+          "$ref": "#/$defs/Validation"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "category",
+        "validation",
+        "enforcement",
+        "coverage"
+      ],
+      "title": "Rule",
+      "type": "object"
+    },
+    "RuleCategory": {
+      "description": "What kind of thing the rule constrains.",
+      "enum": [
+        "action",
+        "code",
+        "behavior",
+        "vague"
+      ],
+      "title": "RuleCategory",
+      "type": "string"
+    },
+    "SemgrepTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "rule_path": {
+          "minLength": 1,
+          "title": "Rule Path",
+          "type": "string"
+        },
+        "test_path": {
+          "minLength": 1,
+          "title": "Test Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rule_path",
+        "test_path"
+      ],
+      "title": "SemgrepTarget",
+      "type": "object"
+    },
+    "SourceFile": {
+      "additionalProperties": false,
+      "description": "An instruction file the rules were read from, pinned by content hash.",
+      "properties": {
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "title": "SourceFile",
+      "type": "object"
+    },
+    "SourceRef": {
+      "additionalProperties": false,
+      "description": "Where the rule was written.",
+      "properties": {
+        "file": {
+          "minLength": 1,
+          "title": "File",
+          "type": "string"
+        },
+        "line": {
+          "minimum": 1,
+          "title": "Line",
+          "type": "integer"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "file",
+        "line",
+        "text"
+      ],
+      "title": "SourceRef",
+      "type": "object"
+    },
+    "Targets": {
+      "additionalProperties": false,
+      "description": "Artifacts the rule was compiled to. Paths are relative to the ``.sdguard/`` folder.",
+      "properties": {
+        "permissions": {
+          "items": {
+            "$ref": "#/$defs/PermissionTarget"
+          },
+          "title": "Permissions",
+          "type": "array"
+        },
+        "pytest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PytestTarget"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "semgrep": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SemgrepTarget"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "Targets",
+      "type": "object"
+    },
+    "Validation": {
+      "additionalProperties": false,
+      "description": "Result of checking the compiled artifacts against good and bad examples.",
+      "properties": {
+        "attempts": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "bad_examples": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Bad Examples",
+          "type": "integer"
+        },
+        "good_examples": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Good Examples",
+          "type": "integer"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        },
+        "status": {
+          "$ref": "#/$defs/ValidationStatus"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "Validation",
+      "type": "object"
+    },
+    "ValidationStatus": {
+      "enum": [
+        "verified",
+        "failed",
+        "not_attempted"
+      ],
+      "title": "ValidationStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Everything the compiler produced for one project.",
+  "properties": {
+    "compiled_by": {
+      "$ref": "#/$defs/CompiledBy"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/Rule"
+      },
+      "title": "Rules",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SourceFile"
+      },
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    }
+  },
+  "required": [
+    "sources",
+    "compiled_by",
+    "rules"
+  ],
+  "title": "RuleSet",
+  "type": "object"
+}
