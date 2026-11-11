@@ -1,19 +1,31 @@
-"""Write the JSON Schema of the rule format next to the code.
+"""Write the JSON Schemas of the contracts next to the code.
 
-Run after changing ``rules.py``:  uv run python -m sdguard.contracts.export_schema
+Run after changing a contract:  uv run python -m sdguard.contracts.export_schema
 """
 
 import json
 from pathlib import Path
 
+from sdguard.contracts.events import HookLogEntry
 from sdguard.contracts.rules import ruleset_json_schema
+from sdguard.contracts.turns import TurnRecord
 
-SCHEMA_FILE = Path(__file__).parent / "schema" / "ruleset.schema.json"
+SCHEMA_DIR = Path(__file__).parent / "schema"
+SCHEMA_FILE = SCHEMA_DIR / "ruleset.schema.json"
+
+
+def schemas() -> dict[Path, dict[str, object]]:
+    return {
+        SCHEMA_FILE: ruleset_json_schema(),
+        SCHEMA_DIR / "hooklog.schema.json": HookLogEntry.model_json_schema(),
+        SCHEMA_DIR / "turn.schema.json": TurnRecord.model_json_schema(),
+    }
 
 
 def main() -> None:
-    SCHEMA_FILE.write_text(json.dumps(ruleset_json_schema(), indent=2, sort_keys=True) + "\n")
-    print(f"wrote {SCHEMA_FILE}")
+    for path, schema in schemas().items():
+        path.write_text(json.dumps(schema, indent=2, sort_keys=True) + "\n")
+        print(f"wrote {path}")
 
 
 if __name__ == "__main__":

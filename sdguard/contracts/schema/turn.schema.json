@@ -1,0 +1,443 @@
+{
+  "$defs": {
+    "AgentName": {
+      "enum": [
+        "claude-code",
+        "antigravity"
+      ],
+      "title": "AgentName",
+      "type": "string"
+    },
+    "Condition": {
+      "enum": [
+        "K0",
+        "K1",
+        "K1b",
+        "K2",
+        "K2b",
+        "K3",
+        "K4"
+      ],
+      "title": "Condition",
+      "type": "string"
+    },
+    "Evaluation": {
+      "additionalProperties": false,
+      "description": "Agent-independent checks on the turn's code, the same in every condition.",
+      "properties": {
+        "exploits": {
+          "items": {
+            "$ref": "#/$defs/ExploitResult"
+          },
+          "title": "Exploits",
+          "type": "array"
+        },
+        "functional": {
+          "$ref": "#/$defs/Functional"
+        },
+        "hallucinated_packages": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Hallucinated Packages",
+          "type": "array"
+        },
+        "ledger": {
+          "$ref": "#/$defs/LedgerSummary"
+        },
+        "packages_installed": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Packages Installed",
+          "type": "array"
+        },
+        "sast": {
+          "$ref": "#/$defs/SastCounts"
+        },
+        "secrets_in_code": {
+          "minimum": 0,
+          "title": "Secrets In Code",
+          "type": "integer"
+        },
+        "secure_and_correct": {
+          "title": "Secure And Correct",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "functional",
+        "secure_and_correct",
+        "sast",
+        "ledger",
+        "secrets_in_code"
+      ],
+      "title": "Evaluation",
+      "type": "object"
+    },
+    "ExploitResult": {
+      "additionalProperties": false,
+      "properties": {
+        "cwe": {
+          "pattern": "^CWE-\\d+$",
+          "title": "Cwe",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "success": {
+          "title": "Success",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "cwe",
+        "success"
+      ],
+      "title": "ExploitResult",
+      "type": "object"
+    },
+    "Functional": {
+      "additionalProperties": false,
+      "properties": {
+        "passed": {
+          "minimum": 0,
+          "title": "Passed",
+          "type": "integer"
+        },
+        "total": {
+          "minimum": 1,
+          "title": "Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "passed",
+        "total"
+      ],
+      "title": "Functional",
+      "type": "object"
+    },
+    "HookStats": {
+      "additionalProperties": false,
+      "description": "The live guard's hook calls in this turn, from the hook log (zero in K0 and K1).",
+      "properties": {
+        "blocks": {
+          "minimum": 0,
+          "title": "Blocks",
+          "type": "integer"
+        },
+        "calls": {
+          "minimum": 0,
+          "title": "Calls",
+          "type": "integer"
+        },
+        "errors": {
+          "minimum": 0,
+          "title": "Errors",
+          "type": "integer"
+        },
+        "feedbacks": {
+          "minimum": 0,
+          "title": "Feedbacks",
+          "type": "integer"
+        },
+        "p95_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P95 Ms"
+        }
+      },
+      "required": [
+        "calls",
+        "blocks",
+        "feedbacks",
+        "errors"
+      ],
+      "title": "HookStats",
+      "type": "object"
+    },
+    "InvalidReason": {
+      "enum": [
+        "empty_response",
+        "auto_denied",
+        "fingerprint_mismatch",
+        "agent_version_changed",
+        "protected_file_changed",
+        "infra_error"
+      ],
+      "title": "InvalidReason",
+      "type": "string"
+    },
+    "LedgerRegression": {
+      "additionalProperties": false,
+      "properties": {
+        "approved": {
+          "default": false,
+          "title": "Approved",
+          "type": "boolean"
+        },
+        "invariant": {
+          "minLength": 1,
+          "title": "Invariant",
+          "type": "string"
+        }
+      },
+      "required": [
+        "invariant"
+      ],
+      "title": "LedgerRegression",
+      "type": "object"
+    },
+    "LedgerSummary": {
+      "additionalProperties": false,
+      "description": "The measurement ledger, which runs outside the agent in every condition.",
+      "properties": {
+        "established": {
+          "minimum": 0,
+          "title": "Established",
+          "type": "integer"
+        },
+        "regressions": {
+          "items": {
+            "$ref": "#/$defs/LedgerRegression"
+          },
+          "title": "Regressions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "established"
+      ],
+      "title": "LedgerSummary",
+      "type": "object"
+    },
+    "SastCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "compiled_new": {
+          "minimum": 0,
+          "title": "Compiled New",
+          "type": "integer"
+        },
+        "default_new": {
+          "minimum": 0,
+          "title": "Default New",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "default_new",
+        "compiled_new"
+      ],
+      "title": "SastCounts",
+      "type": "object"
+    },
+    "Split": {
+      "enum": [
+        "dev",
+        "test"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "Tokens": {
+      "additionalProperties": false,
+      "properties": {
+        "cache_read": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cache Read",
+          "type": "integer"
+        },
+        "input": {
+          "minimum": 0,
+          "title": "Input",
+          "type": "integer"
+        },
+        "output": {
+          "minimum": 0,
+          "title": "Output",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "input",
+        "output"
+      ],
+      "title": "Tokens",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "account": {
+      "pattern": "^[A-Za-z0-9_-]{1,32}$",
+      "title": "Account",
+      "type": "string"
+    },
+    "agent": {
+      "$ref": "#/$defs/AgentName"
+    },
+    "agent_version": {
+      "minLength": 1,
+      "title": "Agent Version",
+      "type": "string"
+    },
+    "condition": {
+      "$ref": "#/$defs/Condition"
+    },
+    "config_fingerprint": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Fingerprint",
+      "type": "string"
+    },
+    "duration_s": {
+      "minimum": 0,
+      "title": "Duration S",
+      "type": "number"
+    },
+    "est_cost_usd": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Est Cost Usd"
+    },
+    "evaluation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Evaluation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "hook": {
+      "$ref": "#/$defs/HookStats"
+    },
+    "invalid_reasons": {
+      "items": {
+        "$ref": "#/$defs/InvalidReason"
+      },
+      "title": "Invalid Reasons",
+      "type": "array"
+    },
+    "model": {
+      "minLength": 1,
+      "title": "Model",
+      "type": "string"
+    },
+    "permission_denials": {
+      "minimum": 0,
+      "title": "Permission Denials",
+      "type": "integer"
+    },
+    "rep": {
+      "minimum": 1,
+      "title": "Rep",
+      "type": "integer"
+    },
+    "ruleset_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ruleset Sha256"
+    },
+    "run_id": {
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "scenario": {
+      "pattern": "^S\\d+$",
+      "title": "Scenario",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seed": {
+      "title": "Seed",
+      "type": "integer"
+    },
+    "session_id": {
+      "minLength": 1,
+      "title": "Session Id",
+      "type": "string"
+    },
+    "split": {
+      "$ref": "#/$defs/Split"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "tokens": {
+      "$ref": "#/$defs/Tokens"
+    },
+    "turn": {
+      "minimum": 1,
+      "title": "Turn",
+      "type": "integer"
+    },
+    "valid": {
+      "title": "Valid",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "run_id",
+    "scenario",
+    "split",
+    "condition",
+    "agent",
+    "agent_version",
+    "model",
+    "account",
+    "session_id",
+    "rep",
+    "turn",
+    "seed",
+    "started_at",
+    "duration_s",
+    "tokens",
+    "config_fingerprint",
+    "valid",
+    "hook",
+    "permission_denials"
+  ],
+  "title": "TurnRecord",
+  "type": "object"
+}
