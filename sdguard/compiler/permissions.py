@@ -17,11 +17,17 @@ from typing import Any
 from sdguard.contracts.rules import AgentName, Enforcement, RuleSet
 
 # The agent must not change or read the tool's own state (docs/plan/01_MIMARI.md §1, rule 5).
+# In the G0 spikes the agent listed and read its hook settings before starting work, so
+# reading them is denied too, not only editing.
 SELF_PROTECTION_DENY: tuple[str, ...] = (
     "Read(./.sdguard/**)",
     "Edit(./.sdguard/**)",
+    "Read(./.claude/settings.json)",
     "Edit(./.claude/settings.json)",
+    "Read(./.claude/settings.local.json)",
     "Edit(./.claude/settings.local.json)",
+    "Read(./.claude/hooks/**)",
+    "Edit(./.claude/hooks/**)",
 )
 
 

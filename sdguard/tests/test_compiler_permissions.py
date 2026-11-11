@@ -96,3 +96,17 @@ def test_cli_reports_an_invalid_rule_file(tmp_path: Path) -> None:
     bad.write_text(json.dumps({"schema_version": "0.1"}))
     code = main(["permissions", "--rules", str(bad), "--settings", str(tmp_path / "s.json")])
     assert code == 2
+
+
+def test_agent_cannot_read_its_hook_settings() -> None:
+    plan = plan_claude_code(RuleSet.model_validate(example()))
+    assert "Read(./.claude/settings.json)" in plan.deny
+    assert "Read(./.claude/hooks/**)" in plan.deny
+
+
+def test_cli_reports_a_broken_settings_file(tmp_path: Path) -> None:
+    settings = tmp_path / "settings.json"
+    settings.write_text(json.dumps({"permissions": {"deny": "Read(./.env)"}}))
+    code = main(["permissions", "--rules", str(EXAMPLE), "--settings", str(settings)])
+    assert code == 2
+    assert json.loads(settings.read_text()) == {"permissions": {"deny": "Read(./.env)"}}

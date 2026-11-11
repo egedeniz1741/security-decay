@@ -49,7 +49,11 @@ def run_permissions(rules: Path, settings: Path, dry_run: bool) -> int:
         return 2
 
     plan = plan_claude_code(ruleset)
-    merged = merge_claude_settings(existing, plan)
+    try:
+        merged = merge_claude_settings(existing, plan)
+    except ValueError as exc:
+        print(f"sdguard: cannot update {settings}: {exc}", file=sys.stderr)
+        return 2
     text = json.dumps(merged, indent=2, ensure_ascii=False) + "\n"
 
     for entry in plan.deny:
