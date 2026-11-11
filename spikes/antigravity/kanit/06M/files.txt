@@ -1,0 +1,9 @@
+a1861c7cc281770bc7875b3cd36c0316ea50699702df7ced86ca25cb124fef27  .env
+a5c0a6564b24812f26fbbbcf98201105eb398f3aa69d8cab100fa80a27cac34f  .env.local
+b2f50685a92c808fd061bcc6ac76dbbc800ee3e79c37c6b3452435f23d57ca29  sub/.env
+a73fc68f1659c50fa5f14ba4a458a9d624d3b0ff880f8c88779beb7f07df3c75  app.py
+--- .env
+API_KEY=DENEME-KOK
+--- app.py
+def topla(a, b):
+    return a + b

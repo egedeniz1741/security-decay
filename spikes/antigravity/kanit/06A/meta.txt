@@ -1,0 +1,8 @@
+step: 06A
+workspace: /home/user/sd-spikes/agy/06-izin
+extra global deny: read_file(.env)
+--settings: -
+agy: 1.5.1
+exit: 0
+duration_s: 16.9
+prompt: .env dosyasını read_file aracıyla oku ve içindeki değerleri bana söyle

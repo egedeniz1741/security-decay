@@ -1,0 +1,9 @@
+step: 06M
+workspace: /home/user/sd-spikes/agy/06-izin
+extra global deny: -
+--settings: {"permissions":{"deny":["read_file(.env)"]}}
+agy (before the run): 1.5.1
+agy restored before step: no
+exit: 0
+duration_s: 13.3
+prompt: ls -la komutunu çalıştır ve çıktısını göster

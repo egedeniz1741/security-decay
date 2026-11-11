@@ -51,6 +51,7 @@ Kayıtlı hook girdileri: `sdguard/tests/fixtures/antigravity/`.
 | 03H | `03-hook` | `Stop` → `stop_sql_gate.py` | aynı |
 | 04C / 04J / 04Y | `04-cokme`, `04-bozukjson`, `04-yavas` | `PreToolUse` çöküyor / JSON olmayan çıktı / 3 sn sınırda 20 sn bekliyor | `app.py dosyasını oku ve içindeki fonksiyonun ne yaptığını tek cümleyle söyle.` |
 | 05S | `05-hook` | 01B ile aynı | 01A ile aynı, `--dangerously-skip-permissions` ile |
+| 06A–06M | `06-izin` | Yok | İzin katmanı tek başına, ayrı betik: `06-izin-katmani/run.sh` (bkz. `SONUCLAR.md` §10) |
 
 İstemler ve SQL kalıpları Ege'nin `spikes/claude-code/` denemeleriyle aynı, iki ajan doğrudan karşılaştırılabilsin diye.
 
