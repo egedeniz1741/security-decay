@@ -1,32 +1,35 @@
 # İlerleme
 
 ## Durum özeti
-- **Faz:** Planlama (G0 öncesi)
-- **Aktif kapı:** G0 · Hook spike · 8 Kasım 2026
-- **Sonraki teslim noktası:** Sözleşmeler (IR şeması, olay/karar şeması) · 11 Kasım 2026
-- **Takvim durumu:** G0 denemeleri iki ajanda da bitti (Claude Code: Ege, Antigravity CLI: Deniz, 5 Kasım). G0 kararı 8 Kasım'da verilecek; sözleşmelere (11 Kasım) 5 gün var.
+- **Faz:** G0 geçildi (11 Kasım); ürün kodu başladı
+- **Aktif kapı:** G1 · Pilot · 29 Kasım 2026
+- **Sonraki teslim noktası:** Derleyici dilimi (3 kural) ve motor iskeleti · 22 Kasım
+- **Takvim durumu:** Vize haftası yüzünden yaklaşık 3 gün kayma: G0 kararı 8 yerine 11 Kasım'da yazıldı; Ege'nin kural formatı sözleşmesi 11 Kasım'da PR olarak açıldı (#8), Deniz'in olay/karar sözleşmesi bekliyor. G1 tarihi şimdilik değişmiyor; 22 Kasım'da yeniden bakılır.
 
 ## Kullanıcı kararı bekliyor
-1. **G0 kararı (8 Kasım, Ege + Deniz):** Antigravity CLI ile devam mı? Deniz'in önerisi evet; gerekçe ve zayıf noktalar `AJAN_ENTEGRASYON.md` sonunda.
-2. K1b ve K2b koşulları eklensin mi? (ADR-0004, ADR-0005) — G1 (pilot) öncesi.
-3. Hoca toplantısındaki kararlar (kapsam, deney ölçeği, yayın hedefi) buraya işlenecek.
-4. ~~Deniz'in GitHub kullanıcı adı~~: `Sternwarts1881` (CODEOWNERS eklendi).
+1. K1b ve K2b koşulları eklensin mi? (ADR-0004, ADR-0005) — G1 (pilot) öncesi.
+2. Hoca toplantısındaki kararlar (kapsam, deney ölçeği, yayın hedefi) buraya işlenecek.
+3. ~~G0 kararı~~: iki ajanla devam (`AJAN_ENTEGRASYON.md`, ADR-0011 kapandı).
 
 ## Sıradaki 3 iş
 
 **Ege**
-1. G0 kararı Deniz ile (8 Kasım); ardından IR şeması sözleşmesi (11 Kasım, PR).
-   ~~Claude Code hook denemeleri~~ (4 deneme bitti, `AJAN_ENTEGRASYON.md`).
-2. İsteğe bağlı: GitHub Projects panosu ve G0, G1 milestone'ları.
-3. ~~CODEOWNERS dosyası~~ (eklendi, Deniz: `Sternwarts1881`).
+1. Kural formatı sözleşmesi PR #8'i Deniz'in yorumlarıyla birleştirme.
+2. Derleyici dilimi: 3 kural (izin, Semgrep, pytest) bu formatta, `semgrep --test` ile doğrulanmış.
+3. Senaryo 1 exploit'leri (pozitif/negatif kontrollü).
+~~G0 Claude Code denemeleri~~ · ~~G0 kararı~~ · ~~CODEOWNERS~~
 
 **Deniz**
-1. G0 kararı için Ege ile `AJAN_ENTEGRASYON.md`'yi birlikte gözden geçirme (8 Kasım); isteğe bağlı: 02 kontrol koşusunu (02K) geniş izin listesiyle tekrar etme.
-2. Olay/karar ve tur kaydı şeması sözleşmesi (11 Kasım, PR). G0 bulguları girdi: Antigravity'de karar yoksa `"ask"`, geri bildirim `PostInvocation`/`Stop` üzerinden, tur geçerliliği için boş cevap + `auto-denied` kontrolü.
-3. Runner ve Docker imajı iskeleti: `~/Projects/sd-env/Containerfile` (agy 1.5.1 sabit, BaxBench yamaları) repoya `harness/docker/` olarak taşınmalı mı kararı ve senaryo 1 tur istemleri.
-~~Kurulum~~ (NixOS + podman, Ubuntu konteyneri) · ~~BaxBench + çok dosya kontrolü (R11)~~ · ~~Antigravity hook spike'ı~~
+1. PR #8'i inceleme (Antigravity izin biçimi doğru mu?).
+2. Olay/karar ve tur kaydı şeması sözleşmesi (PR). G0 bulguları girdi: Antigravity'de karar yoksa `"ask"`, geri bildirim `PostInvocation`/`Stop` üzerinden, tur geçerliliği için boş cevap + `auto-denied` kontrolü, kurala `rule_id` ile bağlanma.
+3. Çekirdek motor ve runner iskeleti, Docker imajı (`harness/docker/`).
+~~Kurulum~~ · ~~BaxBench + çok dosya kontrolü (R11)~~ · ~~Antigravity hook denemeleri~~
 
 ## Oturum günlüğü
+
+### 2026-11-11 oturumu (Ege)
+- G0 kararı yazıldı: iki ajanla devam; ADR-0009 kabul, ADR-0011 kapandı. Denemelerden çıkan 6 tasarım kuralı `AJAN_ENTEGRASYON.md` ve `01_MIMARI.md` §1'e işlendi; yeni riskler R20–R22.
+- Kural formatı sözleşmesi v0.1 (PR #8): pydantic modelleri, JSON Schema, örnek kural seti, 17 test.
 
 ### 2026-11-05/06 oturumu (Deniz)
 Yapılanlar:

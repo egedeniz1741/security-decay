@@ -54,5 +54,17 @@ Antigravity CLI 1.5.1'de G0 için gereken dört yetenek insansız modda gerçek 
 
 Genel dersler: (1) Ajan `.agents/hooks.json`'u ve hook betiklerini okuyup davranışını ayarlayabiliyor, başka klasörlere de çıkıyor; okuma da mutlak yollu kurallarla engellenmeli. (2) agy kendini güncelliyor ve hook davranışı sürümler arasında değişmiş (changelog 1.4.3, 1.4.7, 1.4.11); binary sha256 ile sabitlenmeli. (3) `agy -p`, `trustedWorkspaces` dışındaki bir klasörün hook'larını da onay sormadan çalıştırdı.
 
-## G0 kararı (8 Kasım)
-⏳ Ege ve Deniz birlikte verecek. Deniz'in önerisi: **Antigravity CLI ile devam** (ADR-0011'deki yedek ajana gerek yok). Dört yetenek gösterildi; tur sonu geri bildirimi Claude Code'dan farklı kanaldan (`PostInvocation` / `Stop`) veriliyor, bu da `01_MIMARI.md` §2.5'teki eşlemeyle uyumlu. Kararı zayıflatanlar: denemeler n = 1, yalnızca insansız mod ve tek model; 02 kontrol koşusu geçersiz.
+## G0 kararı (11 Kasım) ✅
+
+**Karar: iki ajanla devam (Claude Code + Antigravity CLI).** Dört yetenek iki ajanda da gösterildi; ADR-0011'deki yedek ajana (Codex CLI / Copilot CLI) gerek yok. Karar 8 Kasım yerine 11 Kasım'da yazıya geçti (vize haftası).
+
+Kararı zayıflatanlar (açıkça kayıtlı): her deneme bir kez koşuldu (n = 1), tek model, Antigravity tarafı yalnızca insansız modda; 02 kontrol koşusu (02K) geçersiz. Bunlar G1 pilotunda tekrarlı koşularla yeniden ölçülecek.
+
+### Denemelerden çıkan tasarım kuralları
+Bunlar `01_MIMARI.md`'deki tasarıma uyulacak kural olarak eklenir:
+1. **Kontrol araca değil sonuca bakar.** Ajan aynı işi farklı araçlarla yapıyor (Bash `cat`, Read, `grep -rn`) ve ekran özeti gerçek aracı göstermiyor. Dosya adına bakan kural dolaylı aramayla aşıldı (1D). Okuma kuralları içerik düzeyinde de kontrol edilir; kapsanmayan yol kural formatında `known_gaps` olarak yazılır.
+2. **Kritik bulgu turu bitirmeyi engeller.** Yazdıktan sonra verilen mesaj öneri olarak kalabiliyor (B2); `Stop` engeli iki ajanda da tek seferde sonuç verdi (3).
+3. **Hook mesajı koddan metin alıntılamaz.** Ajan hook mesajını kullanıcı talimatı sayıyor (3); koddan alınan metin mesaja girerse kod üzerinden ajana talimat verilebilir (prompt injection). Mesaj sabit şablon + kural kimliği + dosya/satır olur.
+4. **Hook ayarları ve betikleri ajanın çalışma klasöründe durmaz, okunması da engellenir.** Ajan işe başlamadan `.claude/` ve `.agents/` klasörlerini listeledi ve okudu (gözlemci etkisi).
+5. **Hook'lar fail-closed.** Claude Code'da her güvenlik hook'u `onFailure: "block"` ile tanımlanır (varsayılan fail-open, 4). Antigravity'de karar yoksa `"ask"` dönülür, çıktısız exit 0 kullanılmaz.
+6. **Ölçüm hook kayıtlarından ve JSON çıktısından yapılır**, ekran özetinden değil. Ajan sürümleri (Claude Code sürümü, agy binary sha256) her turda kaydedilir.

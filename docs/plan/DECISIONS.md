@@ -12,9 +12,10 @@
 | ADR-0006 | 2026-10-24 | Panel teknolojisi | **Açık** | Seçenekler: statik HTML raporu (en ucuz), Streamlit, React | WP12 en düşük öncelik |
 | ADR-0007 | 2026-10-24 | İstatistik analizi R (`lme4`/`glmmTMB`) ile | Önerildi | — | Karma lojistik modeller Python'da zayıf |
 | ADR-0008 | 2026-10-24 | Senaryo bölmesi: 2 geliştirme / 4 test; araç G3'te dondurulur | Önerildi | — | Aşırı uyum (R10) |
-| ADR-0009 | 2026-10-24 | Güvenlik hook'ları fail-closed (`onFailure: "block"`), Claude Code sürümü sabit | Önerildi | — | Varsayılan fail-open (R6) |
+| ADR-0009 | 2026-10-24 | Güvenlik hook'ları fail-closed (`onFailure: "block"`), Claude Code sürümü sabit | Kabul (2026-11-11) | Claude Code'da `onFailure: "block"`; Antigravity'de karar yoksa `"ask"` | G0 deneme 4: Claude Code varsayılanı fail-open, ayarla duruyor; Antigravity varsayılanı fail-closed |
 | ADR-0010 | 2026-10-29 | TÜBİTAK 2209-A başvurusu | Reddedildi | Başvuru yapılmayacak | Ekip kararı |
-| ADR-0011 | 2026-10-24 | İkinci ajan yedeği (Antigravity G0'ı geçemezse) | **Açık** | Codex CLI ya da Copilot CLI; G0 sonrası karar | Hook olgunluğu ve abonelik erişimi |
+| ADR-0011 | 2026-10-24 | İkinci ajan yedeği (Antigravity G0'ı geçemezse) | Reddedildi (2026-11-11) | Yedek ajana gerek yok; Claude Code + Antigravity CLI ile devam | G0: dört yetenek iki ajanda da gösterildi (`AJAN_ENTEGRASYON.md`) |
 | ADR-0012 | 2026-10-24 | Araç adı | **Açık** | Çalışma adı `sdguard` | — |
 | ADR-0013 | 2026-10-29 | İş bölümü: Ege (derleyici, exploit'ler, mutant seti, izolasyon, korpus toplama, CI/Action), Deniz (motor + defter, adaptörler, deney düzeneği, istatistik, panel); yaklaşık %50 / %50 | Kabul | `08_IS_BOLUMU_VE_KOORDINASYON.md` | Ege'nin deneyim alanı; çapraz doğrulama (kimse kendi bileşenini ölçmez) |
 | ADR-0014 | 2026-10-29 | Çalışma kuralları: korumalı `main`, PR + 1 onay, sözleşmeler iki onayla, Conventional Commits, Claude co-author satırı yok | Kabul | `08_IS_BOLUMU_VE_KOORDINASYON.md` §5 | İki kişilik ekipte çakışmayı önlemek |
+| ADR-0015 | 2026-11-11 | Kural formatı sözleşmesi v0.1 | Önerildi (PR #8) | `sdguard/contracts/rules.py`, `01_MIMARI.md` §2.2 | Derleyici, motor ve adaptörler aynı biçimi okur; doğrulanmamış kural zorlanmaz |
