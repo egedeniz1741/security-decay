@@ -19,7 +19,7 @@
       "cwe": ["CWE-200"],
       "targets": {
         "permissions": [
-          {"agent": "claude-code", "deny": ["Read(./.env)", "Read(./.env.*)"]},
+          {"agent": "claude-code", "deny": ["Read(/.env)", "Read(/.env.*)"]},
           {"agent": "antigravity", "deny": ["read_file(.env)"]}
         ]
       },
@@ -27,7 +27,9 @@
       "enforcement": "block",
       "coverage": "partial",
       "known_gaps": [
-        "A recursive search over the folder (grep -rn KEY .) returns the file content without naming the file (G0 spike 1D)."
+        "A recursive search over the folder (grep -rn KEY .) returns the file content without naming the file (G0 spike 1D).",
+        "Antigravity: .env files in subfolders and .env files created later are not covered; agy has no globs, so only files found at compile time are listed (spike 06C, 06D).",
+        "Antigravity: the read_file rule does not cover shell commands (run_command) such as cat .env."
       ]
     },
     {
