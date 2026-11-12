@@ -9,16 +9,19 @@ rules:
       source: "AGENTS.md:15"
     patterns:
       - pattern-either:
-          - pattern: $DB.execute($SQL, ...)
+          - pattern: $DB.$EXEC($SQL, ...)
           - patterns:
               - pattern-inside: |
                   $Q = $SQL
                   ...
-              - pattern: $DB.execute($Q, ...)
+              - pattern: $DB.$EXEC($Q, ...)
+      - metavariable-regex:
+          metavariable: $EXEC
+          regex: ^(execute|executemany|executescript)$
       - metavariable-pattern:
           metavariable: $SQL
           pattern-either:
-            - pattern: f"..."
+            - pattern: f"...{$X}..."
             - pattern: '"..." % $X'
             - pattern: '"...".format(...)'
             - pattern: '"..." + $X'

@@ -28,6 +28,16 @@ def bad_concat(db, name):
     return db.execute("SELECT * FROM items WHERE name = '" + name + "'").fetchall()
 
 
+def bad_executemany(db, table):
+    # ruleid: R-002
+    db.executemany(f"INSERT INTO {table} VALUES (?)", [(1,), (2,)])
+
+
+def bad_executescript(db, item_id):
+    # ruleid: R-002
+    db.executescript("DELETE FROM items WHERE id = " + item_id)
+
+
 def ok_parameterized(db, email):
     # ok: R-002
     return db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
@@ -42,3 +52,8 @@ def ok_named_parameter(db, username):
 def ok_constant(db):
     # ok: R-002
     return db.execute("SELECT COUNT(*) FROM users").fetchone()
+
+
+def ok_fstring_without_values(db):
+    # ok: R-002
+    return db.execute(f"SELECT 1").fetchone()
