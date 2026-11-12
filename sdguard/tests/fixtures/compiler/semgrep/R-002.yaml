@@ -1,0 +1,28 @@
+rules:
+  - id: R-002
+    message: >-
+      sdguard R-002: SQL query is built from a string. Pass values as query parameters.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-89"]
+      source: "AGENTS.md:15"
+    patterns:
+      - pattern-either:
+          - pattern: $DB.$EXEC($SQL, ...)
+          - patterns:
+              - pattern-inside: |
+                  $Q = $SQL
+                  ...
+              - pattern: $DB.$EXEC($Q, ...)
+      - metavariable-regex:
+          metavariable: $EXEC
+          regex: ^(execute|executemany|executescript)$
+      - metavariable-pattern:
+          metavariable: $SQL
+          pattern-either:
+            - pattern: f"...{$X}..."
+            - pattern: '"..." % $X'
+            - pattern: '"...".format(...)'
+            - pattern: '"..." + $X'
+            - pattern: '$X + "..."'

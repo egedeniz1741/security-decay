@@ -51,26 +51,41 @@
 
 LLM çağrısı kullanıcının kendi ajan aboneliğiyle (`claude -p` ya da `agy -p`) yapılır; API anahtarı gerekmez.
 
-### 2.2 Ara temsil (IR) taslağı
+### 2.2 Kural formatı (IR) · sözleşme v0.1
+
+Derleyicinin çıktısı tek bir `RuleSet` dosyasıdır. Koruma motoru, ajan adaptörleri ve CI aynı dosyayı okur. Tanım koddadır: `sdguard/contracts/rules.py` (pydantic). JSON Schema'sı `sdguard/contracts/schema/ruleset.schema.json`; derleyici bunu LLM'e `--json-schema` olarak verir. Tam örnek: `sdguard/tests/fixtures/contracts/ruleset-example.json`. Bu dosyalardaki her değişiklik iki onay ister.
 
 ```json
 {
-  "id": "R-007",
-  "source": {"file": "AGENTS.md", "line": 42, "text": "SQL sorguları her zaman parametreli olmalı"},
-  "category": "code",
-  "cwe": ["CWE-89"],
-  "targets": {
-    "semgrep": {"path": "semgrep/R-007.yaml", "test": "semgrep/tests/R-007.py"},
-    "permission": null,
-    "pytest": null
-  },
-  "validation": {"status": "verified", "good_examples": 3, "bad_examples": 3, "attempts": 1},
+  "id": "R-001",
+  "source": {"file": "AGENTS.md", "line": 12, "text": "Never read the .env file."},
+  "category": "action",
+  "cwe": ["CWE-200"],
+  "targets": {"permissions": [{"agent": "claude-code", "deny": ["Read(/.env)"]}]},
+  "validation": {"status": "verified", "good_examples": 2, "bad_examples": 3, "attempts": 1},
   "enforcement": "block",
-  "compiled_by": {"agent": "claude-code", "model": "<kimlik>", "at": "2026-12-01T10:00:00Z"}
+  "coverage": "partial",
+  "known_gaps": ["grep -rn KEY . dosya adını söylemeden içeriği döndürür (G0 deneme 1D)"]
 }
 ```
 
-`enforcement`: `block` (kritik, turu bitirmeyi engeller), `warn` (geri bildirim), `advise` (yalnızca bağlam). Şema `pydantic` ile tanımlanır, JSON Schema'sı derleyicinin `--json-schema` girdisi olur.
+| Alan | Anlamı |
+|---|---|
+| `category` | Kural neyi sınırlıyor: `action` (ajanın yapacağı iş, ör. dosya okuma), `code` (kodun biçimi), `behavior` (çalışan uygulamanın davranışı), `vague` (kontrol edilemeyen, ör. "girdileri doğrula") |
+| `targets` | Kuralın derlendiği kontroller: ajan başına izin listesi, bir Semgrep kuralı, bir pytest testi. Yollar `.sdguard/` klasörüne görelidir; mutlak yol ve `..` kabul edilmez |
+| `validation` | Kontrolün iyi ve kötü örneklerle sınanma sonucu: `verified`, `failed`, `not_attempted` |
+| `enforcement` | İhlalde ne olur: `block` (işlemi ya da turu bitirmeyi engeller), `warn` (ajana söyler, devam eder), `advise` (yalnızca kural metni bağlama eklenir) |
+| `coverage` | Yazılı kuralın ne kadarının gerçekten zorlandığı: `full`, `partial`, `none` |
+| `known_gaps` | `partial` ise kontrolün neyi yakalamadığı, açıkça yazılı |
+
+Şemanın kendisi şu kuralları zorlar (yanlış dosya yüklenmez, hata verir):
+1. Doğrulanmamış kural zorlanmaz: `block` ya da `warn` için `validation.status = verified` ve en az bir iyi, bir kötü örnek gerekir.
+2. Muğlak kural yalnızca `advise` olabilir.
+3. Zorlanan kuralın en az bir hedefi olmalı ve `coverage` `none` olamaz; `advise` kuralında `coverage` `none` olur.
+4. `partial` kapsamda `known_gaps` boş bırakılamaz. G0 deneme 1D'deki gibi (isimle yazılan kural dolaylı aramayla aşıldı) bir boşluk sessizce kalmaz, raporda görünür.
+5. Kural kimlikleri tekildir; her kuralın kaynak dosyası `sources` listesinde, içerik özetiyle (sha256) bulunur. Kaynak dosya değişince yeniden derleme gerektiği buradan anlaşılır.
+6. Bilinmeyen alan kabul edilmez. Yeni alan eklemek için sözleşme sürümü (`schema_version`) yükseltilir.
+7. İzin satırları ajan başına denetlenir, çünkü iki ajan da hatalı satırı hata vermeden kabul ediyor. Antigravity'de bilinmeyen eylem adı (`edit_file`) ve joker içeren dosya hedefi (`.env.*`) sessizce etkisiz kalıyor (spike 06C, 06G): eylem `read_file | write_file | command | read_url | execute_url | mcp` olmalı, dosya hedefinde `*` dışında joker olmamalı; eşleşen dosyalar derleme anında tek tek yazılır. Claude Code'da satır `Araç` ya da `Araç(desen)` biçiminde olmalı ve bilinen bir araç adı taşımalı. Claude Code'da `/yol` proje köküne, `./yol` çalışma klasörüne göredir (belgeden, spike ile doğrulanmadı); derleyici `/` kullanır.
 
 ### 2.3 Invariant defteri
 
