@@ -5,7 +5,13 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from sdguard.contracts.rules import Rule, RuleSet, ruleset_json_schema
+from sdguard.contracts.rules import (
+    AgentName,
+    PermissionTarget,
+    Rule,
+    RuleSet,
+    ruleset_json_schema,
+)
 
 FIXTURES = Path(__file__).parent / "fixtures" / "contracts"
 SCHEMA_FILE = Path(__file__).parent.parent / "contracts" / "schema" / "ruleset.schema.json"
@@ -99,3 +105,51 @@ def test_unknown_fields_are_rejected() -> None:
     data = rule(1, severity="high")
     with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
         Rule.model_validate(data)
+
+
+@pytest.mark.parametrize(
+    "entry",
+    ["Read(/.env)", "Bash(cat:*)", "WebFetch", "mcp__github__create_issue", "Edit(/src/**)"],
+)
+def test_valid_claude_code_deny_entries(entry: str) -> None:
+    PermissionTarget(agent=AgentName.CLAUDE_CODE, deny=[entry])
+
+
+@pytest.mark.parametrize(
+    ("entry", "message"),
+    [
+        ("read(/.env)", "unknown tool"),
+        ("Reed(/.env)", "unknown tool"),
+        ("Read(/.env", "is not 'Tool' or 'Tool\\(spec\\)'"),
+        ("Read()", "is not 'Tool' or 'Tool\\(spec\\)'"),
+    ],
+)
+def test_invalid_claude_code_deny_entries(entry: str, message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
+        PermissionTarget(agent=AgentName.CLAUDE_CODE, deny=[entry])
+
+
+@pytest.mark.parametrize(
+    "entry", ["read_file(.env)", "write_file(/work/app.py)", "command(rm)", "read_file(*)"]
+)
+def test_valid_antigravity_deny_entries(entry: str) -> None:
+    PermissionTarget(agent=AgentName.ANTIGRAVITY, deny=[entry])
+
+
+@pytest.mark.parametrize(
+    ("entry", "message"),
+    [
+        ("edit_file(app.py)", "unknown action 'edit_file'"),  # tool name, not action (06G)
+        ("run_command(cat .env)", "unknown action 'run_command'"),
+        ("read_file(.env.*)", "take no wildcards"),  # silently ignored by agy (06C)
+        ("read_file", "is not 'action\\(target\\)'"),
+    ],
+)
+def test_invalid_antigravity_deny_entries(entry: str, message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
+        PermissionTarget(agent=AgentName.ANTIGRAVITY, deny=[entry])
+
+
+def test_duplicate_deny_entries_are_rejected() -> None:
+    with pytest.raises(ValidationError, match="unique"):
+        PermissionTarget(agent=AgentName.ANTIGRAVITY, deny=["read_file(.env)", "read_file(.env)"])

@@ -59,7 +59,7 @@ Derleyicinin çıktısı tek bir `RuleSet` dosyasıdır. Koruma motoru, ajan ada
   "source": {"file": "AGENTS.md", "line": 12, "text": "Never read the .env file."},
   "category": "action",
   "cwe": ["CWE-200"],
-  "targets": {"permissions": [{"agent": "claude-code", "deny": ["Read(./.env)"]}]},
+  "targets": {"permissions": [{"agent": "claude-code", "deny": ["Read(/.env)"]}]},
   "validation": {"status": "verified", "good_examples": 2, "bad_examples": 3, "attempts": 1},
   "enforcement": "block",
   "coverage": "partial",
@@ -83,6 +83,7 @@ Derleyicinin çıktısı tek bir `RuleSet` dosyasıdır. Koruma motoru, ajan ada
 4. `partial` kapsamda `known_gaps` boş bırakılamaz. G0 deneme 1D'deki gibi (isimle yazılan kural dolaylı aramayla aşıldı) bir boşluk sessizce kalmaz, raporda görünür.
 5. Kural kimlikleri tekildir; her kuralın kaynak dosyası `sources` listesinde, içerik özetiyle (sha256) bulunur. Kaynak dosya değişince yeniden derleme gerektiği buradan anlaşılır.
 6. Bilinmeyen alan kabul edilmez. Yeni alan eklemek için sözleşme sürümü (`schema_version`) yükseltilir.
+7. İzin satırları ajan başına denetlenir, çünkü iki ajan da hatalı satırı hata vermeden kabul ediyor. Antigravity'de bilinmeyen eylem adı (`edit_file`) ve joker içeren dosya hedefi (`.env.*`) sessizce etkisiz kalıyor (spike 06C, 06G): eylem `read_file | write_file | command | read_url | execute_url | mcp` olmalı, dosya hedefinde `*` dışında joker olmamalı; eşleşen dosyalar derleme anında tek tek yazılır. Claude Code'da satır `Araç` ya da `Araç(desen)` biçiminde olmalı ve bilinen bir araç adı taşımalı. Claude Code'da `/yol` proje köküne, `./yol` çalışma klasörüne göredir (belgeden, spike ile doğrulanmadı); derleyici `/` kullanır.
 
 ### 2.3 Invariant defteri
 
