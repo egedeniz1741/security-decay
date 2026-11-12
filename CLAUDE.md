@@ -9,7 +9,7 @@ AGENTS.md / CLAUDE.md güvenlik kurallarını deterministik kontrollere (izin + 
 - Orkestra şefi: `/sd-sef-muhendis` skill'i; planlayıcı ajanlar `.claude/agents/`
 
 ## Şu anki faz
-Planlama. Ürün kodu G0 (8 Kasım 2026) kapısından sonra başlar. İzin verilen kod: `spikes/` (hook denemeleri) ve `analysis/power/` (güç simülasyonu).
+G0 geçildi (11 Kasım 2026): Claude Code + Antigravity CLI ile devam. Ürün kodu `sdguard/` altında başladı; sıradaki kapı G1 pilot (29 Kasım).
 
 ## Kesin kurallar
 - Belgeler Türkçe; kod, tanımlayıcılar ve commit mesajları İngilizce.

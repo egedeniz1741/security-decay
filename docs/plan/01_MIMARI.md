@@ -8,8 +8,10 @@
 2. **Ajandan bağımsız çekirdek, ince adaptörler.** Çekirdek normalize edilmiş olaylarla çalışır. Claude Code ve Antigravity farkları yalnızca adaptörde yaşar.
 3. **Doğrulanmayan kural zorlanmaz.** İyi ve kötü örnekle test edilemeyen kural "tavsiye" olarak işaretlenir ve yalnızca bağlama eklenir.
 4. **Hızlı yol / yavaş yol.** Her araç çağrısında yalnızca değişen dosyalarda ucuz kontrol (hedef p95 < 1,5 sn); tur sonunda tam defter anlık görüntüsü (hedef p95 < 8 sn). RQ4'ün %25 ek süre sınırı buna bağlı.
-5. **Ajan aracın durumuna dokunamaz.** `.sdguard/` klasörü ve hook ayarları için yazma izni reddedilir; deneyde bu klasör konteynere salt okunur bağlanır.
-6. **Fail-closed.** Güvenlik hook'ları `"onFailure": "block"` ile tanımlanır. Hook hatası sessizce geçmez, kayda girer.
+5. **Ajan aracın durumuna dokunamaz, onu göremez de.** `.sdguard/` klasörü ve hook ayarları için yazma izni reddedilir; G0'da ajan işe başlamadan `.claude/` ve `.agents/` klasörlerini okuduğu için okuma da engellenir ve hook betikleri çalışma klasörünün dışında durur. Deneyde bu klasör konteynere salt okunur bağlanır.
+6. **Fail-closed.** Güvenlik hook'ları `"onFailure": "block"` ile tanımlanır. Hook hatası sessizce geçmez, kayda girer. Antigravity'de karar verilemeyen durumda `"ask"` dönülür (G0 deneme 4).
+7. **Kontrol araca değil sonuca bakar.** Ajan aynı işi farklı araçlarla yapıyor (Bash, Read, Edit, `grep`). Kural dosyanın son haline ve okunan içeriğe bakar; kapsanmayan yol kural formatında `known_gaps` olarak yazılır (G0 deneme 1D).
+8. **Hook mesajı sabit şablondur.** Ajan hook mesajını kullanıcı talimatı gibi uyguluyor; mesaj koddan metin alıntılamaz, yalnızca kural kimliği, dosya ve satır verir (G0 deneme 3, R21).
 
 ## 2. Bileşenler
 
