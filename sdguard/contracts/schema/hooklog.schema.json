@@ -1,0 +1,330 @@
+{
+  "$defs": {
+    "AgentName": {
+      "enum": [
+        "claude-code",
+        "antigravity"
+      ],
+      "title": "AgentName",
+      "type": "string"
+    },
+    "Decision": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/DecisionAction"
+        },
+        "agent_message": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Agent Message"
+        },
+        "elapsed_ms": {
+          "minimum": 0,
+          "title": "Elapsed Ms",
+          "type": "number"
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "ruleset_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ruleset Sha256"
+        }
+      },
+      "required": [
+        "action",
+        "elapsed_ms"
+      ],
+      "title": "Decision",
+      "type": "object"
+    },
+    "DecisionAction": {
+      "enum": [
+        "noop",
+        "deny",
+        "feedback",
+        "block_stop"
+      ],
+      "title": "DecisionAction",
+      "type": "string"
+    },
+    "Event": {
+      "additionalProperties": false,
+      "description": "One hook call, normalized.\n\nHooks do not send a turn number, and Antigravity has no session start hook. The adapter\nkeeps ``turn_idx`` and ``stop_attempt`` in its own session state and emits\n``session_start`` itself when it sees a session for the first time.",
+      "properties": {
+        "agent": {
+          "$ref": "#/$defs/AgentName"
+        },
+        "changed_files": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Changed Files",
+          "type": "array"
+        },
+        "cwd": {
+          "minLength": 1,
+          "title": "Cwd",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/EventKind"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "session_id": {
+          "minLength": 1,
+          "title": "Session Id",
+          "type": "string"
+        },
+        "stop_attempt": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Stop Attempt",
+          "type": "integer"
+        },
+        "tool": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ToolCall"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "turn_idx": {
+          "minimum": 1,
+          "title": "Turn Idx",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "agent",
+        "session_id",
+        "turn_idx",
+        "kind",
+        "cwd"
+      ],
+      "title": "Event",
+      "type": "object"
+    },
+    "EventKind": {
+      "enum": [
+        "session_start",
+        "pre_tool",
+        "post_tool",
+        "turn_end"
+      ],
+      "title": "EventKind",
+      "type": "string"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "cwe": {
+          "items": {
+            "pattern": "^CWE-\\d+$",
+            "type": "string"
+          },
+          "title": "Cwe",
+          "type": "array"
+        },
+        "file": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "File"
+        },
+        "invariant": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Invariant"
+        },
+        "kind": {
+          "$ref": "#/$defs/FindingKind"
+        },
+        "line": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line"
+        },
+        "rule_id": {
+          "anyOf": [
+            {
+              "pattern": "^R-\\d{3,}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rule Id"
+        },
+        "source": {
+          "$ref": "#/$defs/FindingSource"
+        }
+      },
+      "required": [
+        "kind",
+        "source"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "FindingKind": {
+      "enum": [
+        "forbidden_action",
+        "rule_violation",
+        "protection_lost",
+        "new_sast"
+      ],
+      "title": "FindingKind",
+      "type": "string"
+    },
+    "FindingSource": {
+      "enum": [
+        "guard",
+        "semgrep",
+        "pytest",
+        "ledger"
+      ],
+      "title": "FindingSource",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "ToolCall": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Args",
+          "type": "object"
+        },
+        "command": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Command"
+        },
+        "kind": {
+          "$ref": "#/$defs/ToolKind"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "paths": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Paths",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "kind"
+      ],
+      "title": "ToolCall",
+      "type": "object"
+    },
+    "ToolKind": {
+      "description": "What a tool call does, independent of the agent's tool name.\n\nThe adapter maps tool names to kinds. Seen in the G0 spikes: Claude Code ``Read`` is\n``read`` and ``Bash`` is ``command``; Antigravity ``read_file`` is ``read``,\n``write_file`` and ``edit_file`` are ``write``, ``run_command`` is ``command``.",
+      "enum": [
+        "read",
+        "write",
+        "command",
+        "url",
+        "mcp",
+        "other"
+      ],
+      "title": "ToolKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One line of the hook log: what the agent sent and what the guard answered.",
+  "properties": {
+    "at": {
+      "format": "date-time",
+      "title": "At",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/Decision"
+    },
+    "event": {
+      "$ref": "#/$defs/Event"
+    }
+  },
+  "required": [
+    "at",
+    "event",
+    "decision"
+  ],
+  "title": "HookLogEntry",
+  "type": "object"
+}

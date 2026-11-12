@@ -105,21 +105,34 @@ Uygulama: `ast` + `libcst` (kaynak konumu korunur), fazla dinamik kodda (ör. `a
 
 ### 2.4 Normalize olay ve karar şeması
 
-```python
-class Event(BaseModel):
-    agent: Literal["claude-code", "antigravity"]
-    session_id: str
-    turn_idx: int
-    kind: Literal["pre_tool", "post_tool", "turn_end", "session_start"]
-    tool: ToolCall | None          # ad + argümanlar
-    changed_files: list[str]
-    cwd: str
+Adaptör her hook çağrısını bir `Event`'e çevirir, motor bir `Decision` ile cevap verir, adaptör bunu ajanın kendi hook çıktısına çevirir. Her çağrı hook loguna bir `HookLogEntry` satırı (`at`, `event`, `decision`) olarak yazılır; tur kaydındaki `hook` sayıları bu logdan hesaplanır. Tanım koddadır: `sdguard/contracts/events.py` (pydantic). JSON Schema: `sdguard/contracts/schema/hooklog.schema.json`. Örnek: `sdguard/tests/fixtures/contracts/hooklog-example.jsonl`. Bu dosyalardaki her değişiklik iki onay ister.
 
-class Decision(BaseModel):
-    action: Literal["allow", "deny", "feedback", "block_stop", "noop"]
-    findings: list[Finding]        # kural ihlali, koruma kaybı, yeni SAST, yasak eylem
-    agent_message: str | None      # ajana gidecek yapılandırılmış metin
+```json
+{
+  "at": "2026-11-20T10:00:41Z",
+  "event": {"agent": "antigravity", "session_id": "…", "turn_idx": 1, "kind": "pre_tool", "cwd": "/work",
+            "tool": {"name": "read_file", "kind": "read", "paths": ["/work/.env"], "args": {"Path": "/work/.env"}}},
+  "decision": {"action": "deny",
+               "findings": [{"kind": "forbidden_action", "source": "guard", "rule_id": "R-001", "file": ".env"}],
+               "agent_message": "sdguard: R-001 forbids this action on .env.",
+               "ruleset_sha256": "…", "elapsed_ms": 41.0}
+}
 ```
+
+| Alan | Anlamı |
+|---|---|
+| `event.kind` | `session_start`, `pre_tool`, `post_tool`, `turn_end`. Hook'lar tur numarası göndermiyor, Antigravity'de oturum başı hook'u yok: `turn_idx`, `stop_attempt` ve `session_start` adaptörün oturum durumundan gelir |
+| `tool.kind` | Araç adından bağımsız iş: `read`, `write`, `command`, `url`, `mcp`, `other`. Eşleme adaptörde: Antigravity `edit_file`/`write_file` → `write`, `run_command` → `command` (G0, 06F). Bilinmeyen araç `other`, motor onu zararsız saymaz |
+| `decision.action` | `noop` (görüş yok, ajanın kendi izin kuralları karar verir), `deny`, `feedback`, `block_stop` |
+| `finding.kind` | `forbidden_action`, `rule_violation` (ikisi de `rule_id` ister), `protection_lost` (`invariant` ister), `new_sast` |
+| `decision.ruleset_sha256` | Yürürlükteki kural setinin özeti. `R-001` yalnızca bir kural seti içinde tekil olduğu için `rule_id` bununla birlikte anlam taşır |
+
+Şemanın zorladığı kurallar:
+1. `allow` kararı yok. Antigravity'de açık `allow` izin katmanını atlıyor (G0 01H); "görüş yok" `noop`'tur ve adaptör onu Antigravity'de `"ask"`, Claude Code'da çıktısız exit 0 olarak yazar.
+2. Her olay türü yalnızca ajanların uygulayabildiği kararları alır: `pre_tool` → `noop`/`deny`; `post_tool` → `noop`/`feedback`; `turn_end` → `noop`/`feedback`/`block_stop`; `session_start` → `noop`/`feedback`. Antigravity'de `post_tool` geri bildirim kanalı olmadığı için adaptör mesajı kuyruğa alır, `PostInvocation` ya da `Stop` ile verir.
+3. `noop` dışındaki her karar en az bir bulgu ve bir ajan mesajı içerir; `rule_id` taşıyan bulgu varsa `ruleset_sha256` zorunludur.
+4. Bulguda serbest metin alanı yoktur. Ajan mesajı sabit şablondan (kural kimliği, dosya, satır) üretilir; kod ajana metin taşıyamaz (§1 ilke 8, R21).
+5. `changed_files` çalışma köküne görelidir (`..` ve mutlak yol reddedilir); `cwd` ve araç yolları mutlaktır.
 
 ### 2.5 Adaptör eşleme tablosu
 
