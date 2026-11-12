@@ -9,6 +9,7 @@ Design rules encoded here (docs/plan/01_MIMARI.md §1, findings of the G0 spikes
 - A rule that is enforced only in part must say what it misses (``known_gaps``).
 """
 
+import re
 from enum import StrEnum
 from typing import Annotated, Literal, Self
 
@@ -85,11 +86,82 @@ class SourceRef(_Model):
     text: str = Field(min_length=1)
 
 
+# Claude Code tools that a deny rule may name. Claude Code warns at startup about a deny
+# rule whose tool name it does not know (permissions docs); we reject it at compile time.
+CLAUDE_CODE_TOOLS = frozenset(
+    {
+        "Agent",
+        "Bash",
+        "Edit",
+        "Glob",
+        "Grep",
+        "MultiEdit",
+        "NotebookEdit",
+        "Read",
+        "Task",
+        "WebFetch",
+        "WebSearch",
+        "Write",
+    }
+)
+_CLAUDE_ENTRY = re.compile(r"^(?P<tool>mcp__\w+|[A-Za-z]+)(?:\((?P<spec>[^()]+)\))?$")
+
+# Antigravity permission actions. They differ from its tool names (edit_file -> write_file,
+# run_command -> command), and agy silently ignores an unknown action (spike 06G).
+ANTIGRAVITY_ACTIONS = frozenset(
+    {"read_file", "write_file", "command", "read_url", "execute_url", "mcp"}
+)
+_ANTIGRAVITY_ENTRY = re.compile(r"^(?P<action>[a-z_]+)\((?P<target>[^()]+)\)$")
+_WILDCARDS = frozenset("*?[]{}")
+
+
+def _check_claude_entry(entry: str) -> None:
+    match = _CLAUDE_ENTRY.match(entry)
+    if match is None:
+        raise ValueError(f"claude-code deny entry {entry!r} is not 'Tool' or 'Tool(spec)'")
+    tool = match["tool"]
+    if not tool.startswith("mcp__") and tool not in CLAUDE_CODE_TOOLS:
+        raise ValueError(f"claude-code deny entry {entry!r} names an unknown tool {tool!r}")
+
+
+def _check_antigravity_entry(entry: str) -> None:
+    match = _ANTIGRAVITY_ENTRY.match(entry)
+    if match is None:
+        raise ValueError(f"antigravity deny entry {entry!r} is not 'action(target)'")
+    action, target = match["action"], match["target"]
+    if action not in ANTIGRAVITY_ACTIONS:
+        raise ValueError(
+            f"antigravity deny entry {entry!r}: unknown action {action!r} "
+            f"(expected one of {', '.join(sorted(ANTIGRAVITY_ACTIONS))})"
+        )
+    # agy has no globs in file targets; a pattern is silently ignored (spike 06C).
+    if action in ("read_file", "write_file") and target != "*" and _WILDCARDS & set(target):
+        raise ValueError(
+            f"antigravity deny entry {entry!r}: file targets take no wildcards; "
+            "list the matching files one by one"
+        )
+
+
 class PermissionTarget(_Model):
-    """Deny rules for one agent's own permission system."""
+    """Deny rules for one agent's own permission system.
+
+    Both agents accept a malformed entry without failing, so a typo would leave a rule that
+    looks enforced but is not. Entries are checked per agent here instead.
+    """
 
     agent: AgentName
     deny: list[str] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def _check_entries(self) -> Self:
+        check = (
+            _check_claude_entry if self.agent is AgentName.CLAUDE_CODE else _check_antigravity_entry
+        )
+        for entry in self.deny:
+            check(entry)
+        if len(set(self.deny)) != len(self.deny):
+            raise ValueError("deny entries must be unique")
+        return self
 
 
 class SemgrepTarget(_Model):

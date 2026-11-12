@@ -55,7 +55,7 @@
     },
     "PermissionTarget": {
       "additionalProperties": false,
-      "description": "Deny rules for one agent's own permission system.",
+      "description": "Deny rules for one agent's own permission system.\n\nBoth agents accept a malformed entry without failing, so a typo would leave a rule that\nlooks enforced but is not. Entries are checked per agent here instead.",
       "properties": {
         "agent": {
           "$ref": "#/$defs/AgentName"
