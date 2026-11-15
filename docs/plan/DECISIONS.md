@@ -4,7 +4,7 @@
 
 | No | Tarih | Konu | Durum | Karar / öneri | Gerekçe |
 |---|---|---|---|---|---|
-| ADR-0001 | 2026-10-22 | Kapsam: Python web backend (Flask/FastAPI), BaxBench tabanı | Önerildi (hoca onayı) | Yol haritasındaki gibi | İki kişi, 8 ay |
+| ADR-0001 | 2026-10-22 | Kapsam: Python web backend (Flask/FastAPI), BaxBench tabanı | Önerildi | Yol haritasındaki gibi | İki kişi, 8 ay |
 | ADR-0002 | 2026-10-24 | Mimari: ajandan bağımsız çekirdek + ince adaptör, LLM yalnızca derlemede | Önerildi | `01_MIMARI.md` §1–2 | Antigravity ve Claude Code hook farkları büyük; deterministik kontrol iddiası |
 | ADR-0003 | 2026-10-24 | Deney izolasyonu: temiz HOME Docker konteyneri + `system/init` parmak izi | Önerildi | `02_DENEY_ALTYAPISI.md` §3 | `--bare` abonelikle çalışmıyor; `-p` kullanıcı eklentilerini yüklüyor |
 | ADR-0004 | 2026-10-24 | K1b (kuralların her turda yeniden enjeksiyonu) koşulu | **Açık** | Öneri: ekle, iki ajanda; maliyet +150 tur | "Hatırlatma etkisi" karıştırıcısı (R9) |

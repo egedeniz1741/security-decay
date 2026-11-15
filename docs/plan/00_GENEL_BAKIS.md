@@ -28,7 +28,7 @@ Bunlar planı doğrudan etkiliyor. Hepsi `05_RISKLER.md` ve `DECISIONS.md` için
 ### 3.1 Anthropic'in resmi `security-guidance` eklentisi projeye özel kural destekliyor
 Claude Code'un resmi eklenti pazarında `security-guidance` adlı bir eklenti var: her dosya yazımında hızlı desen taraması, tur sonunda git diff üzerinde model incelemesi ve commit/push öncesi daha derin bir ajan incelemesi yapıyor. Projeye özel kurallar için `.claude/claude-security-guidance.md` (düz metin tehdit modeli) ve `.claude/security-patterns.yaml` (özel regex) dosyalarını okuyor.
 
-**Etkisi:** Yol haritasındaki "rakip ürünlerin yapmadığı iki şey: projeye özel kural ve oturum hafızası" iddiasının ilk yarısı artık zayıf. Hocaya ve hakeme bu eklenti sorulacak.
+**Etkisi:** Yol haritasındaki "rakip ürünlerin yapmadığı iki şey: projeye özel kural ve oturum hafızası" iddiasının ilk yarısı artık zayıf. Hakem bu eklentiyi soracaktır.
 
 **Geriye kalan gerçek fark:**
 1. Kurallar elle yazılmıyor, AGENTS.md'den **otomatik derleniyor** ve her çıktı iyi/kötü örnekle **doğrulanıyor** (`semgrep --test` ve pytest).

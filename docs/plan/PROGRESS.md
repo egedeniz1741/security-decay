@@ -49,7 +49,7 @@ Not: Artık her değişiklik diğer kişinin onayını bekliyor. Deniz katılana
 
 ### 2026-10-29 oturumu
 Yapılanlar: TÜBİTAK başvurusu plandan çıkarıldı (ADR-0010 reddedildi). Ege / Deniz iş bölümü, teslim noktaları ve koordinasyon kuralları yazıldı (`08_IS_BOLUMU_VE_KOORDINASYON.md`, ADR-0013, ADR-0014); iş paketlerinin sahipleri, haftalık takvim, risk kaydı, ajan dosyaları ve orkestra şefi skill'i buna göre güncellendi.
-Kullanıcı kararı bekleyenler: K1b/K2b, hoca toplantısı kararları, Deniz'in GitHub kullanıcı adı.
+Kullanıcı kararı bekleyenler: K1b/K2b, kapsam kararları, Deniz'in GitHub kullanıcı adı.
 
 ### 2026-10-24 oturumu
 Yapılanlar: Yol haritası v2 incelendi; Claude Code subagent/hook/skill/headless belgeleri, Antigravity CLI hook ve headless belgeleri, kota politikası, Semgrep/Trail of Bits/arXiv/Zotero araçları, BaxBench ve yakın çalışmalar araştırıldı. Plan dosyaları (00–07), karar kaydı, 10 planlayıcı ajan ve orkestra şefi skill'i oluşturuldu.
