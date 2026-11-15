@@ -100,5 +100,7 @@ Ayrıntı ve öneriler `DECISIONS.md` içinde "Açık" durumundaki kayıtlarda. 
 | `06_CLAUDE_ARAC_SETI.md` | Claude'u bu projede verimli kullanmak için araçlar | — |
 | `07_AJAN_EKIBI.md` | Planlayıcı ajanlar ve faz 2 ajanları | sd-sef-muhendis |
 | `08_IS_BOLUMU_VE_KOORDINASYON.md` | Ege / Deniz iş bölümü, teslim noktaları, GitHub ve toplantı düzeni | Ege + Deniz |
+| `ZAFIYET_KATALOGU.md` | Ölçülen açıklar (CWE), BaxBench eşlemesi, eklenecekler, ilgili çalışmalar | Ege, `literatur-gozcusu` |
+| `VERI_PLANI.md` | Veri kaynakları A–G: ne, ne zaman, nasıl, nerede saklanır | `veri-planlayici` |
 | `DECISIONS.md` | ADR kayıtları | herkes ekler |
 | `PROGRESS.md` | Durum ve sıradaki işler | sd-sef-muhendis |

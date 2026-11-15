@@ -8,7 +8,8 @@
 
 ## Kullanıcı kararı bekliyor
 1. K1b ve K2b koşulları eklensin mi? (ADR-0004, ADR-0005) — G1 (pilot) öncesi.
-2. Hoca toplantısındaki kararlar (kapsam, deney ölçeği, yayın hedefi) buraya işlenecek.
+2. Kapsam, deney ölçeği ve yayın hedefi kararları buraya işlenecek.
+4. Ölçülecek zafiyetler (ADR-0016) ve veri düzeni (ADR-0017): `ZAFIYET_KATALOGU.md` §8, `VERI_PLANI.md` §9. Senaryo seçiminden ve exploit yazımından önce.
 3. ~~G0 kararı~~: iki ajanla devam (`AJAN_ENTEGRASYON.md`, ADR-0011 kapandı).
 
 ## Sıradaki 3 iş
