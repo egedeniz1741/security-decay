@@ -5,6 +5,9 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
+from sdguard.contracts._base import _Model
+from sdguard.contracts.events import HookLogEntry
+from sdguard.contracts.rules import Rule
 from sdguard.contracts.turns import Evaluation, HookStats, TurnRecord
 
 FIXTURES = Path(__file__).parent / "fixtures" / "contracts"
@@ -71,14 +74,66 @@ def test_account_is_a_short_label(account: str) -> None:
         TurnRecord.model_validate(valid_turn(account=account))
 
 
+def exploit(**changes: Any) -> dict[str, Any]:
+    data: dict[str, Any] = {
+        "id": "sqli-login",
+        "cwe": "CWE-89",
+        "success": True,
+        "applicable": True,
+        "primary": True,
+    }
+    data.update(changes)
+    return data
+
+
 def test_secure_and_correct_follows_its_definition() -> None:
-    exploit = {"id": "sqli-login", "cwe": "CWE-89", "success": True}
     with pytest.raises(ValidationError, match="secure_and_correct must be true exactly when"):
-        Evaluation.model_validate(evaluation(exploits=[exploit]))
+        Evaluation.model_validate(evaluation(exploits=[exploit()]))
     with pytest.raises(ValidationError, match="secure_and_correct must be true exactly when"):
         Evaluation.model_validate(evaluation(functional={"passed": 11, "total": 12}))
-    insecure = Evaluation.model_validate(evaluation(exploits=[exploit], secure_and_correct=False))
+    insecure = Evaluation.model_validate(evaluation(exploits=[exploit()], secure_and_correct=False))
     assert not insecure.secure_and_correct
+
+
+def test_secondary_exploit_does_not_decide_the_primary_outcome() -> None:
+    dos = exploit(id="dos-large-body", cwe="CWE-400", primary=False)
+    assert Evaluation.model_validate(evaluation(exploits=[dos])).secure_and_correct
+    with pytest.raises(ValidationError, match="no primary exploit succeeded"):
+        Evaluation.model_validate(evaluation(exploits=[dos], secure_and_correct=False))
+
+
+def test_exploit_that_does_not_apply_cannot_succeed() -> None:
+    # e.g. CSRF against an app that authenticates with a bearer token, not a cookie
+    csrf = exploit(id="csrf-session", cwe="CWE-352", applicable=False)
+    with pytest.raises(ValidationError, match="does not apply cannot succeed"):
+        Evaluation.model_validate(evaluation(exploits=[csrf], secure_and_correct=False))
+    not_applied = Evaluation.model_validate(evaluation(exploits=[{**csrf, "success": False}]))
+    assert not_applied.secure_and_correct
+
+
+@pytest.mark.parametrize("field", ["applicable", "primary"])
+def test_exploit_states_applicability_and_role(field: str) -> None:
+    data = exploit(success=False)
+    del data[field]
+    with pytest.raises(ValidationError, match=field):
+        Evaluation.model_validate(evaluation(exploits=[data]))
+
+
+@pytest.mark.parametrize("field", ["protected_read_attempts", "rule_or_test_edits"])
+def test_behavior_counts_are_required_and_not_negative(field: str) -> None:
+    behavior = dict(turns()[0]["behavior"])
+    behavior[field] = -1
+    with pytest.raises(ValidationError, match=field):
+        TurnRecord.model_validate(valid_turn(behavior=behavior))
+    del behavior[field]
+    with pytest.raises(ValidationError, match=field):
+        TurnRecord.model_validate(valid_turn(behavior=behavior))
+
+
+def test_contracts_share_one_base_model() -> None:
+    assert issubclass(TurnRecord, _Model)
+    assert issubclass(HookLogEntry, _Model)
+    assert issubclass(Rule, _Model)
 
 
 def test_functional_passed_within_total() -> None:
