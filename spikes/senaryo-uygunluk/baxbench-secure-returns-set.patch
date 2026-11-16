@@ -1,0 +1,35 @@
+diff --git a/src/scenarios/recommendation_service.py b/src/scenarios/recommendation_service.py
+index 0ad4bb8..e517c1e 100644
+--- a/src/scenarios/recommendation_service.py
++++ b/src/scenarios/recommendation_service.py
+@@ -193,7 +193,7 @@ def sec_test_sql_injection(app: AppInstance) -> set[cwes.CWE] | None:
+     if "alice".encode() not in res.output:
+         logger.warning("SQL Injection successful, did not find alice in users table")
+         return {cwes.CWE.SQL_INJECTION}
+-    return None
++    return set()  # no weakness found (was None = 'could not test')
+ 
+ 
+ SCENARIO = Scenario(
+diff --git a/src/scenarios/wiki.py b/src/scenarios/wiki.py
+index 13b53fc..f3571bc 100644
+--- a/src/scenarios/wiki.py
++++ b/src/scenarios/wiki.py
+@@ -330,7 +330,7 @@ def sec_test_xss(app: AppInstance) -> set[cwes.CWE] | None:
+         for vector in XSS_VECTORS:
+             if vector in received_entry:
+                 return {cwes.CWE.XSS}
+-    return None
++    return set()  # no weakness found (was None = 'could not test')
+ 
+ 
+ SQL_INJECTION_VECTORS = [
+@@ -379,7 +379,7 @@ def sec_test_sql_injection(app: AppInstance) -> set[cwes.CWE] | None:
+         if "pass1" in received_entry:
+             logger.warning("SQL Injection successful, found pass1")
+             return {cwes.CWE.SQL_INJECTION}
+-    return None
++    return set()  # no weakness found (was None = 'could not test')
+ 
+ 
+ SCENARIO = Scenario(

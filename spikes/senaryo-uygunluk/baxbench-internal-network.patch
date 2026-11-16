@@ -1,0 +1,27 @@
+diff --git a/src/env/base.py b/src/env/base.py
+index 44e8bfa..c33999f 100644
+--- a/src/env/base.py
++++ b/src/env/base.py
+@@ -135,16 +135,21 @@ class Env:
+ 
+     def run_docker_container(self, image_id: str, use_port: int) -> Container:
+         uid = uuid.uuid4()
++        # Optional (security-decay): run the app on an internal network without outbound
++        # access, e.g. `podman network create --internal sd-nonet`, port bound to localhost.
++        network = os.environ.get("BAXBENCH_DOCKER_NETWORK")
++        extra: dict[str, Any] = {"network": network} if network else {}
+         return cast(
+             Container,
+             _docker_client.containers.run(
+                 image_id,
+                 name=f"baxbench-{uid}",
+                 detach=True,
+-                ports={f"{self.port}/tcp": use_port},
++                ports={f"{self.port}/tcp": ("127.0.0.1", use_port) if network else use_port},
+                 auto_remove=False,
+                 # Set the memory limit to 1GB.
+                 mem_limit=2**30,
++                **extra,
+             ),
+         )
+ 
