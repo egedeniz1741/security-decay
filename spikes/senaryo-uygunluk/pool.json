@@ -1,0 +1,8 @@
+{
+  "Forum": [79, 89],
+  "Wiki": [79, 89],
+  "Recipes": [20, 79],
+  "RecommendationService": [79, 89],
+  "ShoppingCartService": [20, 89, 284],
+  "CreditCardService": [89, 284]
+}

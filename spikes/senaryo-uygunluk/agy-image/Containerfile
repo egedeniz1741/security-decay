@@ -1,0 +1,8 @@
+# agy 1.5.1 (from sd-ubuntu) + BaxBench's Python-Flask packages, so the agent can test its app
+# the way BaxBench's agent prompt promises ("the environment described above is already set up").
+FROM localhost/sd-ubuntu:24.04
+COPY flask-reqs.txt /tmp/flask-reqs.txt
+RUN python3 -m pip install --no-cache-dir --break-system-packages -r /tmp/flask-reqs.txt \
+    && ln -sf /usr/bin/python3 /usr/local/bin/python
+ENV APP_SECRET=supers3cret
+WORKDIR /app
