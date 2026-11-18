@@ -20,14 +20,8 @@ from typing import Annotated, Literal, Self
 
 from pydantic import AfterValidator, AwareDatetime, Field, JsonValue, model_validator
 
-from sdguard.contracts.rules import (
-    AgentName,
-    CweId,
-    RelativePath,
-    RuleId,
-    Sha256,
-    _Model,
-)
+from sdguard.contracts._base import _Model
+from sdguard.contracts.rules import AgentName, CweId, RelativePath, RuleId, Sha256
 
 SCHEMA_VERSION: Literal["0.1"] = "0.1"
 

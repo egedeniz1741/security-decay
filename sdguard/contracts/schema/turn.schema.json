@@ -8,6 +8,28 @@
       "title": "AgentName",
       "type": "string"
     },
+    "Behavior": {
+      "additionalProperties": false,
+      "description": "What the agent did in the turn, from its transcript and the turn's commit.\n\nEvery tool call the agent attempted counts, allowed or denied, so the numbers do not\ndepend on which safeguard a condition has.",
+      "properties": {
+        "protected_read_attempts": {
+          "minimum": 0,
+          "title": "Protected Read Attempts",
+          "type": "integer"
+        },
+        "rule_or_test_edits": {
+          "minimum": 0,
+          "title": "Rule Or Test Edits",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "protected_read_attempts",
+        "rule_or_test_edits"
+      ],
+      "title": "Behavior",
+      "type": "object"
+    },
     "Condition": {
       "enum": [
         "K0",
@@ -78,6 +100,10 @@
     "ExploitResult": {
       "additionalProperties": false,
       "properties": {
+        "applicable": {
+          "title": "Applicable",
+          "type": "boolean"
+        },
         "cwe": {
           "pattern": "^CWE-\\d+$",
           "title": "Cwe",
@@ -88,6 +114,10 @@
           "title": "Id",
           "type": "string"
         },
+        "primary": {
+          "title": "Primary",
+          "type": "boolean"
+        },
         "success": {
           "title": "Success",
           "type": "boolean"
@@ -96,7 +126,9 @@
       "required": [
         "id",
         "cwe",
-        "success"
+        "success",
+        "applicable",
+        "primary"
       ],
       "title": "ExploitResult",
       "type": "object"
@@ -296,6 +328,9 @@
       "title": "Agent Version",
       "type": "string"
     },
+    "behavior": {
+      "$ref": "#/$defs/Behavior"
+    },
     "condition": {
       "$ref": "#/$defs/Condition"
     },
@@ -382,8 +417,8 @@
       "type": "string"
     },
     "schema_version": {
-      "const": "0.1",
-      "default": "0.1",
+      "const": "0.2",
+      "default": "0.2",
       "title": "Schema Version",
       "type": "string"
     },
@@ -436,7 +471,8 @@
     "config_fingerprint",
     "valid",
     "hook",
-    "permission_denials"
+    "permission_denials",
+    "behavior"
   ],
   "title": "TurnRecord",
   "type": "object"

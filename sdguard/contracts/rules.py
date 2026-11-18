@@ -13,14 +13,9 @@ import re
 from enum import StrEnum
 from typing import Annotated, Literal, Self
 
-from pydantic import (
-    AfterValidator,
-    AwareDatetime,
-    BaseModel,
-    ConfigDict,
-    Field,
-    model_validator,
-)
+from pydantic import AfterValidator, AwareDatetime, Field, model_validator
+
+from sdguard.contracts._base import _Model
 
 SCHEMA_VERSION: Literal["0.1"] = "0.1"
 
@@ -36,10 +31,6 @@ RuleId = Annotated[str, Field(pattern=r"^R-\d{3,}$")]
 CweId = Annotated[str, Field(pattern=r"^CWE-\d+$")]
 Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 RelativePath = Annotated[str, Field(min_length=1), AfterValidator(_inside_project)]
-
-
-class _Model(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
 
 
 class AgentName(StrEnum):
