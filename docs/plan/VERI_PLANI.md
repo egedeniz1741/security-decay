@@ -1,6 +1,6 @@
 # Veri planı
 
-> Durum: **öneri v0.1** · 15 Kasım 2026 · Sahipleri: her kaynağın satırında yazıyor. Karar bekleyenler §9'da.
+> Durum: **öneri v0.2** · 18 Kasım 2026 (Deniz'in #14 incelemesi işlendi) · Sahipleri: her kaynağın satırında yazıyor. Karar bekleyenler §9'da.
 > Bu dosya projede toplanan her verinin ne olduğunu, ne zaman ve nasıl toplanacağını ve nerede saklanacağını tek yerde toplar. Şemalar koddadır (`sdguard/contracts/`); burada yalnızca akış ve kurallar var.
 
 ## 1. Özet: hangi veri, ne zaman
@@ -34,7 +34,7 @@
 | Test ya da kural dosyası değiştirme | Commit farkında `tests/`, `.sdguard/`, ayar dosyaları | Ödül hilesi (`ZAFIYET_KATALOGU.md` §6) |
 | Hook mesajına tepki | `block_stop`'tan sonra aynı turda ilgili bulgunun kapanıp kapanmadığı | G0 deneme 2–3: ajan mesaja bazen uydu, bazen uymadı |
 
-İlk dördü tur kaydına sayaç olarak girebilir (sözleşme v0.2, karar Deniz'de). Beşincisi analizde hesaplanır.
+Korunan dosya okuma ve kural/test değiştirme tur kaydında sayaç olarak var (sözleşme v0.2, `Behavior`). Diğerleri sezgisel tanımlar; sözleşmeye girmez, analizde hook logundan hesaplanır.
 
 **Nitel inceleme:** Ana deneyden rastgele 60 tur iki kişi tarafından elle incelenir: defterin bulduğu gerçek mi, ajan neden korumayı kaldırdı, hook mesajına ne cevap verdi. Etiketleme şablonu pilotta 10 turla denenir. Sonuçlar `data/labels/` altına gider (E).
 
@@ -44,7 +44,10 @@
 3. Tur kaydı şemayla doğrulanır; geçersizse `invalid_reasons` doldurulur. Satır silinmez.
 4. Günlük bir betik bütün `turns.jsonl` dosyalarını `data/processed/turns.parquet` olarak birleştirir. Analiz yalnızca bunu okur.
 
-**Boyut (tahmin, pilotta ölçülecek):** Tur başına akış çıktısı yaklaşık 0,2–2 MB. 750 ana tur ve pilot birlikte 0,5–2 GB ham veri; işlenmiş tablo birkaç MB.
+**Boyut (kaba tahmin, pilotta ölçülecek):**
+- Tur başına akış çıktısı yaklaşık 0,2–2 MB. Yaklaşık 800 tur (ana deney + pilot) için 0,16–1,6 GB.
+- Hook logu, kod farkı ve test çıktıları bunun üstüne eklenir. Toplam ham veri 0,2–2 GB aralığında.
+- İşlenmiş tablo birkaç MB.
 
 **Gizlilik:**
 - Abonelik kimlik bilgisi hiçbir dosyaya yazılmaz.
@@ -71,7 +74,11 @@
 
 **Saklama:** `data/corpus/` altında repo, SHA, yol, satır, kural metni ve etiketler (CSV). Dosyaların tamamı saklanmaz; yalnızca kural metni ve bağlantı. Yayımlanan veri setinde de yalnızca bağlantı + SHA + kısa alıntı olur. Tahmini boyut birkaç MB.
 
-**Bölme:** Korpusun %30'u geliştirme dilimi (derleyici bunlara bakılarak geliştirilir), %70'i test dilimi. Test dilimi G3'e kadar derleyiciden geçirilmez.
+**Bölme ve takvim:**
+- Korpusun %30'u geliştirme dilimi (derleyici bunlara bakılarak geliştirilir), %70'i test dilimi.
+- İki kişiyle etiketlenen 150 kural test diliminden seçilir.
+- RQ1 için derleyici **G2'de (17 Ocak) dondurulur**. Test dilimi ancak bundan sonra derlenir ve kesinlik Ocak sonuna kadar etiketlere karşı ölçülür (Deniz).
+- Deney için araç G3'te dondurulur. G2 ile G3 arasında derleyicide yapılan değişiklikler RQ1 sonucunu değiştirmez; gerekiyorsa ayrıca raporlanır.
 
 ## 4. C · Mutant seti (RQ3)
 
@@ -92,10 +99,11 @@
 
 **Kurallar:**
 - Exploit'ler araç dondurulmadan **önce** ve koşullardan bağımsız yazılır. Ön kayda (OSF) eklenir.
-- Her exploit iki kez sınanır: güvenli kontrol uygulamasında başarısız, güvensizde başarılı olmalı. Bu sınama CI'da koşar.
+- Her exploit kontrol uygulamalarıyla sınanır: güvenli uygulamada başarısız, güvensizde başarılı olmalı. Birincil sayılacaksa aynı koda 10 tekrarda aynı sonucu vermeli (`ZAFIYET_KATALOGU.md` §5).
+- Bu sınama **yerelde**, ağsız konteynerde (`--network none` ya da `sd-nonet`) bir betikle ve PR'dan önce koşar. CI'da koşmaz. Repo ve CI logları açık; test bölmesinin exploit'leri oraya düşmemeli. Exploit kuralı (`CLAUDE.md`) da bunu gerektiriyor. Geliştirme bölmesi için CI'da koşmak istenirse bu ayrı bir karar ve `CLAUDE.md` kuralının açıkça değişmesi gerekir.
 - Exploit'ler yalnızca ağsız yerel Docker konteynerinde çalışır.
 
-**Test bölmesinin saklanması:** Repo herkese açık. Test senaryoları ve exploit'leri açık repoda dursa, araç geliştirirken yanlışlıkla görülebilir. Ayrıca ileride modellerin eğitim verisine girebilir. İki seçenek var:
+**Test bölmesinin saklanması (Deniz kabul etti, Ege'nin onayı bekleniyor):** Repo herkese açık. Test senaryoları ve exploit'leri açık repoda dursa, araç geliştirirken yanlışlıkla görülebilir. Ayrıca ileride modellerin eğitim verisine girebilir. İki seçenek var:
 1. **Önerilen:** Test bölmesi G3'e kadar ayrı, gizli bir repoda durur. G3'te ana repoya taşınır ve o anki commit'in özeti (hash) ön kayda yazılır. Böylece sonradan değiştirilmediği kanıtlanabilir.
 2. Aynı repoda `harness/scenarios/test/` altında kalır, yalnızca kurala güvenilir (şu anki `CLAUDE.md` kuralı).
 
@@ -146,7 +154,7 @@ GitHub'ın dosya başına 100 MB sınırı ve büyük repo uyarıları yüzünde
 
 | Dönem | Veri işi |
 |---|---|
-| 15 – 22 Kas | Zafiyet kataloğu kararı; senaryo seçimi; `data/` düzeni ve `.gitignore` değişikliği; nitel inceleme şablonu |
+| 15 – 22 Kas | Zafiyet kataloğu kararı; senaryo seçimi (`SENARYO_SECIMI.md`); `data/` düzeni ve `.gitignore` değişikliği; nitel inceleme şablonu |
 | 23 – 29 Kas (G1) | Pilot: A ve F toplanır, şemalar ve Gitleaks hattı sınanır, 10 turla nitel inceleme denemesi |
 | Aralık | B toplama ve 20 kurallık deneme etiketi; C üreteci; D test bölmesi yazılır |
 | Ocak | B 150 kural çift etiket ve κ; koşum planı üretilir; G3'te D kilitlenir, ön kayıt (OSF) |
@@ -154,7 +162,7 @@ GitHub'ın dosya başına 100 MB sınırı ve büyük repo uyarıları yüzünde
 | 15 – 31 Mart (G4–G5) | Veri kilidi; işlenmiş veri ve korpus Zenodo'ya |
 
 **Karar bekleyenler:**
-1. §2'deki davranış sayaçları tur kaydına girsin mi? (Deniz, sözleşme v0.2)
-2. Test bölmesi gizli repoda mı dursun, aynı repoda mı? (§5)
-3. `.gitignore` ve `data/` düzeni §8'deki gibi olsun mu?
-4. Korpusa Cursor ve Copilot kural dosyaları (`.cursor/rules`, `.github/copilot-instructions.md`) da eklensin mi? Kapsamı büyütür ama karşılaştırmayı Yan'dan ayırır. Öneri: şimdilik hayır, gelecek çalışma.
+1. ~~Davranış sayaçları~~ → İkisi sözleşme v0.2'de (#17).
+2. Test bölmesi gizli repoda: Deniz kabul etti; Ege'nin onayıyla ADR-0017 kabul edilir.
+3. `data/` düzeni §8'deki gibi: Deniz kabul etti.
+4. Cursor / Copilot kural dosyaları: şimdilik hayır (ikimiz).
