@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": ["Bash(cat:*)", "Bash(grep:*)", "Bash(ls:*)"],
+    "deny": ["Read(./.env)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [{"type": "command", "command": "cat > /dev/null; echo calisti >> __LOG__"}]
+      }
+    ]
+  }
+}
