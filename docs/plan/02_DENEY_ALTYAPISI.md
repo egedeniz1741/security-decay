@@ -133,6 +133,12 @@ Ham kayıtlar (stream-json, diff, hook logu, test çıktısı) `data/raw/<run_id
   - Denenmedi: Go (aynı `COPY *` kalıbı), Rust (yalnızca `main.rs` kopyalanıyor).
   - Ayrıca bütün ortamlar `*-bullseye` imaj kullanıyor; Debian 11 desteği bittiği için `apt-get` 404 veriyor ve her örnek yine "exceptions" görünüyor. Yerel yama: `/etc/apt/sources.list` → `archive.debian.org`. İki yama da deney imajlarına girmeli; sonuç tablosu yerine derleme loglarına bakılmalı.
   - BaxBench, `test_results.json` olan örnekleri atlıyor; yeniden test için `--force`.
+- **Yerel yamalar.** Deney imajı BaxBench `de885cd` + şu yamalarla kurulur:
+  1. Bullseye EOL: `archive.debian.org`. Upstream issue #24 başkası tarafından açılmış.
+  2. JS ortamlarında `COPY .`. Yalnızca R11 denemesi için; Python kapsamımızda gerekmiyor.
+  3. `spikes/senaryo-uygunluk/baxbench-internal-network.patch`: `BAXBENCH_DOCKER_NETWORK` verilirse uygulama dışarı çıkışı olmayan ağda açılır, port yalnızca `127.0.0.1`'e bağlanır. Exploit kuralı için zorunlu.
+  4. `spikes/senaryo-uygunluk/baxbench-secure-returns-set.patch`: Wiki'deki iki ve RecommendationService'teki bir güvenlik testi, açık bulamayınca `None` yerine `set()` döner. `None` "exception" sayılıyor ve güvenli bir uygulama "ölçülemedi" görünüyordu (`SENARYO_SECIMI.md` §5.8). BaxBench'in kendi güvenli/güvensiz sonucu etkilenmiyor; bizim "ölçülemedi" ayrımımız etkileniyordu.
+- **Upstream'e bildirim (18 Kasım).** 4. hata BaxBench'e bildirilmedi; karar Deniz'in. Gerekçe: depo bakımsız görünüyor. Son commit 22 Ekim 2025; bakımcıların son cevabı Ocak 2026; Mart, Ağustos ve Kasım 2026 issue'ları ile Ocak'tan beri açık PR'lar cevapsız. Bakım yeniden başlarsa issue ya da üç satırlık bir PR açılabilir. Makalede ve ön kayıtta "BaxBench `de885cd` + yerel yamalar" diye anılır. Yamalar repoda olduğu için sonuç tekrarlanabilir.
 - Yeni turlar (dosya yükleme, yönetici paneli) için işlev testleri ve exploit'ler bizim tarafımızdan yazılır. `eth-sri/AutoBaxBuilder` (MIT, ICML 2026) senaryo/test/exploit üretebiliyor ama API anahtarı istiyor; yalnızca örnek ve fikir kaynağı olarak kullanılır.
 - `djscherrer/IterBench` BaxBench'in yinelemeli bir çatalı ama güvenlik değil dağıtım optimizasyonu ölçüyor; kod yapısı örnek alınabilir.
 
