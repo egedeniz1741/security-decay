@@ -7,7 +7,7 @@
     "PreToolUse": [
       {
         "matcher": "*",
-        "hooks": [{"type": "command", "command": "cat > /dev/null; echo calisti >> __LOG__"}]
+        "hooks": [{"type": "command", "command": "python3 -c \"import json,sys; print(json.load(sys.stdin).get('tool_name'))\" >> __LOG__"}]
       }
     ]
   }

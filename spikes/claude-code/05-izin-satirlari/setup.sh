@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Deneme 5 (izin satırları) için klasörleri kurar. Hook yok; yalnızca Claude Code'un kendi
 # izin sistemi sınanıyor. Bütün değerler sahte.
-#   ~/sd-spikes/05-izin/proje          : .claude/settings.json içinde deny Read(/.env), Bash(cat|grep) izinli
-#   ~/sd-spikes/05-izin/proje/alt      : alt klasör (ajan buradan başlatılınca kök ayarı geçerli mi?)
+#   ~/sd-spikes/05-izin/proje          : .claude/settings.json içinde deny Read(/.env) ve Read(/alt/.env), Bash(cat|grep|ls) izinli
+#   ~/sd-spikes/05-izin/proje/alt      : alt klasör (ajan buradan başlatılınca kökteki ayar ve /alt/.env yasağı geçerli mi?)
 #   ~/sd-spikes/05-izin/yazim-hatasi   : deny satırında bilinmeyen araç adı (Reed)
 #   ~/sd-spikes/05-izin/bozuk-desen    : deny satırında kapanmayan parantez
 #   ~/sd-spikes/05-izin/ayarsiz        : proje ayarı yok; izinler --settings ile dışarıdan verilecek

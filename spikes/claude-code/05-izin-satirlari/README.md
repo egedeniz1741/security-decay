@@ -27,23 +27,32 @@ bash spikes/claude-code/05-izin-satirlari/run.sh
 - `ajanin cevabi`: Cevabın ilk kısmı.
 - `stderr`: Hata ve uyarı çıktısı. C ve D'de uyarı burada görünebilir.
 
-## Etkileşimli kontrol (C ve D için, 2 dakika)
+## 2. koşu: güven onayı ve etkileşimli kontrol
 
-İnsansız modda uyarı ekrana gelmeyebilir. Bu yüzden bir kez de etkileşimli açıp bakmak gerekiyor:
+1. koşuda klasörlere güven onayı verilmediği için `allow` satırları yok sayıldı (`SONUCLAR.md`). 2. koşudan önce dört klasörde Claude Code'u bir kez etkileşimli açıp güven sorusuna **evet** demek gerekiyor. Bunu yaparken C ve D için uyarıya da bakılıyor.
 
 ```bash
-cd ~/sd-spikes/05-izin/yazim-hatasi && claude
+cd ~/projects/security-decay && git pull
+bash spikes/claude-code/05-izin-satirlari/setup.sh
 ```
 
-1. Açılışta bir uyarı çıkıyor mu? Ekran görüntüsünü al.
-2. `/permissions` yaz. `Reed(/.env)` satırı listede görünüyor mu, yanında uyarı var mı?
-3. `/exit` ile çık.
+Sonra sırayla:
 
-Aynısını `~/sd-spikes/05-izin/bozuk-desen` klasöründe de yap.
+| Klasör | Ne yap | Ekran görüntüsü |
+|---|---|---|
+| `~/sd-spikes/05-izin/yazim-hatasi` | `claude` → güven sorusuna evet → açılış ekranına bak → `/permissions` yaz → `/exit` | 1) güven onayından sonraki açılış ekranı, 2) `/permissions` çıktısı (Deny sekmesi) |
+| `~/sd-spikes/05-izin/bozuk-desen` | Aynısı | Aynı iki görüntü |
+| `~/sd-spikes/05-izin/proje` | `claude` → güven sorusuna evet → `/exit` | Gerekmiyor |
+| `~/sd-spikes/05-izin/proje/alt` | Aynısı | Gerekmiyor |
+
+Sonra:
+```bash
+bash spikes/claude-code/05-izin-satirlari/run.sh
+```
 
 ## Gönderilecekler
-- `run.sh`'in bütün çıktısı (metin olarak yapıştırabilirsin).
-- Etkileşimli kontrolün iki ekran görüntüsü.
+- 2. koşudaki `run.sh` çıktısı (metin olarak).
+- `yazim-hatasi` ve `bozuk-desen` için ikişer ekran görüntüsü.
 
 **Bitti sayılır:** A–F'nin her biri için "evet / hayır / belirsiz" cevabı var.
 
