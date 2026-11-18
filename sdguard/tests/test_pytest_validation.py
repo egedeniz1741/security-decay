@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 import pytest
@@ -137,3 +138,96 @@ def test_slow_test_times_out(tmp_path: Path) -> None:
     assert validation.status is ValidationStatus.FAILED
     assert validation.message is not None
     assert "timed out" in validation.message
+
+
+def make_app(tmp_path: Path, name: str, old: str, new: str) -> Path:
+    folder = tmp_path / name
+    folder.mkdir()
+    source = (SECURE / "app.py").read_text()
+    assert old in source
+    (folder / "app.py").write_text(source.replace(old, new))
+    return folder
+
+
+def test_broken_app_is_not_a_detection(tmp_path: Path) -> None:
+    # Secure app whose POST /orders fails: no IDOR, so the test must not verify against it.
+    broken = make_app(
+        tmp_path,
+        "broken",
+        'return jsonify({"id": order_id}), 201',
+        'return jsonify({"error": "db down"}), 500',
+    )
+    validation = validate_pytest(TEST, [SECURE], [broken])
+    assert validation.status is ValidationStatus.FAILED
+    assert validation.message is not None
+    assert "weakness not detected" in validation.message
+
+
+def test_broken_app_is_caught_even_when_setup_uses_assert(tmp_path: Path) -> None:
+    broken = make_app(
+        tmp_path,
+        "broken",
+        'return jsonify({"id": order_id}), 201',
+        'return jsonify({"error": "db down"}), 500',
+    )
+    old_style = TEST.read_text().replace(
+        'require(response.status_code == 201, "order could not be created")',
+        "assert response.status_code == 201",
+    )
+    validation = validate_pytest(write(tmp_path, old_style), [SECURE], [broken])
+    assert validation.status is ValidationStatus.FAILED
+    assert validation.message is not None
+    assert "no test passed" in validation.message
+
+
+def test_assert_inside_the_app_is_not_a_detection(tmp_path: Path) -> None:
+    asserting = make_app(
+        tmp_path,
+        "asserting",
+        "    own = [",
+        "    assert ORDERS is None\n    own = [",
+    )
+    run = run_against(TEST, asserting)
+    assert run.outcomes[next(k for k in run.outcomes if k.endswith("only_own_orders"))] == "error"
+
+
+def test_pytest_fail_in_the_test_file_counts_as_assertion(tmp_path: Path) -> None:
+    text = "import pytest\n\ndef test_fails(client):\n    pytest.fail('weakness found')\n"
+    run = run_against(write(tmp_path, text), SECURE)
+    assert run.tests_with("assertion") == ["test_fails"]
+
+
+def test_state_does_not_leak_between_tests_of_a_multi_file_app(tmp_path: Path) -> None:
+    split = tmp_path / "split"
+    split.mkdir()
+    (split / "store.py").write_text("ORDERS: dict[int, dict[str, str]] = {}\n")
+    source = (SECURE / "app.py").read_text()
+    (split / "app.py").write_text(
+        source.replace("ORDERS: dict[int, dict[str, str]] = {}\n", "from store import ORDERS\n")
+    )
+    one_order = (
+        "def _one(client):\n"
+        "    client.post('/orders', json={'item': 'x'}, headers={'X-User': 'alice'})\n"
+        "    assert len(client.get('/orders', headers={'X-User': 'alice'}).get_json()) == 1\n\n"
+        "def test_first(client):\n    _one(client)\n\n"
+        "def test_second(client):\n    _one(client)\n"
+    )
+    run = run_against(write(tmp_path, one_order, "iso.py"), split)
+    assert run.tests_with("passed") == ["test_first", "test_second"]
+
+
+def test_parent_environment_does_not_reach_the_test(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("SDGUARD_FAKE_TOKEN", "not-a-real-token")
+    text = "import os\n\ndef test_env(client):\n    assert 'SDGUARD_FAKE_TOKEN' not in os.environ\n"
+    run = run_against(write(tmp_path, text), SECURE)
+    assert run.tests_with("passed") == ["test_env"]
+
+
+def test_reference_apps_are_left_unchanged(tmp_path: Path) -> None:
+    copy = tmp_path / "secure"
+    shutil.copytree(SECURE, copy)
+    before = sorted(p.name for p in copy.iterdir())
+    run_against(TEST, copy)
+    assert sorted(p.name for p in copy.iterdir()) == before

@@ -5,14 +5,19 @@ code patterns; it compiles to a pytest file that exercises the running applicati
 The test is only trusted when it tells the two kinds of reference application apart:
 
 - on every **secure** reference application all tests pass (good examples), and
-- on every **insecure** one at least one test fails **with an assertion** (bad examples).
+- on every **insecure** one at least one test fails **with an assertion in the test file**
+  and at least one test passes (bad examples). The passing test shows that the insecure
+  app works, so a broken app cannot be mistaken for a weak one.
 
-A test that crashes on the insecure application has not shown that it detects the
-weakness, so a crash does not count as detection.
+A crash, a failed setup step (``sdguard.testing.require``) or an ``AssertionError`` raised
+inside the application does not count as detection (see ``sdguard.testing``).
 
 Running the validation executes the compiled test and the reference applications. The
 compiled test comes from an LLM, so in the experiment this must run inside the
-network-less container, never directly on a developer machine.
+network-less container, never directly on a developer machine. The test process gets a
+small allow-listed environment (no tokens from the parent process) and runs with the
+interpreter of sdguard itself, so the reference applications' dependencies (Flask, JWT
+libraries …) must be installed in that environment; the experiment image provides them.
 """
 
 import json
@@ -25,9 +30,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from sdguard.contracts.rules import Validation, ValidationStatus
-from sdguard.testing import APP_DIR_ENV, RESULT_FILE_ENV
 
+# Shared with the pytest plugin (sdguard.testing). Kept here so that importing the
+# compiler does not need pytest.
+APP_DIR_ENV = "SDGUARD_APP_DIR"
+RESULT_FILE_ENV = "SDGUARD_RESULT_FILE"
 _TIMEOUT_SECONDS = 120
+# Only these variables reach the test process; everything else (tokens, plugin settings)
+# is dropped.
+_PASSED_ENV = ("PATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ")
 
 
 @dataclass(frozen=True)
@@ -73,12 +84,18 @@ def run_against(test_path: Path, app_dir: Path, *, timeout: int = _TIMEOUT_SECON
             str(work),
             str(test_path.resolve()),
         ]
-        env = {
-            **os.environ,
-            APP_DIR_ENV: str(app_dir.resolve()),
-            RESULT_FILE_ENV: str(result_file),
-            "PYTHONDONTWRITEBYTECODE": "1",
-        }
+        env = {key: os.environ[key] for key in _PASSED_ENV if key in os.environ}
+        env.update(
+            {
+                APP_DIR_ENV: str(app_dir.resolve()),
+                RESULT_FILE_ENV: str(result_file),
+                "HOME": str(work),
+                "TMPDIR": str(work),
+                "PYTHONDONTWRITEBYTECODE": "1",
+                # other installed plugins (e.g. pytest-randomly) must not change outcomes
+                "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+            }
+        )
         try:
             completed = subprocess.run(  # noqa: S603  # fixed argument list, no shell
                 command, cwd=work, capture_output=True, text=True, timeout=timeout, env=env
@@ -148,6 +165,10 @@ def validate_pytest(
             crashed = run.tests_with("error")
             detail = f"; crashed instead: {', '.join(crashed)}" if crashed else ""
             problems.append(f"insecure app {app_dir.name}: weakness not detected{detail}")
+        elif not run.tests_with("passed"):
+            problems.append(
+                f"insecure app {app_dir.name}: no test passed, so the app may simply be broken"
+            )
 
     if problems:
         return result(ValidationStatus.FAILED, "; ".join(problems))
