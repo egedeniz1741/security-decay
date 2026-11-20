@@ -10,9 +10,15 @@ sdguard remembers which deny entries it added (a state file under ``.sdguard/``)
 next run it removes those before adding the new plan, so a rule that was dropped or
 downgraded does not leave its entry behind. Entries the user wrote are never touched.
 
-Whether Claude Code applies ``Read(...)`` deny rules to Bash commands such as ``cat`` and
-``grep`` is not verified in our spikes. Until it is, the guard hook covers Bash; a rule
-that relies on the permission layer alone keeps that path in ``known_gaps``.
+Spike 05 (Claude Code, n = 1):
+- A ``Read(...)`` deny also stops Bash commands that name the file (``cat .env``), but not
+  commands that target a folder (``grep -rn KEY .``). The guard hook covers that path; a
+  rule that relies on the permission layer alone keeps it in ``known_gaps``.
+- Project settings are not loaded when the agent starts in a subfolder, so these entries
+  only hold when the session starts at the project root. The experiment passes the
+  permissions with ``--settings`` instead.
+- In headless mode a malformed or unknown-tool entry is silently ignored; entries are
+  therefore checked per agent in the rule format contract.
 """
 
 from dataclasses import dataclass, field
@@ -23,9 +29,9 @@ from sdguard.contracts.rules import AgentName, Enforcement, RuleSet
 # The agent must not change or read the tool's own state (docs/plan/01_MIMARI.md §1, rule 5).
 # In the G0 spikes the agent listed and read its hook settings before starting work, so
 # reading them is denied too, not only editing. A leading "/" is relative to the project
-# root in project settings, so the entries hold when Claude starts in a subfolder ("./"
-# would be relative to the working directory). Taken from the permissions docs, not
-# verified by a spike.
+# root in project settings ("./" would be relative to the working directory; docs). Note
+# that the project settings are not loaded at all when Claude starts in a subfolder
+# (spike 05 B1).
 SELF_PROTECTION_DENY: tuple[str, ...] = (
     "Read(/.sdguard/**)",
     "Edit(/.sdguard/**)",

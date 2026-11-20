@@ -37,6 +37,18 @@ Claude Code'da G0 için gereken dört yetenek de gerçek denemelerle gösterildi
 | Hook çökerse durma (`onFailure: "block"`) | ✅ | Varsayılan fail-open; bütün güvenlik hook'ları bu ayarla tanımlanmalı |
 | İnsansız mod (`claude -p`) | ✅ | İzin modu açıkça verilmeli; engellemeler `permission_denials` alanından ölçülebiliyor |
 
+**İzin katmanı (deneme 5, 18 Kasım, n = 1):**
+
+| Soru | Sonuç |
+|---|---|
+| `Read` yasağı Bash'i kapsıyor mu? | `cat .env` evet; `grep -rn KEY .` (klasör hedefli) hayır |
+| Alt klasörden başlatılınca proje ayarı geçerli mi? | Hayır, proje ayarı yüklenmiyor |
+| Bilinmeyen araç adı / bozuk desen | Etkileşimli modda uyarı var; insansız modda sessizce etkisiz |
+| `--settings` | İzinleri ve hook'ları taşıyor; izin kuralının reddettiği Read çağrısı hook'a ulaşmıyor |
+| Güven onayı olmayan klasör | `allow` yok sayılıyor, `deny` uygulanıyor |
+
+Ayrıntı: `spikes/claude-code/05-izin-satirlari/SONUCLAR.md`. Deneyde izinler iki ajanda da `--settings` ile verilir ve ajan proje kökünden başlatılır.
+
 Genel ders: Ajan aynı işi farklı araçlarla yapıyor (aynı istekte bazen Bash, bazen Read/Edit) ve ekrandaki özetler gerçek aracı göstermiyor. Kontroller araç türüne değil, işlemin sonucuna (dosyanın son hali, okunan içerik) bakmalı; ölçüm hook kayıtlarından ve JSON çıktısından yapılmalı.
 
 ## Antigravity CLI tarafının özeti (5 Kasım)

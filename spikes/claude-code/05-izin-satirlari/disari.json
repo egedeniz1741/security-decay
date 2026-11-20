@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": ["Bash(cat:*)", "Bash(grep:*)", "Bash(ls:*)"],
+    "deny": ["Read(./.env)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [{"type": "command", "command": "python3 -c \"import json,sys; print(json.load(sys.stdin).get('tool_name'))\" >> __LOG__"}]
+      }
+    ]
+  }
+}
