@@ -13,6 +13,7 @@ sdguard = "sdguard.cli:main"
 
 [dependency-groups]
 dev = [
+    "flask>=3.0",
     "mypy>=1.10",
     "pytest>=8.0",
     "ruff>=0.5",

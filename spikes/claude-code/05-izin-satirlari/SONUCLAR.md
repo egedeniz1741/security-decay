@@ -53,7 +53,7 @@ Bu koşuda güven uyarısı yok, yani `allow` satırları geçerliydi. `ayarsiz`
 |---|---|
 | A. `Read` yasağı `cat .env`'i engelliyor mu? | **Evet** (A2) |
 | A. `grep -rn KEY .` ile dolaylı okumayı engelliyor mu? | **Hayır** (A3). Hook gerekiyor (R20) |
-| B. Alt klasörden başlatılınca kök ayarı geçerli mi? | **Hayır** (B1, n = 1). Ajan proje kökünden başlatılmalı ya da izinler `--settings` ile verilmeli |
+| B. Alt klasörden başlatılınca kök ayarı geçerli mi? | **Hayır** (B1, n = 1). `proje` bir git deposuydu; Claude Code proje ayarını git kökünden de aramıyor, yalnızca başlatıldığı klasördeki `.claude/` okunuyor. Ajan proje kökünden başlatılmalı ya da izinler `--settings` ile verilmeli |
 | C. Bilinmeyen araç adı | Etkileşimli modda açılış uyarısı var; **insansız modda sessizce etkisiz** |
 | D. Bozuk desen | Etkileşimli modda uyarı ekranı var, satır atlanıyor; **insansız modda sessizce etkisiz** |
 | E. `--settings` izinleri taşıyor mu? | **Evet** (E1, E2) |
@@ -66,6 +66,6 @@ Bu koşuda güven uyarısı yok, yani `allow` satırları geçerliydi. `ayarsiz`
    - ayarlar ajanın çalışma klasörünün dışında kalır (R22),
    - yasak satırları güven onayı olmadan da uygulanıyor (E1). Ama `--settings` içindeki `allow` satırlarının güven onayı olmayan klasörde geçerli olup olmadığı kanıtlanmadı; pilotta duman testiyle bakılacak,
    - alt klasör sorunu ortadan kalkar.
-3. **Runner ajanı her zaman proje kökünden başlatır.** Ürün tarafında (deney dışı) `sdguard permissions` çıktısının alt klasörden başlatılan oturumda geçerli olmadığı belgeye ve `known_gaps`'e yazılmalı.
+3. **Runner ajanı her zaman proje kökünden başlatır ve her koşulda bir duman testi yapar:** yasaklı bir istek reddedilmeli, izinli bir komut çalışmalı. İkincisi, `--settings` içindeki `allow` satırlarının güven onayı olmayan klasörde de geçerli olduğunu gösterir (E2'de kanıtlanmadı). Ürün tarafında (deney dışı) `sdguard permissions` çıktısının alt klasörden başlatılan oturumda geçerli olmadığı belgeye ve `known_gaps`'e yazılmalı.
 4. **`Behavior` sayaçları hook logundan değil akış çıktısından sayılmalı.** İzin kuralının reddettiği Read çağrısı hook'a hiç ulaşmıyor (F). Sözleşme v0.2 zaten akış çıktısını kaynak alıyor; bu sonuç o kararı doğruluyor.
 5. `.env` yasağı Bash'te dosya adı geçen komutları da kapsıyor (A2). Açık kalan yol klasör hedefli komutlar (`grep -r`, `find -exec`, `tar` …). Bunlar hook'un işi.

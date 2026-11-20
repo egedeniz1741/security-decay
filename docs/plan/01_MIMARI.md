@@ -46,7 +46,7 @@
 | Atomikleştirme | "SQL parametreli olmalı ve kullanıcı girdisi loglanmamalı" → 2 kural | LLM, `--json-schema` ile yapılandırılmış çıktı |
 | Katman ataması | eylem → izin; kod → Semgrep; davranış → pytest; muğlak → tavsiye | LLM önerir, kural tabanlı doğrulayıcı onaylar |
 | Çeviri | Her katman için artefakt üretir | `claude -p --output-format json --json-schema <ir.schema.json>` |
-| Doğrulama | Semgrep kuralı için `# ruleid:` ve `# ok:` işaretli iyi/kötü örnek, `semgrep --test`; pytest testi için güvenli ve güvensiz referans uygulamada beklenen sonuç; izin kuralı için simüle araç çağrısı | Deterministik |
+| Doğrulama | Semgrep kuralı için `# ruleid:` ve `# ok:` işaretli iyi/kötü örnek, `semgrep --test` (`compiler/semgrep_validation.py`); pytest testi her güvenli referans uygulamada geçmeli, her güvensizde en az bir assertion ile kalmalı, çökme tespit sayılmaz (`compiler/pytest_validation.py`, eklenti `sdguard.testing`); izin kuralı için ajan başına satır denetimi (sözleşme) | Deterministik. pytest doğrulaması LLM'in yazdığı testi çalıştırır: deneyde ağsız konteynerde koşar |
 | Onarım döngüsü | Doğrulama başarısızsa hata mesajıyla en fazla 2 yeniden deneme, sonra "tavsiye" | Sınırlı, kayda girer |
 
 LLM çağrısı kullanıcının kendi ajan aboneliğiyle (`claude -p` ya da `agy -p`) yapılır; API anahtarı gerekmez.

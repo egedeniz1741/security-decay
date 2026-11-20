@@ -4,7 +4,7 @@
 
 | No | Tarih | Konu | Durum | Karar / öneri | Gerekçe |
 |---|---|---|---|---|---|
-| ADR-0001 | 2026-10-22 | Kapsam: Python web backend (Flask/FastAPI), BaxBench tabanı | Önerildi (hoca onayı) | Yol haritasındaki gibi | İki kişi, 8 ay |
+| ADR-0001 | 2026-10-22 | Kapsam: Python web backend (Flask/FastAPI), BaxBench tabanı | Önerildi | Yol haritasındaki gibi | İki kişi, 8 ay |
 | ADR-0002 | 2026-10-24 | Mimari: ajandan bağımsız çekirdek + ince adaptör, LLM yalnızca derlemede | Önerildi | `01_MIMARI.md` §1–2 | Antigravity ve Claude Code hook farkları büyük; deterministik kontrol iddiası |
 | ADR-0003 | 2026-10-24 | Deney izolasyonu: temiz HOME Docker konteyneri + `system/init` parmak izi | Önerildi | `02_DENEY_ALTYAPISI.md` §3 | `--bare` abonelikle çalışmıyor; `-p` kullanıcı eklentilerini yüklüyor |
 | ADR-0004 | 2026-10-24 | K1b (kuralların her turda yeniden enjeksiyonu) koşulu | **Açık** | Öneri: ekle, iki ajanda; maliyet +150 tur | "Hatırlatma etkisi" karıştırıcısı (R9) |
@@ -18,4 +18,7 @@
 | ADR-0012 | 2026-10-24 | Araç adı | **Açık** | Çalışma adı `sdguard` | — |
 | ADR-0013 | 2026-10-29 | İş bölümü: Ege (derleyici, exploit'ler, mutant seti, izolasyon, korpus toplama, CI/Action), Deniz (motor + defter, adaptörler, deney düzeneği, istatistik, panel); yaklaşık %50 / %50 | Kabul | `08_IS_BOLUMU_VE_KOORDINASYON.md` | Ege'nin deneyim alanı; çapraz doğrulama (kimse kendi bileşenini ölçmez) |
 | ADR-0014 | 2026-10-29 | Çalışma kuralları: korumalı `main`, PR + 1 onay, sözleşmeler iki onayla, Conventional Commits, Claude co-author satırı yok | Kabul | `08_IS_BOLUMU_VE_KOORDINASYON.md` §5 | İki kişilik ekipte çakışmayı önlemek |
-| ADR-0015 | 2026-11-11 | Kural formatı sözleşmesi v0.1 | Önerildi (PR #8) | `sdguard/contracts/rules.py`, `01_MIMARI.md` §2.2 | Derleyici, motor ve adaptörler aynı biçimi okur; doğrulanmamış kural zorlanmaz |
+| ADR-0015 | 2026-11-11 | Kural formatı sözleşmesi v0.1 | Kabul (2026-11-12, PR #8) | `sdguard/contracts/rules.py`, `01_MIMARI.md` §2.2 | Derleyici, motor ve adaptörler aynı biçimi okur; doğrulanmamış kural zorlanmaz |
+| ADR-0016 | 2026-11-15 | Ölçülecek zafiyetler: pilotta havuzun BaxBench CWE'leri + CWE-862/639 (CWE-798/489 ek maliyetsiz); CSRF ve SSRF kararı G3'e kadar; birincil exploit kuralı (kontrol sınaması, 10 tekrarda aynı sonuç, kaybolabilen koruma); CWE-400/703/117 ikincil | Önerildi (Ege + Deniz, 2026-11-18) | `ZAFIYET_KATALOGU.md` §4–5 | Turlarımızla ve defterle doğrudan bağlantı; G1'e 11 gün varken exploit yükünü sınırlamak |
+| ADR-0017 | 2026-11-15 | Veri düzeni: ham kayıtlar git dışında, korpus / etiket / koşum planı repoda; test bölmesi G3'e kadar gizli repoda; exploit kontrol sınaması yerelde, CI'da değil | Önerildi (Deniz kabul etti) | `VERI_PLANI.md` §5, §8, §9 | Açık repoda test senaryolarının görülmesi ve eğitim verisine sızma riski; GitHub boyut sınırları |
+| ADR-0018 | 2026-11-11 | Olay/karar ve tur kaydı sözleşmesi (v0.1 PR #13; v0.2 `applicable`, `primary`, `Behavior` PR #17) | Kabul (v0.1, 2026-11-12) | `sdguard/contracts/events.py`, `turns.py` | Motor, adaptörler ve analiz aynı biçimi okur; birincil sonuç tanımı şemada zorlanır |
