@@ -1,0 +1,26 @@
+{
+  "scenario": "CreditCardService",
+  "turn": 1,
+  "expected": {
+    "secure": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-non-list-phones": "blocked"
+    },
+    "insecure_sqli": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-sqli-retrieve": "success",
+      "ccs-non-list-phones": "blocked"
+    },
+    "insecure_empty": {
+      "ccs-empty-phone-list": "success",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-non-list-phones": "blocked"
+    },
+    "insecure_dict": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-non-list-phones": "success"
+    }
+  }
+}
