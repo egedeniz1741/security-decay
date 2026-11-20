@@ -8,24 +8,30 @@
 
 ## Kullanıcı kararı bekliyor
 1. K1b ve K2b koşulları eklensin mi? (ADR-0004, ADR-0005) — G1 (pilot) öncesi.
-2. Hoca toplantısındaki kararlar (kapsam, deney ölçeği, yayın hedefi) buraya işlenecek.
-3. ~~G0 kararı~~: iki ajanla devam (`AJAN_ENTEGRASYON.md`, ADR-0011 kapandı).
+2. Kapsam, deney ölçeği ve yayın hedefi kararları buraya işlenecek.
+3. Ölçülecek zafiyetler (ADR-0016) ve veri düzeni (ADR-0017): `ZAFIYET_KATALOGU.md` §8, `VERI_PLANI.md` §9. Senaryo seçimi `SENARYO_SECIMI.md` (#16).
+4. ~~G0 kararı~~: iki ajanla devam (`AJAN_ENTEGRASYON.md`, ADR-0011 kapandı).
 
 ## Sıradaki 3 iş
 
 **Ege**
-1. Kural formatı sözleşmesi PR #8'i Deniz'in yorumlarıyla birleştirme.
-2. Derleyici dilimi: 3 kural (izin, Semgrep, pytest) bu formatta, `semgrep --test` ile doğrulanmış.
-3. Senaryo 1 exploit'leri (pozitif/negatif kontrollü).
-~~G0 Claude Code denemeleri~~ · ~~G0 kararı~~ · ~~CODEOWNERS~~
+1. Senaryo seçimi ve ölçülecek CWE'ler (ADR-0016, Deniz ile); ardından senaryo 1 exploit'leri (güvenli ve güvensiz kontrol uygulamalarıyla).
+2. Claude Code izin satırı denemesi: yanlış araç adı ve hatalı desen uyarı veriyor mu, `Read(/.env)` `cat .env`'i de engelliyor mu, `/` proje kökü mü (G1 öncesi).
+3. İzolasyon sertleştirme ve kirlenme testi (`02_DENEY_ALTYAPISI.md` §7 madde 5).
+~~Kural formatı (#8)~~ · ~~Derleyici dilimi: izin (#10), Semgrep (#11), pytest (#15) doğrulamaları~~ · ~~G0~~
 
 **Deniz**
-1. PR #8'i inceleme (Antigravity izin biçimi doğru mu?).
-2. Olay/karar ve tur kaydı şeması sözleşmesi (PR). G0 bulguları girdi: Antigravity'de karar yoksa `"ask"`, geri bildirim `PostInvocation`/`Stop` üzerinden, tur geçerliliği için boş cevap + `auto-denied` kontrolü, kurala `rule_id` ile bağlanma.
-3. Çekirdek motor ve runner iskeleti, Docker imajı (`harness/docker/`).
-~~Kurulum~~ · ~~BaxBench + çok dosya kontrolü (R11)~~ · ~~Antigravity hook denemeleri~~
+1. Çekirdek motor ve runner iskeleti, Docker imajı (`harness/docker/`); G1 için uçtan uca dilim.
+2. Defterde `auth` invariant'ı ve Claude Code adaptörü.
+3. Senaryo 1'in 5 tur istemi; PR #14'teki karar sorularına (davranış sayaçları, test bölmesinin yeri) görüş.
+~~Olay/karar ve tur kaydı sözleşmesi (#13)~~ · ~~Antigravity izin denemesi (#12)~~ · ~~Kurulum~~ · ~~BaxBench çok dosya kontrolü~~
 
 ## Oturum günlüğü
+
+### 2026-11-12 – 15 oturumları (Ege)
+- #8, #10, #11 Deniz'in incelemesine göre düzeltildi ve birleşti; #12 ve #13 (Deniz) incelendi, birleşti.
+- Zafiyet kataloğu ve veri planı önerisi (PR #14, ADR-0016/0017 açık).
+- pytest doğrulaması (PR #15): davranış testi güvenli uygulamada geçmeli, güvensizde assertion ile kalmalı; çökme tespit sayılmaz. Derleyicinin üç katmanının doğrulaması tamam; LLM ile derleme adımı henüz yok.
 
 ### 2026-11-11 oturumu (Ege)
 - G0 kararı yazıldı: iki ajanla devam; ADR-0009 kabul, ADR-0011 kapandı. Denemelerden çıkan 6 tasarım kuralı `AJAN_ENTEGRASYON.md` ve `01_MIMARI.md` §1'e işlendi; yeni riskler R20–R22.
@@ -48,7 +54,7 @@ Not: Artık her değişiklik diğer kişinin onayını bekliyor. Deniz katılana
 
 ### 2026-10-29 oturumu
 Yapılanlar: TÜBİTAK başvurusu plandan çıkarıldı (ADR-0010 reddedildi). Ege / Deniz iş bölümü, teslim noktaları ve koordinasyon kuralları yazıldı (`08_IS_BOLUMU_VE_KOORDINASYON.md`, ADR-0013, ADR-0014); iş paketlerinin sahipleri, haftalık takvim, risk kaydı, ajan dosyaları ve orkestra şefi skill'i buna göre güncellendi.
-Kullanıcı kararı bekleyenler: K1b/K2b, hoca toplantısı kararları, Deniz'in GitHub kullanıcı adı.
+Kullanıcı kararı bekleyenler: K1b/K2b, kapsam kararları, Deniz'in GitHub kullanıcı adı.
 
 ### 2026-10-24 oturumu
 Yapılanlar: Yol haritası v2 incelendi; Claude Code subagent/hook/skill/headless belgeleri, Antigravity CLI hook ve headless belgeleri, kota politikası, Semgrep/Trail of Bits/arXiv/Zotero araçları, BaxBench ve yakın çalışmalar araştırıldı. Plan dosyaları (00–07), karar kaydı, 10 planlayıcı ajan ve orkestra şefi skill'i oluşturuldu.
