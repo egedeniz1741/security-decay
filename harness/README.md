@@ -39,6 +39,13 @@ bash harness/scripts/check_exploits.sh harness/controls/credit_card_service 10
 sudo unshare -n .venv/bin/python -m harness.exploits.check --loopback-up harness/controls/credit_card_service
 ```
 
+Test bölmesinin exploit'leri gizli repoda (`security-decay-holdout`) duruyor. Onlar için:
+
+```bash
+SD_HOLDOUT=~/projects/security-decay-holdout \
+  bash harness/scripts/check_exploits.sh /holdout/controls/forum 10 --exploits-module holdout_exploits.forum
+```
+
 Her tekrarda kontrol uygulaması sıfırdan başlatılır (yeni klasör, yeni veritabanı). Çıktıdaki her satır bir (uygulama, exploit) hücresi: `ok` beklenen sonuç 10/10 tekrarda alındı demek.
 
 ## Yeni exploit eklemek
