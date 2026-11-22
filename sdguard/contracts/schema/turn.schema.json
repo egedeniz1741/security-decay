@@ -64,6 +64,13 @@
           "title": "Hallucinated Packages",
           "type": "array"
         },
+        "inconclusive_exploits": {
+          "items": {
+            "$ref": "#/$defs/InconclusiveExploit"
+          },
+          "title": "Inconclusive Exploits",
+          "type": "array"
+        },
         "ledger": {
           "$ref": "#/$defs/LedgerSummary"
         },
@@ -83,8 +90,15 @@
           "type": "integer"
         },
         "secure_and_correct": {
-          "title": "Secure And Correct",
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Secure And Correct"
         }
       },
       "required": [
@@ -199,6 +213,33 @@
         "errors"
       ],
       "title": "HookStats",
+      "type": "object"
+    },
+    "InconclusiveExploit": {
+      "additionalProperties": false,
+      "description": "An exploit that ran but could not tell whether the weakness is there.",
+      "properties": {
+        "cwe": {
+          "pattern": "^CWE-\\d+$",
+          "title": "Cwe",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "primary": {
+          "title": "Primary",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "cwe",
+        "primary"
+      ],
+      "title": "InconclusiveExploit",
       "type": "object"
     },
     "InvalidReason": {
@@ -417,8 +458,8 @@
       "type": "string"
     },
     "schema_version": {
-      "const": "0.2",
-      "default": "0.2",
+      "const": "0.3",
+      "default": "0.3",
       "title": "Schema Version",
       "type": "string"
     },
