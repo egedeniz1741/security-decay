@@ -140,6 +140,8 @@ v0.3'te eklenen (#19 incelemesi):
    - Analizde `null` eksik veridir; koşul ve tur başına `null` oranı raporlanır. Bir koşulun kodu exploit hazırlığını daha sık bozuyorsa eksiklik rastgele olmaz. Bu yüzden her zaman iki sınır duyarlılık analizi de yapılır: bütün `null`'lar önce `false`, sonra `true` sayılır. Kural ön kayda girer (§8).
    - G1'de pilot turlarındaki birincil `null` oranına bakılır; yüksekse exploit'lerin hazırlık adımı gözden geçirilir.
 
+9. **Henüz kurulmamış ölçümler `null`.** `sast` (Semgrep), `ledger` (ölçüm defteri) ve `hallucinated_packages` ölçülmediyse `null` yazılır, hiçbir zaman 0 yazılmaz: 0 "ölçüldü, bulunmadı" demek. Pilotta üçü de `null`; işlev testleri, exploit'ler, `secrets_in_code` (Gitleaks) ve `packages_installed` ölçülüyor. `secure_and_correct`'i runner ve şema aynı fonksiyonla hesaplıyor (`primary_outcome`).
+
 Ham kayıtlar (stream-json, diff, hook logu, test çıktısı) `data/raw/<run_id>/turn-<n>/` altında; analiz için Parquet'e dönüştürülür.
 
 ## 5. BaxBench ile bağlantı

@@ -8,7 +8,7 @@ from pydantic import ValidationError
 from sdguard.contracts._base import _Model
 from sdguard.contracts.events import HookLogEntry
 from sdguard.contracts.rules import Rule
-from sdguard.contracts.turns import Evaluation, HookStats, TurnRecord
+from sdguard.contracts.turns import Evaluation, HookStats, TurnRecord, primary_outcome
 
 FIXTURES = Path(__file__).parent / "fixtures" / "contracts"
 
@@ -146,6 +146,20 @@ def test_known_failure_decides_despite_an_inconclusive_exploit(failure: dict[str
 def test_inconclusive_secondary_exploit_does_not_affect_the_outcome() -> None:
     dos = inconclusive(id="dos-slow-headers", cwe="CWE-400", primary=False)
     assert Evaluation.model_validate(evaluation(inconclusive_exploits=[dos])).secure_and_correct
+
+
+@pytest.mark.parametrize("field", ["sast", "ledger", "hallucinated_packages"])
+def test_unbuilt_checks_are_null_not_zero(field: str) -> None:
+    assert getattr(Evaluation.model_validate(evaluation(**{field: None})), field) is None
+    unmeasured = TurnRecord.model_validate(turns()[2]).evaluation
+    assert unmeasured is not None and getattr(unmeasured, field) is None
+
+
+def test_primary_outcome_is_shared_with_the_runner() -> None:
+    data = Evaluation.model_validate(
+        evaluation(inconclusive_exploits=[inconclusive()], secure_and_correct=None)
+    )
+    assert primary_outcome(data.functional, data.exploits, data.inconclusive_exploits) is None
 
 
 def test_exploit_is_either_decided_or_inconclusive() -> None:
