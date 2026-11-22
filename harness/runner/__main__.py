@@ -65,8 +65,8 @@ def main(argv: list[str] | None = None) -> int:
         expected_version=version,
         engine=engine,
         login=login,
-        out_root=args.out,
-        prompts_dir=args.prompts_dir,
+        out_root=args.out.resolve(),
+        prompts_dir=args.prompts_dir.resolve(),
         turn_timeout_s=args.turn_timeout,
     )
     if args.command == "expect":

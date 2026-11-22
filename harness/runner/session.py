@@ -288,8 +288,8 @@ def start_container(cfg: Config, run_dir: Path) -> AgentContainer:
             cfg.engine,
             name=name,
             image=cfg.image,
-            work_dir=str(run_dir / "work"),
-            settings_file=str(run_dir / "settings.json"),
+            work_dir=str((run_dir / "work").resolve()),  # a relative path is a volume name
+            settings_file=str((run_dir / "settings.json").resolve()),
             env=app_env,
             login=cfg.login,
         ),
@@ -480,8 +480,9 @@ class Session:
         )
         _write(self.run_dir / "run.json", meta)
         status = Status(state="running")
-        container = start_container(cfg, self.run_dir)
+        container: AgentContainer | None = None
         try:
+            container = start_container(cfg, self.run_dir)
             token = [read_token(container)]
             init, raw = preflight_init(container)
             store(self.run_dir, "preflight.jsonl", raw, token)
@@ -509,7 +510,8 @@ class Session:
             status = Status(state="error", turns_completed=status.turns_completed, detail=repr(err))
             raise
         finally:
-            container.remove()
+            if container:
+                container.remove()
             _write(self.run_dir / "status.json", status)
 
     def _turns(
