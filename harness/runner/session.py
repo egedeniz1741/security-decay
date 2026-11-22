@@ -111,7 +111,9 @@ def _write(path: Path, model: BaseModel) -> None:
     path.write_text(model.model_dump_json(indent=2) + "\n")
 
 
-def _runner_commit() -> str:
+def runner_commit() -> str:
+    """The repo's HEAD, with "+dirty" when the working tree has changes."""
+
     def git(*args: str) -> str:
         return subprocess.run(  # noqa: S603
             ["git", "-C", str(REPO), *args],  # noqa: S607
@@ -251,6 +253,14 @@ class AgentContainer:
         )
         self.exec(["sh", "-c", script], timeout=30)
 
+    def packages(self) -> set[str]:
+        """``name==version`` of every installed package, the agent's own installs included."""
+        out = self.exec(
+            ["python3", "-m", "pip", "list", "--format=freeze", "--disable-pip-version-check"],
+            timeout=120,
+        )
+        return set(out.stdout.split())
+
     def snapshot(self, paths: ProtectedPaths) -> dict[str, str]:
         def expand(p: str) -> str:
             return HOME + p[1:] if p.startswith("~") else p
@@ -374,6 +384,7 @@ def turn_facts(
     integrity_changes: list[str],
     commit: str,
     changed_files: list[str],
+    packages_installed: list[str],
     masked: int,
     paths: ProtectedPaths,
     settings_sha256: str,
@@ -398,13 +409,11 @@ def turn_facts(
         ),
         est_cost_usd=result.get("total_cost_usd"),
         config_fingerprint=fingerprint.config_fingerprint(
-            init,
+            init or {},  # a crashed turn still ran with these settings and image
             settings_sha256=settings_sha256,
             protected_paths_sha256=paths.sha256,
             image_id=image_id,
-        )
-        if init
-        else None,
+        ),
         contamination_diff=fingerprint.differences(
             fingerprint.contamination(init), expected["contamination"]
         )
@@ -428,6 +437,7 @@ def turn_facts(
         hook=NO_HOOKS,
         commit=commit,
         changed_files=changed_files,
+        packages_installed=packages_installed,
         masked_secrets=masked,
     )
 
@@ -475,7 +485,7 @@ class Session:
             settings_sha256=_sha256(settings_raw),
             protected_paths_sha256=self.paths.sha256,
             prompts_sha256={n: _sha256(p.encode()) for n, p in self.prompts.items()},
-            runner_commit=_runner_commit(),
+            runner_commit=runner_commit(),
             started_at=datetime.now(UTC),
         )
         _write(self.run_dir / "run.json", meta)
@@ -527,6 +537,7 @@ class Session:
         session_id: str | None = None
         for n in range(1, cfg.scenario.turns + 1):
             before = container.snapshot(self.paths)
+            packages_before = container.packages()
             started_at = datetime.now(UTC)
             start = time.monotonic()
             command = claude_args(
@@ -545,6 +556,7 @@ class Session:
             stream = parse(clean)
             container.stop_agent_processes()
             integrity = snapshot.changes(before, container.snapshot(self.paths))
+            installed = sorted(container.packages() - packages_before)
             commit, changed, masked_files = workspace.commit(n, token)
             facts = turn_facts(
                 turn=n,
@@ -557,6 +569,7 @@ class Session:
                 integrity_changes=integrity,
                 commit=commit,
                 changed_files=changed,
+                packages_installed=installed,
                 masked=masked + masked_err + masked_files,
                 paths=self.paths,
                 settings_sha256=meta.settings_sha256,

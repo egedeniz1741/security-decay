@@ -1,7 +1,9 @@
 """Command line: ``python -m harness.runner <command>``.
 
-    session   run one session and write data/raw/<run_id>/
+    session   run one session, write data/raw/<run_id>/, then evaluate it
     expect    record a condition's expected init fields (harness/conditions/<K>/expected.json)
+    evaluate  evaluate a finished session again and write its turn records
+    compare   compare two evaluations of the same session (pilot criterion 3)
 
 The login token comes from $CLAUDE_CODE_OAUTH_TOKEN if set, otherwise from the podman secret
 ``sd-claude-oauth`` (harness/docker/README.md).
@@ -15,6 +17,7 @@ import sys
 from pathlib import Path
 
 from harness.runner.container import PODMAN_SECRET, TOKEN_ENV, LoginSource, detect
+from harness.runner.evaluate import compare, evaluate_run
 from harness.runner.scenarios import PROMPTS_DIR, SCENARIOS
 from harness.runner.session import DATA_DIR, Config, Session, record_expected
 from sdguard.contracts.turns import Condition
@@ -44,9 +47,27 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--prompts-dir", type=Path, default=PROMPTS_DIR)
         p.add_argument("--out", type=Path, default=DATA_DIR)
         p.add_argument("--turn-timeout", type=int, default=1500, help="seconds per turn")
+    sub.choices["session"].add_argument("--no-evaluate", action="store_true")
+    ev = sub.add_parser("evaluate")
+    ev.add_argument("run_dir", type=Path)
+    ev.add_argument("--out", type=Path, help="default: <run_dir>/turns.jsonl")
+    ev.add_argument("--force", action="store_true", help="overwrite --out")
+    cmp = sub.add_parser("compare")
+    cmp.add_argument("a", type=Path)
+    cmp.add_argument("b", type=Path)
     args = parser.parse_args(argv)
 
+    if args.command == "compare":
+        diffs = compare(args.a, args.b)
+        print("\n".join(diffs) or "evaluations agree")
+        return 1 if diffs else 0
     engine = detect()
+    if args.command == "evaluate":
+        records = evaluate_run(
+            engine, args.run_dir, args.out or args.run_dir / "turns.jsonl", args.force
+        )
+        print(f"{len(records)} turn records")
+        return 0
     if os.environ.get(TOKEN_ENV):
         login = LoginSource.ENV
     elif engine.is_podman and engine.run(["secret", "inspect", PODMAN_SECRET]).returncode == 0:
@@ -73,8 +94,12 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(record_expected(cfg), indent=2, sort_keys=True))
         return 0
     status = Session(cfg).run()
+    run_dir = cfg.out_root / cfg.run_id
     print(f"{cfg.run_id}: {status.state} ({status.turns_completed} turns) {status.detail}")
-    print(f"output: {cfg.out_root / cfg.run_id}")
+    if status.turns_completed and not args.no_evaluate:
+        records = evaluate_run(engine, run_dir, run_dir / "turns.jsonl")
+        print(f"{len(records)} turn records in {run_dir / 'turns.jsonl'}")
+    print(f"output: {run_dir}")
     return 0 if status.state == "completed" else 1
 
 

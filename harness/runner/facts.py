@@ -75,7 +75,7 @@ class TurnFacts(_Model):
     agent_version: str | None
     tokens: Tokens
     est_cost_usd: float | None
-    config_fingerprint: Sha256 | None
+    config_fingerprint: Sha256
     contamination_diff: list[str]
     environment_diff: list[str]  # recorded, does not invalidate
     integrity_changes: list[str]
@@ -85,4 +85,5 @@ class TurnFacts(_Model):
     hook: HookStats
     commit: str
     changed_files: list[str]
+    packages_installed: list[str]  # name==version added during the turn
     masked_secrets: int = Field(ge=0)  # token occurrences replaced in logs and files
