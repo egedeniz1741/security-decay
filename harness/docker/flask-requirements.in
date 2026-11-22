@@ -1,0 +1,12 @@
+# BaxBench's Python-Flask environment (src/env/python.py at de885cd); the agent is told these
+# are installed, and the evaluation runs the agent's app with exactly these packages.
+blinker==1.9.0
+click==8.1.7
+Flask==3.1.0
+fpdf==1.7.2
+itsdangerous==2.2.0
+Jinja2==3.1.4
+MarkupSafe==3.0.2
+passlib==1.7.4
+pyjwt==2.10.1
+Werkzeug==3.1.3
