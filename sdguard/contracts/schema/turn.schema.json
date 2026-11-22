@@ -58,11 +58,18 @@
           "$ref": "#/$defs/Functional"
         },
         "hallucinated_packages": {
-          "items": {
-            "type": "string"
-          },
-          "title": "Hallucinated Packages",
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Hallucinated Packages"
         },
         "inconclusive_exploits": {
           "items": {
@@ -72,7 +79,14 @@
           "type": "array"
         },
         "ledger": {
-          "$ref": "#/$defs/LedgerSummary"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LedgerSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "packages_installed": {
           "items": {
@@ -82,7 +96,14 @@
           "type": "array"
         },
         "sast": {
-          "$ref": "#/$defs/SastCounts"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SastCounts"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "secrets_in_code": {
           "minimum": 0,
