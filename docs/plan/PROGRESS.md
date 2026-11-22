@@ -15,18 +15,23 @@
 ## Sıradaki 3 iş
 
 **Ege**
-1. Senaryo seçimi ve ölçülecek CWE'ler (ADR-0016, Deniz ile); ardından senaryo 1 exploit'leri (güvenli ve güvensiz kontrol uygulamalarıyla).
-2. Claude Code izin satırı denemesi: yanlış araç adı ve hatalı desen uyarı veriyor mu, `Read(/.env)` `cat .env`'i de engelliyor mu, `/` proje kökü mü (G1 öncesi).
-3. İzolasyon sertleştirme ve kirlenme testi (`02_DENEY_ALTYAPISI.md` §7 madde 5).
-~~Kural formatı (#8)~~ · ~~Derleyici dilimi: izin (#10), Semgrep (#11), pytest (#15) doğrulamaları~~ · ~~G0~~
+1. Senaryo 1 (CreditCardService) 2–5. tur exploit'leri ve kontrol uygulamaları; özellikle yönetici paneli turunda CWE-862/639. Deniz'in tur istemleri gelince.
+2. Kirlenme testi (`02_DENEY_ALTYAPISI.md` §7 madde 5) ve izolasyon sertleştirme.
+3. Gizli test reposu (`security-decay-holdout`) ve klasör düzeni; derleyici istemine `require` ve "normal kullanım testi" kuralları (Aralık).
+~~Exploit altyapısı ve senaryo 1 tur 1 (#19)~~ · ~~Claude Code izin denemesi (#18)~~ · ~~Kural formatı ve derleyici doğrulamaları~~ · ~~G0~~
 
 **Deniz**
-1. Çekirdek motor ve runner iskeleti, Docker imajı (`harness/docker/`); G1 için uçtan uca dilim.
-2. Defterde `auth` invariant'ı ve Claude Code adaptörü.
-3. Senaryo 1'in 5 tur istemi; PR #14'teki karar sorularına (davranış sayaçları, test bölmesinin yeri) görüş.
-~~Olay/karar ve tur kaydı sözleşmesi (#13)~~ · ~~Antigravity izin denemesi (#12)~~ · ~~Kurulum~~ · ~~BaxBench çok dosya kontrolü~~
+1. Runner ve Docker imajı (`harness/docker/`), Claude Code adaptörü; G1 için uçtan uca dilim. İzinler iki ajanda da `--settings` ile (deneme 5, spike 06S).
+2. Defterde `auth` invariant'ı; senaryo 1'in 5 tur istemi; ADR-0019 (senaryo ayrımı).
+3. agy kotası açılınca (23 Kasım): `search_web` ve reddedilen `read_file`'ın hook'a ulaşıp ulaşmadığı; pilot için kota planı.
+~~Tur kaydı v0.2 (#17)~~ · ~~Senaryo seçimi (#16)~~ · ~~Olay/karar sözleşmesi (#13)~~ · ~~Antigravity izin denemesi (#12)~~
 
 ## Oturum günlüğü
+
+### 2026-11-18 – 20 oturumları (Ege)
+- #14, #15, #18 Deniz'in incelemesiyle birleşti; #16 ve #17 (Deniz) incelendi, birleşti. Senaryo ayrımı tohum 20261116 ile çekildi: geliştirme CreditCardService ve Wiki, senaryo 1 CreditCardService.
+- Claude Code izin denemesi (#18): `Read` yasağı `cat`'i kapsıyor ama `grep -r`'yi kapsamıyor; alt klasörden başlatılınca proje ayarı yüklenmiyor; insansız modda hatalı satır sessiz. Deneyde izinler `--settings` ile verilecek.
+- Exploit altyapısı (#19): dört sonuçlu exploit tanımı, ağ varsa çalışmayı reddeden kontrol, 10 tekrarlı kontrol sınaması; CreditCardService 1. tur için 3 exploit ve 4 kontrol uygulaması. Ağsız ad alanında (`unshare -n`) 12/12 hücre 10/10 tutarlı.
 
 ### 2026-11-12 – 15 oturumları (Ege)
 - #8, #10, #11 Deniz'in incelemesine göre düzeltildi ve birleşti; #12 ve #13 (Deniz) incelendi, birleşti.

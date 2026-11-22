@@ -358,6 +358,7 @@ def test_turn_facts_from_a_real_stream() -> None:
         integrity_changes=[],
         commit="abc",
         changed_files=["code/app.py"],
+        packages_installed=[],
         masked=0,
         paths=PATHS,
         settings_sha256="a" * 64,
