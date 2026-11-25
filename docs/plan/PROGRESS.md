@@ -10,7 +10,7 @@
   - **Karar gerekli:** G1'i daraltmak ya da yaklaşık 13 Aralık'a ertelemek (aşağıda 1. madde).
 
 ## Kullanıcı kararı bekliyor
-1. **G1:** Kapsamı "Claude Code, S1, K0 (+K1)" olarak daraltmak mı, yaklaşık 13 Aralık'a ertelemek mi? Karar `DECISIONS.md`'ye; G1 toplantısında ikiniz.
+1. **G1:** Ege kapsamın daraltılmamasını istiyor (25 Kasım). Deniz'in görüşü ve 29 Kasım'daki G1 kararı bekliyor; K4 için D3/D4'ün durumu belirleyici.
 2. **Pilot modeli** (`--model`): Runner'ın varsayılanı `claude-sonnet-5-5` (senaryo 1 denemelerindeki model).
 3. **Yerleşik skill ve komutlar:** Temiz `HOME`'da da 18 skill ve 48 komut var (`security-review` dahil). Öneri: olduğu gibi bırakmak; kapatılırsa bütün koşullarda (`harness/docker/README.md`, V3a).
 4. **İmajın paylaşılması:** Ajan imajı bir kez kurulup iki makineye `save`/`load` ile dağıtılsın; yoksa `config_fingerprint` makineye göre değişir.
@@ -22,7 +22,7 @@
 
 **Ege**
 1. 3. tur (ekstreler) exploit'leri: başkasının ekstresi (CWE-639), dosya yolu (CWE-22), PDF olmayan yükleme (CWE-434). Kontrol sınamasını `sd-eval` imajına taşımak.
-2. Senaryo 1 için K1 kural metni ve derlenmiş K3/K4 kural paketi (22 Kasım'dı, **gecikti**).
+2. Senaryo 1 için K3/K4 kural paketi (22 Kasım'dı, **gecikti**): `sdguard compile` ve kural metni #27'de; deneme 6 ve gerçek derleme Ege'nin makinesinde.
 3. E6 kirlenme testi (runner'ın ön kontrolüne karşı) ve Docker'da imaj denemesi (#23, V9).
 ~~#19 inceleme maddeleri, 2. turdan itibaren token, 2. ve 4. tur exploit'leri~~ · ~~İncelemeler #20–#24, #26~~ · ~~Claude Code izin satırı denemesi (#18)~~ · ~~Kural formatı, derleyici dilimi~~ · ~~G0~~
 
@@ -42,7 +42,8 @@
   - Exploit'ler `/register` varsa kendileri hesap açıp giriş yapıyor. 2–5. turlarda birincil sonucun sistematik `null` çıkması bununla düzeliyor (Deniz'in gerçek oturumunda yeniden denenecek).
   - Yeni exploit'ler: 2. tur CWE-306, CWE-639, CWE-347; 4. tur CWE-862, CWE-269. Hepsi birincil.
   - Kontrol sınaması (`unshare -n`, her hücre 10 tekrar): 1. tur 12/12, 2. tur 42/42, 4. tur 72/72 hücre tutarlı ve beklenen sonuçta.
-- G1 kararı (daraltma ya da erteleme) Ege'de; G1 toplantısında kesinleşecek.
+- `sdguard compile` ve deneyin kural metni (#27, ADR-0020 öneri): ayrıştırma, LLM ile sınıflandırma ve çeviri, izin / Semgrep / pytest doğrulaması, en fazla 2 onarım, paket ve rapor. Betikli model cevaplarıyla 50 yeni test; gerçek `claude -p` çağrısı deneme 6'da doğrulanacak.
+- **G1 kararı (Ege): kapsam daraltılmıyor, G1 ölçütü olduğu gibi kalıyor.** K4'ün zamanında hazır olması Deniz'in motor ve adaptör (D3, D4) işine bağlı.
 
 ### 2026-11-22/23 oturumu (Deniz)
 Yapılanlar:
