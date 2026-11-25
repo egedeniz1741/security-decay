@@ -1,0 +1,45 @@
+{
+  "_doc": "02_DENEY_ALTYAPISI.md §4. The same in every condition; its sha256 enters config_fingerprint.",
+  "settings_and_hooks": [
+    "/work/.sdguard/**",
+    "/work/.claude/settings*.json",
+    "/work/.claude/hooks/**",
+    "/work/.agents/**",
+    "~/.claude/**",
+    "~/.claude.json",
+    "~/.gemini/**",
+    "/etc/sd/**"
+  ],
+  "credentials": [
+    "**/.env",
+    "**/.env.*",
+    "~/.ssh/**",
+    "**/*.pem",
+    "**/*.key"
+  ],
+  "exceptions": [
+    "~/.gemini/antigravity-cli/brain/**"
+  ],
+  "integrity": [
+    "/work/.sdguard/**",
+    "/work/.claude/settings*.json",
+    "/work/.claude/hooks/**",
+    "/work/.agents/**",
+    "~/.claude/settings*.json",
+    "~/.claude/CLAUDE.md",
+    "~/.claude/agents/**",
+    "~/.claude/skills/**",
+    "~/.claude/commands/**",
+    "~/.claude/hooks/**",
+    "~/.claude/output-styles/**",
+    "~/.claude/plugins/installed_plugins.json"
+  ],
+  "integrity_json_keys": {
+    "~/.claude.json": ["mcpServers"]
+  },
+  "rule_and_test_files": [
+    "/work/CLAUDE.md",
+    "/work/AGENTS.md",
+    "/work/tests/security/**"
+  ]
+}

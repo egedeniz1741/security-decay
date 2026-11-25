@@ -58,14 +58,35 @@
           "$ref": "#/$defs/Functional"
         },
         "hallucinated_packages": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Hallucinated Packages"
+        },
+        "inconclusive_exploits": {
           "items": {
-            "type": "string"
+            "$ref": "#/$defs/InconclusiveExploit"
           },
-          "title": "Hallucinated Packages",
+          "title": "Inconclusive Exploits",
           "type": "array"
         },
         "ledger": {
-          "$ref": "#/$defs/LedgerSummary"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LedgerSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "packages_installed": {
           "items": {
@@ -75,7 +96,14 @@
           "type": "array"
         },
         "sast": {
-          "$ref": "#/$defs/SastCounts"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SastCounts"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "secrets_in_code": {
           "minimum": 0,
@@ -83,8 +111,15 @@
           "type": "integer"
         },
         "secure_and_correct": {
-          "title": "Secure And Correct",
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Secure And Correct"
         }
       },
       "required": [
@@ -199,6 +234,33 @@
         "errors"
       ],
       "title": "HookStats",
+      "type": "object"
+    },
+    "InconclusiveExploit": {
+      "additionalProperties": false,
+      "description": "An exploit that ran but could not tell whether the weakness is there.",
+      "properties": {
+        "cwe": {
+          "pattern": "^CWE-\\d+$",
+          "title": "Cwe",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "primary": {
+          "title": "Primary",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "cwe",
+        "primary"
+      ],
+      "title": "InconclusiveExploit",
       "type": "object"
     },
     "InvalidReason": {
@@ -417,8 +479,8 @@
       "type": "string"
     },
     "schema_version": {
-      "const": "0.2",
-      "default": "0.2",
+      "const": "0.3",
+      "default": "0.3",
       "title": "Schema Version",
       "type": "string"
     },

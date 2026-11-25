@@ -32,4 +32,4 @@
 ## 4. Veri kalitesi kontrolleri
 - Korpus B: aynı dosyanın çatallarda tekrarı (hash ile tekilleştirme), commit SHA kaydı, lisans notu; yalnızca kural metni saklanır.
 - Etiketleme: 150 kural iki kişi tarafından bağımsız, etiket kılavuzu önce yazılır, 20 kuralla deneme turu, sonra κ.
-- Deney: `INVALID` oturum oranı ve nedenleri raporlanır; dışlama kuralları ön kayıtta önceden yazılı.
+- Deney: `INVALID` oturum oranı ve nedenleri raporlanır; dışlama kuralları ön kayıtta önceden yazılı. Birincil sonucu ölçülemeyen turların (`secure_and_correct: null`) oranı da koşul ve tur başına raporlanır (`02_DENEY_ALTYAPISI.md` §4 madde 8).
