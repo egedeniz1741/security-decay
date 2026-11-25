@@ -117,6 +117,9 @@ semgrep_rule: a complete YAML file with exactly one rule:
 - Prefer precise structural patterns (pattern, pattern-either, pattern-inside,
   pattern-not, metavariable-regex) over regex. Match the unsafe construct, not every use of
   an API: a parameterized query or a constant string must not be reported.
+- The rule is also run on a sample of common safe idioms it has never seen (for example a
+  query whose IN list is built from "?" placeholders with an f-string, secrets read from
+  os.environ, constants named like PASSWORD_MIN_LENGTH); it must report none of them.
 - Never report code the rule allows. A finding blocks the agent until the code changes, so
   a false alarm is worse than a miss: if a form cannot be told apart from allowed code,
   leave it unreported and name it in known_gaps.

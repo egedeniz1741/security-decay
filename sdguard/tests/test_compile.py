@@ -346,6 +346,39 @@ def test_compile_end_to_end_with_a_repair(tmp_path: Path) -> None:
     assert log[2]["validation"]["status"] == "failed"
 
 
+SQL_RULE = """rules:
+  - id: R-001
+    message: sdguard R-001 SQL is built with an f-string. Use ? parameters.
+    severity: ERROR
+    languages: [python]
+    pattern: $DB.execute(f"...", ...)
+"""
+SQL_TEST = """def bad(db, name):
+    # ruleid: R-001
+    return db.execute(f"SELECT * FROM t WHERE name = '{name}'")
+
+
+def good(db, name):
+    # ok: R-001
+    return db.execute("SELECT * FROM t WHERE name = ?", (name,))
+"""
+
+
+@needs_semgrep
+def test_a_semgrep_rule_that_reports_safe_idioms_is_sent_back(tmp_path: Path) -> None:
+    """An f-string that only inserts "?" placeholders is safe; the neutral sample has one."""
+    rule = {"source_line": 11, "text": "Never build SQL with f-strings.", "category": "code"}
+    answer = {"semgrep_rule": SQL_RULE, "semgrep_test": SQL_TEST, "coverage": "full"}
+    llm = ScriptedLlm(
+        {"classify": [{"rules": [rule], "not_security": [10, 12, 14]}], "R-001": [answer] * 3}
+    )
+    result = run(llm, tmp_path)
+    advice = result.ruleset.rules[0]
+    assert advice.enforcement is Enforcement.ADVISE
+    assert "reports safe code that follows the rule" in (advice.validation.message or "")
+    assert "IN ({marks})" in llm.calls[2][1]
+
+
 @needs_semgrep
 def test_a_rule_that_keeps_failing_becomes_advice_with_its_last_attempt(tmp_path: Path) -> None:
     no_bad = dict(CODE, semgrep_test=CODE["semgrep_test"].replace("# ruleid: R-002", "# x"))

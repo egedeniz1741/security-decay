@@ -45,3 +45,26 @@ Girdi: `harness/rules/security-rules.md` (`CLAUDE.md` adıyla, sha256 `7b3d3e36�
   - R-022, `is_admin` ile kayıt olmayı.
 - **Yakalanmayan:** R-020 (sahiplik) S1'in API'sine uymadığı için IDOR'u hiçbir uygulamada sınayamadı ("uygulanmaz"). ADR-0020'de öngörülen bedel bu; bu açığı K4'te defter kapatıyor.
 - **Yanlış bulgu:** R-023, yükleme yolu olmayan `insecure_no_auth` uygulamasında bulgu verdi (yukarıdaki 2. sorun).
+
+## İkinci derleme (25 Kasım akşam, nötr uygulama kontrolüyle, n = 1)
+
+| | Sayı |
+|---|---|
+| Atomik kural | 28 (aynı metinden; sınıflandırma çalıştırmadan çalıştırmaya değişiyor) |
+| Doğrulanan ve zorlanan | 21 (eylem 3/3, kod 11/11, davranış 7/7) |
+| Tavsiye | 7 |
+| Model çağrısı | 27; bildirilen maliyet 1,43 USD |
+
+- **Düzelenler:**
+  - "Kontrol etmediğin paketi kurma" artık muğlak; `pip install` yasağı yok.
+  - "Dosyaları yükleme klasöründe tut" ve "yapılandırma ortam değişkenlerinden" de muğlak kaldı.
+  - Davranış testleri iki nötr uygulamada bulgu vermiyor.
+- **Kontrol uygulamalarına karşı davranış testleri:**
+  - Güvenli uygulamalarda yanlış alarm yok.
+  - Yakalananlar: R-020 token'sız erişimi (2. ve 4. tur), R-023 açık yönetici uçlarını, R-024 `is_admin` ile kaydı.
+  - Sahiplik testleri (R-021, R-022) yine uygulanamadı.
+- **Yeni sorun: Semgrep kurallarında yanlış alarm.** Kurallar kontrol uygulamalarına karşı da tarandı:
+  - **R-008, bütün güvenli uygulamalarda bulgu verdi.** Sebep: `IN (?, ?, ...)` yer tutucularını f-string ile kuran yaygın ve güvenli kalıp. Senaryo 1'in API'si değişken uzunlukta telefon listesi istediği için ajanın büyük olasılıkla aynı kalıbı yazacağını düşünüyorum (öngörü, ölçmedim). Bu durumda K3/K4'te ajan kurala uyduğu halde engellenirdi. R-009'da da aynı sorun var.
+  - Kuralların gerçekten yakaladıkları: R-008 SQL injection'ı (`insecure_sqli`), R-015/R-016 imzası denetlenmeyen JWT'yi (`insecure_jwt`).
+  - **Düzeltme:** Her Semgrep kuralı artık yaygın güvenli kalıplardan oluşan bir örnek dosyaya karşı da taranıyor (`sdguard/compiler/neutral_code/service.py`; senaryolardan bağımsız yazıldı). Bulgu çıkarsa doğrulama başarısız olur ve satırlar modele gösterilir. Bu kontrol ikinci paketin R-008 ve R-009'unu yakalıyor, diğer 9 kural geçiyor.
+- **Sonuç:** Paket yine kullanılmayacak; üçüncü derleme gerekiyor.

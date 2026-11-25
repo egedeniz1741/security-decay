@@ -43,6 +43,7 @@ from sdguard.compiler.behavior_runner import BehaviorRunner
 from sdguard.compiler.extract import Candidate, extract_candidates
 from sdguard.compiler.llm import Llm, LlmError, LlmUnavailable
 from sdguard.compiler.neutral_apps import NEUTRAL_APPS
+from sdguard.compiler.neutral_code import NEUTRAL_CODE
 from sdguard.compiler.permission_validation import validate_permissions
 from sdguard.compiler.schemas import (
     ActionTranslation,
@@ -51,7 +52,7 @@ from sdguard.compiler.schemas import (
     ClassifiedRule,
     CodeTranslation,
 )
-from sdguard.compiler.semgrep_validation import rule_ids, validate_semgrep
+from sdguard.compiler.semgrep_validation import report_lines, rule_ids, validate_semgrep
 from sdguard.contracts.rules import (
     AgentName,
     CompiledBy,
@@ -356,6 +357,8 @@ class _Session:
             )  # fmt: skip
         else:
             validation = validate_semgrep(rule_file, test_file, attempts=attempt)
+        if validation.status is ValidationStatus.VERIFIED:
+            validation = _check_neutral_code(validation, rule_file)
         validation = _require_gaps(validation, answer.coverage, answer.known_gaps)
         rule_path, test_path = f"semgrep/{rule_id}.yaml", f"semgrep/tests/{rule_id}.py"
         verified = validation.status is ValidationStatus.VERIFIED
@@ -406,6 +409,22 @@ class _Session:
         folder = self.work / rule_id / f"attempt-{attempt}"
         folder.mkdir(parents=True)
         return folder
+
+
+def _check_neutral_code(validation: Validation, rule_file: Path) -> Validation:
+    """A Semgrep rule must not report the safe idioms in ``neutral_code/service.py``."""
+    lines = report_lines(rule_file, NEUTRAL_CODE)
+    if isinstance(lines, str):
+        return _failed(validation, f"the neutral code check failed: {lines}")
+    if not lines:
+        return validation
+    source = NEUTRAL_CODE.read_text(encoding="utf-8").splitlines()
+    shown = "; ".join(f"line {n}: {source[n - 1].strip()}" for n in lines[:5])
+    return _failed(
+        validation,
+        "the rule reports safe code that follows the rule (neutral sample of common safe "
+        f"idioms): {shown}. Narrow the pattern so it no longer matches these.",
+    )
 
 
 def _failed(validation: Validation, message: str) -> Validation:
