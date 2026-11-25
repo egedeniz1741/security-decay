@@ -6,7 +6,7 @@ rules:
     languages: [python]
     metadata:
       cwe: ["CWE-95"]
-      source: "CLAUDE.md:11"
+      source: "instructions.md:11"
     pattern-either:
       - pattern: eval(...)
       - pattern: exec(...)

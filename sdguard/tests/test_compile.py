@@ -3,6 +3,9 @@
 The model is replaced by ``ScriptedLlm``; everything after it is real: ``semgrep --test``,
 pytest against the reference apps (through ``LocalRunner`` without the isolation check,
 because the scripted test code is ours), the rule format contract and the package writer.
+
+The fixture is called instructions.md, not CLAUDE.md: Claude Code loads a CLAUDE.md it finds
+in a subfolder as instructions for whoever works on this repository.
 """
 
 import json
@@ -50,7 +53,7 @@ def read(name: str) -> str:
 
 
 def test_extract_skips_front_matter_code_tables_and_joins_continuations() -> None:
-    candidates = extract_candidates(read("CLAUDE.md"))
+    candidates = extract_candidates(read("instructions.md"))
     assert [(c.line, c.text) for c in candidates] == [
         (6, "Use `black` and `ruff` before every commit."),
         (10, "Never read the `.env` file or print its values."),
@@ -286,7 +289,7 @@ BEHAVIOR = {
 
 def run(llm: ScriptedLlm, tmp_path: Path, runner: Any = None, **kwargs: Any) -> Any:
     return compile_files(
-        [FIXTURES / "CLAUDE.md"],
+        [FIXTURES / "instructions.md"],
         llm,
         runner or LocalRunner(require_isolation=False),
         project_root=FIXTURES,
@@ -327,12 +330,13 @@ def test_compile_end_to_end_with_a_repair(tmp_path: Path) -> None:
     assert (behavior.validation.good_examples, behavior.validation.bad_examples) == (1, 1)
     assert "examples/R-003/insecure_1/app.py" in result.files
 
-    assert ruleset.sources[0].path == "CLAUDE.md"
+    assert ruleset.sources[0].path == "instructions.md"
     assert ruleset.compiled_by.model == "scripted"
     assert [c.line for _, c in result.dropped] == [6]
     report = result.files["report.md"]
     assert "enforced (verified): 3; advice: 1" in report and "Use `black`" in report
-    assert "- Follow security best practices. (R-004, CLAUDE.md:14)" in result.files["advisory.md"]
+    advisory = result.files["advisory.md"]
+    assert "- Follow security best practices. (R-004, instructions.md:14)" in advisory
     log = [json.loads(line) for line in result.files["compile-log.jsonl"].splitlines()]
     assert [(e["stage"], e["rule_id"], e["attempt"]) for e in log] == [
         ("classify", None, 1), ("translate", "R-001", 1), ("translate", "R-002", 1),
@@ -484,7 +488,7 @@ def test_cli_compile_with_a_fake_claude(tmp_path: Path, capsys: pytest.CaptureFi
     )
     out = tmp_path / "pkg"
     code = main(
-        ["compile", str(FIXTURES / "CLAUDE.md"), "--project-root", str(FIXTURES),
+        ["compile", str(FIXTURES / "instructions.md"), "--project-root", str(FIXTURES),
          "--out", str(out), "--claude", str(script), "--behavior-runner", "none"]
     )  # fmt: skip
     assert code == 0
@@ -496,7 +500,7 @@ def test_cli_compile_fails_cleanly_without_claude(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     code = main(
-        ["compile", str(FIXTURES / "CLAUDE.md"), "--project-root", str(FIXTURES),
+        ["compile", str(FIXTURES / "instructions.md"), "--project-root", str(FIXTURES),
          "--out", str(tmp_path / "pkg"), "--claude", str(tmp_path / "missing")]
     )  # fmt: skip
     assert code == 2
