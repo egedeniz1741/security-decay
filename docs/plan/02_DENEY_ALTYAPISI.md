@@ -41,7 +41,7 @@ runner.py --scenario S3 --condition K4 --agent claude --rep 2 --seed 1234
 | Tehdit | Önlem | Doğrulama |
 |---|---|---|
 | Geliştiricinin `~/.claude` eklentileri, hook'ları, skill'leri, CLAUDE.md'si yüklenir | Temiz `HOME`, yalnızca kimlik bilgisi bağlanır | `system/init` olayında `plugins`, `mcp_servers`, skill listesi koşulun beklenen listesine eşit olmalı; değilse oturum `INVALID` |
-| Otomatik hafıza oturumlar arası öğrenme taşır | Temiz `HOME` + otomatik hafıza kapalı (ayar adı pilotta doğrulanacak) | Konteyner sonunda hafıza klasörü boş mu kontrolü |
+| Otomatik hafıza oturumlar arası öğrenme taşır | Temiz `HOME` + ajan imajında `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` (22 Kasım'da doğrulandı, `harness/docker/README.md`) | `system/init`'te `memory_paths` boş |
 | `--bare` kullanılamıyor (abonelik girişini okumaz) | Bu yüzden izolasyon konteynerle | — |
 | Ajan kural dosyasını ya da hook ayarını değiştirir | `permissions.deny`: `Edit(.claude/**)`, `Write(.claude/**)`, `Edit(.sdguard/**)`, `Edit(AGENTS.md)` vb.; ayrıca salt okunur bağlama | Tur sonunda bu dosyaların hash'i sabit mi |
 | Hook çöker ve sessizce geçer | `"onFailure": "block"`, hook logları ayrı dosyaya | Her turda hook çağrı sayısı > 0 |

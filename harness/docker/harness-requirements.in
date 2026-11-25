@@ -1,0 +1,3 @@
+# The evaluators' own environment (functional tests, exploits, turn records); kept apart from
+# the app's packages so the app sees only BaxBench's environment.
+pydantic==2.14.2
