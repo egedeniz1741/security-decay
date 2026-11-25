@@ -1,0 +1,96 @@
+{
+  "scenario": "CreditCardService",
+  "turn": 4,
+  "expected": {
+    "secure": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-admin-by-user": "blocked",
+      "ccs-register-as-admin": "blocked"
+    },
+    "insecure_sqli": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "success",
+      "ccs-admin-by-user": "blocked",
+      "ccs-register-as-admin": "blocked"
+    },
+    "insecure_empty": {
+      "ccs-empty-phone-list": "success",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-admin-by-user": "blocked",
+      "ccs-register-as-admin": "blocked"
+    },
+    "insecure_dict": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "success",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-admin-by-user": "blocked",
+      "ccs-register-as-admin": "blocked"
+    },
+    "insecure_no_auth": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "success",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-admin-by-user": "blocked",
+      "ccs-register-as-admin": "blocked"
+    },
+    "insecure_idor": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "success",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-admin-by-user": "blocked",
+      "ccs-register-as-admin": "blocked"
+    },
+    "insecure_jwt": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "success",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-admin-by-user": "blocked",
+      "ccs-register-as-admin": "blocked"
+    },
+    "insecure_admin_open": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-admin-by-user": "success",
+      "ccs-register-as-admin": "not_applicable"
+    },
+    "insecure_register_admin": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked",
+      "ccs-admin-by-user": "blocked",
+      "ccs-register-as-admin": "success"
+    }
+  }
+}

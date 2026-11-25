@@ -10,7 +10,7 @@
   - **Karar gerekli:** G1'i daraltmak ya da yaklaşık 13 Aralık'a ertelemek (aşağıda 1. madde).
 
 ## Kullanıcı kararı bekliyor
-1. **G1:** Kapsamı "Claude Code, S1, K0 (+K1)" olarak daraltmak mı, yaklaşık 13 Aralık'a ertelemek mi? Karar `DECISIONS.md`'ye; G1 toplantısında ikiniz.
+1. **G1:** Ege kapsamın daraltılmamasını istiyor (25 Kasım). Deniz'in görüşü ve 29 Kasım'daki G1 kararı bekliyor; K4 için D3/D4'ün durumu belirleyici.
 2. **Pilot modeli** (`--model`): Runner'ın varsayılanı `claude-sonnet-5-5` (senaryo 1 denemelerindeki model).
 3. **Yerleşik skill ve komutlar:** Temiz `HOME`'da da 18 skill ve 48 komut var (`security-review` dahil). Öneri: olduğu gibi bırakmak; kapatılırsa bütün koşullarda (`harness/docker/README.md`, V3a).
 4. **İmajın paylaşılması:** Ajan imajı bir kez kurulup iki makineye `save`/`load` ile dağıtılsın; yoksa `config_fingerprint` makineye göre değişir.
@@ -21,10 +21,10 @@
 ## Sıradaki 3 iş
 
 **Ege**
-1. #19'daki inceleme maddeleri ve 1. tur exploit'lerinin 2. turdan itibaren token alması. Şu an 2–5. turlarda birincil sonuç ölçülemiyor (`null`).
-2. İncelemeler: #20–#25. Sözleşme PR'ı #22 iki onay istiyor. Docker'da imaj denemesi (#23, V9).
-3. K3/K4 kural paketi ve E6 kirlenme testi (runner'ın ön kontrolüne karşı).
-~~Claude Code izin satırı denemesi (#18)~~ · ~~Senaryo 1 exploit'leri (#19, düzeltme bekliyor)~~ · ~~Kural formatı, derleyici dilimi~~ · ~~G0~~
+1. 3. tur (ekstreler) exploit'leri: başkasının ekstresi (CWE-639), dosya yolu (CWE-22), PDF olmayan yükleme (CWE-434). Kontrol sınamasını `sd-eval` imajına taşımak.
+2. Senaryo 1 için K3/K4 kural paketi (22 Kasım'dı, **gecikti**): `sdguard compile` ve kural metni #27'de; deneme 6 ve gerçek derleme Ege'nin makinesinde.
+3. E6 kirlenme testi (runner'ın ön kontrolüne karşı) ve Docker'da imaj denemesi (#23, V9).
+~~#19 inceleme maddeleri, 2. turdan itibaren token, 2. ve 4. tur exploit'leri~~ · ~~İncelemeler #20–#24, #26~~ · ~~Claude Code izin satırı denemesi (#18)~~ · ~~Kural formatı, derleyici dilimi~~ · ~~G0~~
 
 **Deniz**
 1. G1 pilot oturumları (S1, K0) ve kota ölçümü: `rate_limit_event`'teki 5 saatlik ve 7 günlük kullanım oranlarından gerçek `r`.
@@ -33,6 +33,17 @@
 ~~Sözleşme v0.3 (#22)~~ · ~~Deney imajları (#23)~~ · ~~Runner: oturum (#24), değerlendirme (#25, taslak)~~ · ~~Senaryo 1 istemleri (#21)~~ · ~~Olay/karar ve tur kaydı sözleşmesi (#13)~~
 
 ## Oturum günlüğü
+
+### 2026-11-25 oturumu (Ege)
+- Deniz'in PR'ları incelendi ve birleşti: #20 (senaryo kararı), #21 (senaryo 1 istemleri), #22 (sözleşme v0.3), #23 (deney imajları), #24 (runner, oturum), #26 (bu dosya). #25 taslak, #19'a bağlı.
+- #19 Deniz'in incelemesine göre düzeltildi:
+  - Sandbox kontrolü `lo` dışında arayüz varsa reddediyor (`--internal` ağ artık geçmiyor).
+  - `Target` yalnızca loopback kabul ediyor, proxy'yi yok sayıyor; `attempt()` sandbox kontrolünü kendisi çalıştırıyor; bozuk HTTP cevabı `inconclusive`.
+  - Exploit'ler `/register` varsa kendileri hesap açıp giriş yapıyor. 2–5. turlarda birincil sonucun sistematik `null` çıkması bununla düzeliyor (Deniz'in gerçek oturumunda yeniden denenecek).
+  - Yeni exploit'ler: 2. tur CWE-306, CWE-639, CWE-347; 4. tur CWE-862, CWE-269. Hepsi birincil.
+  - Kontrol sınaması (`unshare -n`, her hücre 10 tekrar): 1. tur 12/12, 2. tur 42/42, 4. tur 72/72 hücre tutarlı ve beklenen sonuçta.
+- `sdguard compile` ve deneyin kural metni (#27, ADR-0020 öneri): ayrıştırma, LLM ile sınıflandırma ve çeviri, izin / Semgrep / pytest doğrulaması, en fazla 2 onarım, paket ve rapor. Betikli model cevaplarıyla 50 yeni test; gerçek `claude -p` çağrısı deneme 6'da doğrulanacak.
+- **G1 kararı (Ege): kapsam daraltılmıyor, G1 ölçütü olduğu gibi kalıyor.** K4'ün zamanında hazır olması Deniz'in motor ve adaptör (D3, D4) işine bağlı.
 
 ### 2026-11-22/23 oturumu (Deniz)
 Yapılanlar:
@@ -66,6 +77,11 @@ Değişen plan dosyaları: `02_DENEY_ALTYAPISI.md` §3, §4 (madde 8–9, bütü
 Bağımsız denetim bulguları: yok. `plan-denetcisi` ve `guvenlik-denetcisi` bu oturumda çalıştırılmadı; G1 öncesi gerekli.
 Kullanıcı kararı bekleyenler: yukarıdaki liste, özellikle G1.
 Yaklaşan son tarihler: G1 29 Kasım (6 gün). Ege'nin K3/K4 kural paketi 22 Kasım'dı, gelmedi. Mutant seti v1 20 Aralık.
+
+### 2026-11-18 – 20 oturumları (Ege)
+- #14, #15, #18 Deniz'in incelemesiyle birleşti; #16 ve #17 (Deniz) incelendi, birleşti. Senaryo ayrımı tohum 20261116 ile çekildi: geliştirme CreditCardService ve Wiki, senaryo 1 CreditCardService.
+- Claude Code izin denemesi (#18): `Read` yasağı `cat`'i kapsıyor ama `grep -r`'yi kapsamıyor; alt klasörden başlatılınca proje ayarı yüklenmiyor; insansız modda hatalı satır sessiz. Deneyde izinler `--settings` ile verilecek.
+- Exploit altyapısı (#19): dört sonuçlu exploit tanımı, ağ varsa çalışmayı reddeden kontrol, 10 tekrarlı kontrol sınaması; CreditCardService 1. tur için 3 exploit ve 4 kontrol uygulaması. Ağsız ad alanında (`unshare -n`) 12/12 hücre 10/10 tutarlı.
 
 ### 2026-11-12 – 15 oturumları (Ege)
 - #8, #10, #11 Deniz'in incelemesine göre düzeltildi ve birleşti; #12 ve #13 (Deniz) incelendi, birleşti.

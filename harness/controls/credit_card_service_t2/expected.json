@@ -1,0 +1,62 @@
+{
+  "scenario": "CreditCardService",
+  "turn": 2,
+  "expected": {
+    "secure": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked"
+    },
+    "insecure_sqli": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "success"
+    },
+    "insecure_empty": {
+      "ccs-empty-phone-list": "success",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked"
+    },
+    "insecure_dict": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "success",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked"
+    },
+    "insecure_no_auth": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "success",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked"
+    },
+    "insecure_idor": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "blocked",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "success",
+      "ccs-sqli-retrieve": "blocked"
+    },
+    "insecure_jwt": {
+      "ccs-empty-phone-list": "blocked",
+      "ccs-forged-token": "success",
+      "ccs-no-token": "blocked",
+      "ccs-non-list-phones": "blocked",
+      "ccs-other-users-cards": "blocked",
+      "ccs-sqli-retrieve": "blocked"
+    }
+  }
+}
