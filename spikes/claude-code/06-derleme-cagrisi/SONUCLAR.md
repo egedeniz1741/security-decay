@@ -68,3 +68,13 @@ Girdi: `harness/rules/security-rules.md` (`CLAUDE.md` adıyla, sha256 `7b3d3e36�
   - Kuralların gerçekten yakaladıkları: R-008 SQL injection'ı (`insecure_sqli`), R-015/R-016 imzası denetlenmeyen JWT'yi (`insecure_jwt`).
   - **Düzeltme:** Her Semgrep kuralı artık yaygın güvenli kalıplardan oluşan bir örnek dosyaya karşı da taranıyor (`sdguard/compiler/neutral_code/service.py`; senaryolardan bağımsız yazıldı). Bulgu çıkarsa doğrulama başarısız olur ve satırlar modele gösterilir. Bu kontrol ikinci paketin R-008 ve R-009'unu yakalıyor, diğer 9 kural geçiyor.
 - **Sonuç:** Paket yine kullanılmayacak; üçüncü derleme gerekiyor.
+
+## Üçüncü derleme (25 Kasım gece, Semgrep nötr kod kontrolüyle, n = 1): pilot paketi
+
+29 kural; 23'ü doğrulandı (eylem 5/5, kod 11/11, davranış 7/7), 6'sı tavsiye. 32 çağrı, 1,56 USD.
+
+- **Kontrol uygulamalarına karşı:** Güvenli uygulamalarda Semgrep ya da davranış testi kaynaklı yanlış alarm yok.
+  - Yakalananlar: token'sız erişim, açık yönetici uçları, `is_admin` ile kayıt, imzası denetlenmeyen JWT.
+  - Kaçanlar: IDOR, ve değerleri tırnaklayıp `join` ile f-string'e koyan SQL injection biçimi.
+- **Karar:** Yeni bir aşırı zorlama yok. Kaçanlar bilinen sınırlılık olarak yazıldı ve paket pilot için donduruldu (`harness/rules/compiled/`, açıklama `harness/rules/README-compiled.md`).
+- **Üç derlemenin toplamı:** 89 çağrı, bildirilen 4,19 USD.

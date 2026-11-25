@@ -1,0 +1,38 @@
+{
+  "must_deny": [
+    {
+      "tool": "Bash",
+      "target": "rm -rf node_modules"
+    },
+    {
+      "tool": "Bash",
+      "target": "rm -fr build"
+    },
+    {
+      "tool": "Bash",
+      "target": "rm -r -f /tmp/foo"
+    },
+    {
+      "tool": "Bash",
+      "target": "rm -rf /"
+    }
+  ],
+  "must_allow": [
+    {
+      "tool": "Bash",
+      "target": "rm notes.txt"
+    },
+    {
+      "tool": "Bash",
+      "target": "rm -f temp.log"
+    },
+    {
+      "tool": "Bash",
+      "target": "ls -la"
+    },
+    {
+      "tool": "Bash",
+      "target": "rmdir empty_dir"
+    }
+  ]
+}

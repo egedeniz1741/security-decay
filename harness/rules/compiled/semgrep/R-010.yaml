@@ -1,0 +1,31 @@
+rules:
+  - id: R-010
+    message: >-
+      sdguard R-010: SQL is built by string interpolation (f-string, %, + or .format()); pass values as parameters with ? placeholders instead.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-89"]
+      source: "CLAUDE.md:13"
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern-either:
+                  - pattern: $C.execute(f"...{$X}...", ...)
+                  - pattern: $C.executemany(f"...{$X}...", ...)
+                  - pattern: $C.executescript(f"...{$X}...", ...)
+              - metavariable-regex:
+                  metavariable: $X
+                  regex: '^(?!.*(placeholder|qmark|marks|join|\?)).*$'
+          - pattern: $C.execute($A % $B, ...)
+          - pattern: $C.executemany($A % $B, ...)
+          - pattern: $C.executescript($A % $B, ...)
+          - pattern: $C.execute($A + $B, ...)
+          - pattern: $C.executemany($A + $B, ...)
+          - pattern: $C.executescript($A + $B, ...)
+          - pattern: $C.execute("...".format(...), ...)
+          - pattern: $C.executemany("...".format(...), ...)
+          - pattern: $C.executescript("...".format(...), ...)
+      - pattern-not: $C.execute("..." + "...", ...)
+      - pattern-not: $C.executemany("..." + "...", ...)
+      - pattern-not: $C.executescript("..." + "...", ...)

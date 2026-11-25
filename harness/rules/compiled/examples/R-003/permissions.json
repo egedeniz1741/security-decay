@@ -1,0 +1,42 @@
+{
+  "must_deny": [
+    {
+      "tool": "Read",
+      "target": ".env"
+    },
+    {
+      "tool": "Read",
+      "target": "config/.env.local"
+    },
+    {
+      "tool": "Edit",
+      "target": "secrets/api_key.txt"
+    },
+    {
+      "tool": "Write",
+      "target": ".env.production"
+    },
+    {
+      "tool": "Read",
+      "target": "secrets/db/password"
+    }
+  ],
+  "must_allow": [
+    {
+      "tool": "Read",
+      "target": ".env.example"
+    },
+    {
+      "tool": "Read",
+      "target": "src/config.py"
+    },
+    {
+      "tool": "Edit",
+      "target": "README.md"
+    },
+    {
+      "tool": "Read",
+      "target": "docs/secretsmanagement.md"
+    }
+  ]
+}

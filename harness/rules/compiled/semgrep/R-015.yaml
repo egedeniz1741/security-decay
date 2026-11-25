@@ -1,0 +1,41 @@
+rules:
+  - id: R-015
+    message: >-
+      sdguard R-015: Password is stored in plain text or hashed without a salt; hash it with werkzeug.security generate_password_hash (or passlib) before storing and verify with check_password_hash.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-256", "CWE-916"]
+      source: "CLAUDE.md:17"
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern-either:
+                  - pattern: $C.execute($Q, (..., $P, ...))
+                  - pattern: $C.execute($Q, [..., $P, ...])
+              - metavariable-regex:
+                  metavariable: $Q
+                  regex: (?is)^["']{1,3}\s*(insert|update|replace).*password.*
+              - metavariable-regex:
+                  metavariable: $P
+                  regex: ^(password|passwd|pwd|plain_password|raw_password|new_password)$
+              - pattern-not-inside: |
+                  def $F(...):
+                      ...
+                      generate_password_hash(...)
+                      ...
+              - pattern-not-inside: |
+                  def $F(...):
+                      ...
+                      $H.hash(...)
+                      ...
+          - patterns:
+              - pattern-either:
+                  - pattern: hashlib.$H($P.encode(...))
+                  - pattern: hashlib.$H($P)
+              - metavariable-regex:
+                  metavariable: $H
+                  regex: ^(md5|sha1|sha224|sha256|sha384|sha512)$
+              - metavariable-regex:
+                  metavariable: $P
+                  regex: ^(password|passwd|pwd|plain_password|raw_password|new_password)$

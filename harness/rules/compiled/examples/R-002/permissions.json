@@ -1,0 +1,38 @@
+{
+  "must_deny": [
+    {
+      "tool": "Read",
+      "target": ".env"
+    },
+    {
+      "tool": "Read",
+      "target": "secrets/api_key.txt"
+    },
+    {
+      "tool": "Edit",
+      "target": "config/.env.local"
+    },
+    {
+      "tool": "Bash",
+      "target": "cat .env"
+    }
+  ],
+  "must_allow": [
+    {
+      "tool": "Read",
+      "target": ".env.example"
+    },
+    {
+      "tool": "Read",
+      "target": "src/config.py"
+    },
+    {
+      "tool": "Edit",
+      "target": "docs/secrets_policy.md"
+    },
+    {
+      "tool": "Bash",
+      "target": "cat README.md"
+    }
+  ]
+}

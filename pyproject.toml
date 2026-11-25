@@ -31,7 +31,7 @@ packages = ["sdguard"]
 line-length = 100
 target-version = "py312"
 # Fixture files are deliberately insecure example code for the compiler tests.
-extend-exclude = ["docs", "spikes", "sdguard/tests/fixtures", "harness/controls", "sdguard/compiler/neutral_code/service.py"]
+extend-exclude = ["docs", "spikes", "sdguard/tests/fixtures", "harness/controls", "sdguard/compiler/neutral_code/service.py", "harness/rules/compiled"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "S"]
@@ -47,7 +47,7 @@ warn_unused_ignores = true
 warn_redundant_casts = true
 disallow_untyped_defs = true
 plugins = ["pydantic.mypy"]
-exclude = ["^sdguard/tests/fixtures/", "^harness/controls/", "^sdguard/compiler/neutral_code/service\\.py$"]
+exclude = ["^sdguard/tests/fixtures/", "^harness/controls/", "^sdguard/compiler/neutral_code/service\\.py$", "^harness/rules/compiled/"]
 
 [tool.pytest.ini_options]
 testpaths = ["sdguard/tests", "harness/tests"]

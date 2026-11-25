@@ -1,0 +1,38 @@
+rules:
+  - id: R-011
+    message: >-
+      sdguard R-011: request data reaches eval, exec, pickle.loads or an unsafe yaml.load; parse it with json or yaml.safe_load and never execute or unpickle it.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-94", "CWE-502"]
+      source: "CLAUDE.md:14"
+    mode: taint
+    pattern-sources:
+      - pattern: request.args
+      - pattern: request.form
+      - pattern: request.values
+      - pattern: request.json
+      - pattern: request.data
+      - pattern: request.cookies
+      - pattern: request.headers
+      - pattern: request.files
+      - pattern: request.get_json(...)
+      - pattern: request.get_data(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: eval($X, ...)
+          - focus-metavariable: $X
+      - patterns:
+          - pattern: exec($X, ...)
+          - focus-metavariable: $X
+      - patterns:
+          - pattern: pickle.loads($X, ...)
+          - focus-metavariable: $X
+      - patterns:
+          - pattern: yaml.load($X, ...)
+          - pattern-not: yaml.load($X, Loader=yaml.SafeLoader)
+          - pattern-not: yaml.load($X, Loader=yaml.CSafeLoader)
+          - pattern-not: yaml.load($X, yaml.SafeLoader)
+          - pattern-not: yaml.load($X, yaml.CSafeLoader)
+          - focus-metavariable: $X

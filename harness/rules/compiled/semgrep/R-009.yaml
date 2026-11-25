@@ -1,0 +1,27 @@
+rules:
+  - id: R-009
+    message: >-
+      sdguard R-009: SQL text is built from values with an f-string, %, + or .format(); pass values as parameters with ? placeholders and a separate arguments tuple instead.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-89"]
+      source: "CLAUDE.md:13"
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern: $C.$M(f"...{$X}...", ...)
+              - metavariable-regex:
+                  metavariable: $X
+                  regex: '^(?!.*(\?|placeholder|marks|qmarks|question)).*$'
+          - pattern: $C.$M("..." % $V, ...)
+          - patterns:
+              - pattern: $C.$M($A + $B, ...)
+              - pattern-not: $C.$M("..." + "...", ...)
+              - pattern-either:
+                  - pattern: $C.$M("..." + $B, ...)
+                  - pattern: $C.$M($A + "...", ...)
+          - pattern: $C.$M("...".format(...), ...)
+      - metavariable-regex:
+          metavariable: $M
+          regex: '^(execute|executemany|executescript)$'

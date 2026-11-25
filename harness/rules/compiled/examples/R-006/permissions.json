@@ -1,0 +1,30 @@
+{
+  "must_deny": [
+    {
+      "tool": "Bash",
+      "target": "git push --force"
+    },
+    {
+      "tool": "Bash",
+      "target": "git push --force origin main"
+    },
+    {
+      "tool": "Bash",
+      "target": "git push -f origin main"
+    }
+  ],
+  "must_allow": [
+    {
+      "tool": "Bash",
+      "target": "git push origin main"
+    },
+    {
+      "tool": "Bash",
+      "target": "git push"
+    },
+    {
+      "tool": "Bash",
+      "target": "git status"
+    }
+  ]
+}
