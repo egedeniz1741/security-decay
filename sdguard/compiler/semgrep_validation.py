@@ -167,3 +167,28 @@ def _collect_problems(report: dict[str, Any], ids: list[str]) -> list[str]:
         if not check.get("passed", False) and not problems:
             problems.append(f"{rule_id}: semgrep --test did not pass")
     return problems
+
+
+def report_lines(rule_path: Path, target: Path, *, semgrep: str | None = None) -> list[int] | str:
+    """Lines of ``target`` that the rules in ``rule_path`` report, or an error message."""
+    binary = find_semgrep(semgrep or "semgrep")
+    if binary is None:
+        return "semgrep is not installed"
+    command = [
+        binary, "scan", "--config", str(rule_path), "--json", "--quiet", "--metrics", "off",
+        "--disable-version-check", str(target),
+    ]  # fmt: skip
+    env = {**os.environ, "SEMGREP_SEND_METRICS": "off", "SEMGREP_ENABLE_VERSION_CHECK": "0"}
+    try:
+        completed = subprocess.run(  # noqa: S603  # fixed argument list, no shell
+            command, capture_output=True, text=True, timeout=_TIMEOUT_SECONDS, env=env
+        )
+        report = json.loads(completed.stdout)
+    except subprocess.TimeoutExpired:
+        return f"semgrep timed out after {_TIMEOUT_SECONDS}s"
+    except (OSError, json.JSONDecodeError) as exc:
+        return f"semgrep scan failed: {exc}"
+    if not isinstance(report, dict) or report.get("errors"):
+        return "semgrep reported errors while scanning"
+    results = report.get("results") or []
+    return sorted({r["start"]["line"] for r in results if isinstance(r, dict) and "start" in r})

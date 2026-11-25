@@ -1,0 +1,16 @@
+rules:
+  - id: R-017
+    message: >-
+      sdguard R-017: JWT decoded without a pinned algorithm list or with signature verification disabled; call jwt.decode with algorithms=["HS256"] and leave signature verification on.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-347"]
+      source: "CLAUDE.md:18"
+    pattern-either:
+      - patterns:
+          - pattern: jwt.decode(...)
+          - pattern-not: jwt.decode(..., algorithms=$A, ...)
+          - pattern-not: jwt.decode(..., **$K)
+      - pattern: |
+          jwt.decode(..., options={..., "verify_signature": False, ...}, ...)

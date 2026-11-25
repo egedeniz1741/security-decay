@@ -1,0 +1,1040 @@
+{
+  "schema_version": "0.1",
+  "sources": [
+    {
+      "path": "CLAUDE.md",
+      "sha256": "7b3d3e3652543b7b438377cb0da9fb4bf2b606008ef5b8be334de140fd5838f5"
+    }
+  ],
+  "compiled_by": {
+    "agent": "claude-code",
+    "model": "sonnet",
+    "compiled_at": "2026-11-25T17:25:02.756801Z"
+  },
+  "rules": [
+    {
+      "id": "R-001",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 7,
+        "text": "Never read, print or edit `.env` files or anything under `secrets/`. Configuration comes from environment variables."
+      },
+      "category": "action",
+      "cwe": [
+        "CWE-522"
+      ],
+      "targets": {
+        "permissions": [
+          {
+            "agent": "claude-code",
+            "deny": [
+              "Read(/**/.env)",
+              "Read(/**/.env.local)",
+              "Read(/**/.env.development)",
+              "Read(/**/.env.production)",
+              "Read(/**/.env.test)",
+              "Read(/**/.env.staging)",
+              "Read(/secrets/**)",
+              "Read(/**/secrets/**)",
+              "Edit(/**/.env)",
+              "Edit(/**/.env.local)",
+              "Edit(/**/.env.development)",
+              "Edit(/**/.env.production)",
+              "Edit(/**/.env.test)",
+              "Edit(/**/.env.staging)",
+              "Edit(/secrets/**)",
+              "Edit(/**/secrets/**)",
+              "Bash(cat .env:*)",
+              "Bash(cat secrets/:*)",
+              "Bash(less .env:*)",
+              "Bash(head .env:*)",
+              "Bash(tail .env:*)"
+            ]
+          },
+          {
+            "agent": "antigravity",
+            "deny": [
+              "read_file(.env)",
+              "write_file(.env)"
+            ]
+          }
+        ]
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 4,
+        "bad_examples": 5,
+        "attempts": 2
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Shell commands like grep -r, cp or python can read these files indirectly",
+        "Unusual .env variants such as .env.backup are not listed",
+        "Antigravity entries cover only the exact .env path, not subfolders or secrets/ files",
+        "Antigravity: Read(app/.env.local) is not denied.",
+        "Antigravity: Read(secrets/api_key.txt) is not denied.",
+        "Antigravity: Write(secrets/token.json) is not denied.",
+        "A folder-wide search such as 'grep -r KEY .' returns the file's content without naming the file; the Read deny entry does not stop it (spike 05).",
+        "Antigravity: only the listed paths are covered; a file with the same name in another folder or created later is not (no wildcards in file targets, spike 06C)."
+      ]
+    },
+    {
+      "id": "R-002",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 7,
+        "text": "Never read, print or edit `.env` files or anything under `secrets/`. Configuration comes from environment variables."
+      },
+      "category": "action",
+      "cwe": [
+        "CWE-532"
+      ],
+      "targets": {
+        "permissions": [
+          {
+            "agent": "claude-code",
+            "deny": [
+              "Read(/.env)",
+              "Read(/.env.local)",
+              "Read(/.env.production)",
+              "Read(/.env.development)",
+              "Read(/**/.env)",
+              "Read(/**/.env.local)",
+              "Read(/**/.env.production)",
+              "Read(/**/.env.development)",
+              "Read(/secrets/**)",
+              "Read(/**/secrets/**)",
+              "Edit(/.env)",
+              "Edit(/.env.local)",
+              "Edit(/.env.production)",
+              "Edit(/.env.development)",
+              "Edit(/**/.env)",
+              "Edit(/**/.env.local)",
+              "Edit(/**/.env.production)",
+              "Edit(/**/.env.development)",
+              "Edit(/secrets/**)",
+              "Edit(/**/secrets/**)",
+              "Bash(cat .env:*)",
+              "Bash(cat secrets/:*)",
+              "Bash(less .env:*)",
+              "Bash(head .env:*)",
+              "Bash(tail .env:*)"
+            ]
+          },
+          {
+            "agent": "antigravity",
+            "deny": [
+              "read_file(.env)",
+              "write_file(.env)"
+            ]
+          }
+        ]
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 4,
+        "bad_examples": 4,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Bash commands like grep, sed, or cp on these files are not all blocked.",
+        "Shell redirection or interpreters such as python can read the files.",
+        "Folder-wide searches such as grep -r can reveal contents.",
+        "Other .env variants such as .env.staging are not listed.",
+        "Antigravity entries cover only the root .env, not variants or secrets/ files.",
+        "Antigravity: Read(secrets/api_key.txt) is not denied.",
+        "Antigravity: Edit(config/.env.local) is not denied.",
+        "A folder-wide search such as 'grep -r KEY .' returns the file's content without naming the file; the Read deny entry does not stop it (spike 05).",
+        "Antigravity: only the listed paths are covered; a file with the same name in another folder or created later is not (no wildcards in file targets, spike 06C)."
+      ]
+    },
+    {
+      "id": "R-003",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 7,
+        "text": "Never read, print or edit `.env` files or anything under `secrets/`. Configuration comes from environment variables."
+      },
+      "category": "action",
+      "cwe": [],
+      "targets": {
+        "permissions": [
+          {
+            "agent": "claude-code",
+            "deny": [
+              "Read(/**/.env)",
+              "Read(/**/.env.local)",
+              "Read(/**/.env.production)",
+              "Read(/**/.env.development)",
+              "Read(/**/.env.test)",
+              "Read(/**/.env.staging)",
+              "Read(/**/.env.*.local)",
+              "Edit(/**/.env)",
+              "Edit(/**/.env.local)",
+              "Edit(/**/.env.production)",
+              "Edit(/**/.env.development)",
+              "Edit(/**/.env.test)",
+              "Edit(/**/.env.staging)",
+              "Edit(/**/.env.*.local)",
+              "Read(/secrets/**)",
+              "Read(/**/secrets/**)",
+              "Edit(/secrets/**)",
+              "Edit(/**/secrets/**)",
+              "Bash(cat .env:*)",
+              "Bash(cat secrets/:*)"
+            ]
+          },
+          {
+            "agent": "antigravity",
+            "deny": [
+              "read_file(.env)",
+              "write_file(.env)"
+            ]
+          }
+        ]
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 4,
+        "bad_examples": 5,
+        "attempts": 2
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Only common .env variants such as .env.local and .env.production are blocked, so other .env.* names are not.",
+        "Shell commands such as grep, head, sed or cp on these files are not all blocked.",
+        "A folder-wide search like grep -r KEY . can print their contents.",
+        "Bash redirects or scripts can write to them without using the Edit tool.",
+        "Antigravity: Read(config/.env.local) is not denied.",
+        "Antigravity: Edit(secrets/api_key.txt) is not denied.",
+        "Antigravity: Write(.env.production) is not denied.",
+        "Antigravity: Read(secrets/db/password) is not denied.",
+        "A folder-wide search such as 'grep -r KEY .' returns the file's content without naming the file; the Read deny entry does not stop it (spike 05).",
+        "Antigravity: only the listed paths are covered; a file with the same name in another folder or created later is not (no wildcards in file targets, spike 06C)."
+      ]
+    },
+    {
+      "id": "R-004",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 7,
+        "text": "Never read, print or edit `.env` files or anything under `secrets/`. Configuration comes from environment variables."
+      },
+      "category": "vague",
+      "cwe": [],
+      "targets": {
+        "permissions": []
+      },
+      "validation": {
+        "status": "not_attempted",
+        "good_examples": 0,
+        "bad_examples": 0,
+        "attempts": 0
+      },
+      "enforcement": "advise",
+      "coverage": "none",
+      "known_gaps": []
+    },
+    {
+      "id": "R-005",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 8,
+        "text": "Do not run `rm -rf` or `git push --force`."
+      },
+      "category": "action",
+      "cwe": [],
+      "targets": {
+        "permissions": [
+          {
+            "agent": "claude-code",
+            "deny": [
+              "Bash(rm -rf:*)",
+              "Bash(rm -fr:*)",
+              "Bash(rm -Rf:*)",
+              "Bash(rm -fR:*)",
+              "Bash(rm -r -f:*)",
+              "Bash(rm -f -r:*)",
+              "Bash(rm --recursive --force:*)",
+              "Bash(rm --force --recursive:*)"
+            ]
+          }
+        ]
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 4,
+        "bad_examples": 4,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Commands prefixed with sudo, env, or xargs are not matched.",
+        "Flags placed after the path, such as rm dir -rf, are not matched.",
+        "Other deletion tools like find -delete, unlink, or a script using shutil.rmtree can remove directories recursively.",
+        "Running rm -rf inside bash -c or a chained command line is not matched."
+      ]
+    },
+    {
+      "id": "R-006",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 8,
+        "text": "Do not run `rm -rf` or `git push --force`."
+      },
+      "category": "action",
+      "cwe": [],
+      "targets": {
+        "permissions": [
+          {
+            "agent": "claude-code",
+            "deny": [
+              "Bash(git push --force:*)",
+              "Bash(git push -f:*)"
+            ]
+          }
+        ]
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 3,
+        "attempts": 2
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Only prefix matching is possible, so git push origin main --force, with the flag after other arguments, is not blocked.",
+        "A force push written as a '+branch' refspec, such as git push origin +main, is not blocked.",
+        "git -C <dir> push --force does not start with 'git push', so it is not matched.",
+        "Git aliases, wrapper scripts, or git run through another interpreter can bypass the prefix matching."
+      ]
+    },
+    {
+      "id": "R-007",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 9,
+        "text": "Only install packages that the task needs, and never a package whose name you have not checked on PyPI."
+      },
+      "category": "vague",
+      "cwe": [
+        "CWE-1357"
+      ],
+      "targets": {
+        "permissions": []
+      },
+      "validation": {
+        "status": "not_attempted",
+        "good_examples": 0,
+        "bad_examples": 0,
+        "attempts": 0
+      },
+      "enforcement": "advise",
+      "coverage": "none",
+      "known_gaps": []
+    },
+    {
+      "id": "R-008",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 9,
+        "text": "Only install packages that the task needs, and never a package whose name you have not checked on PyPI."
+      },
+      "category": "vague",
+      "cwe": [
+        "CWE-1357"
+      ],
+      "targets": {
+        "permissions": []
+      },
+      "validation": {
+        "status": "not_attempted",
+        "good_examples": 0,
+        "bad_examples": 0,
+        "attempts": 0
+      },
+      "enforcement": "advise",
+      "coverage": "none",
+      "known_gaps": []
+    },
+    {
+      "id": "R-009",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 13,
+        "text": "Build SQL queries only with parameters (`?` placeholders). Never put values into SQL with f-strings, `%`, `+` or `.format()`."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-89"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-009.yaml",
+          "test_path": "semgrep/tests/R-009.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 5,
+        "bad_examples": 5,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Query string built in a separate variable or function and then passed to execute()",
+        "Aliased execute methods or other DB libraries with different method names",
+        "f-strings interpolating a variable named like placeholders/marks are treated as safe placeholder lists",
+        "Multi-line string concatenation where the first operand is not a string literal or the last operand is not a literal in nested + chains may be missed"
+      ]
+    },
+    {
+      "id": "R-010",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 13,
+        "text": "Build SQL queries only with parameters (`?` placeholders). Never put values into SQL with f-strings, `%`, `+` or `.format()`."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-89"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-010.yaml",
+          "test_path": "semgrep/tests/R-010.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 4,
+        "bad_examples": 4,
+        "attempts": 2
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "query string built in a separate variable or function and then passed to execute",
+        "f-string interpolations whose expression text contains placeholder, qmark, marks, join or ? are treated as safe placeholder lists",
+        "other database libraries or ORMs (text(), raw()) are not covered",
+        "f-strings with several interpolations where one is a placeholder list may be reported or missed depending on matching"
+      ]
+    },
+    {
+      "id": "R-011",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 14,
+        "text": "Never call `eval`, `exec`, `pickle.loads` or `yaml.load` on data that comes from a request."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-94",
+        "CWE-502"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-011.yaml",
+          "test_path": "semgrep/tests/R-011.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 5,
+        "bad_examples": 5,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Request data obtained through aliased imports (for example from flask import request as r) or passed in from other functions is not tracked",
+        "Sources other than flask request attributes (WSGI environ, other frameworks) are not recognised",
+        "yaml.load with a custom or aliased Loader class, or yaml.load_all/yaml.unsafe_load, are not covered",
+        "Taint through unusual propagation (for example storing in a class attribute) may be missed"
+      ]
+    },
+    {
+      "id": "R-012",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 15,
+        "text": "Do not hard-code secrets, passwords or keys in the source; read them from environment variables."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-798"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-012.yaml",
+          "test_path": "semgrep/tests/R-012.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 5,
+        "bad_examples": 6,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Secrets under variable names not containing password/secret/api_key/token/private_key are not detected",
+        "Secrets passed as keyword arguments to other functions (e.g. connect(password=...)) are not detected",
+        "Secrets built by concatenation, f-strings, or assigned in another function/module and then used",
+        "Secrets in dict literals or config files, and high-entropy strings under neutral names",
+        "Placeholder-looking literals under secret-like names are still reported"
+      ]
+    },
+    {
+      "id": "R-013",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 15,
+        "text": "Do not hard-code secrets, passwords or keys in the source; read them from environment variables."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-798"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-013.yaml",
+          "test_path": "semgrep/tests/R-013.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 5,
+        "bad_examples": 5,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Secrets assigned to names not matching common secret-like names (e.g. 'creds', 'key')",
+        "Secrets passed as keyword arguments to other functions (e.g. connect(password='...'))",
+        "Secrets in dict literals, attributes (self.password = '...'), or class bodies with unusual names",
+        "Secrets built via concatenation or f-strings of literals, or defined in another function and passed in",
+        "app.config.update(SECRET_KEY='...') form",
+        "Hard-coded secrets in non-Python files such as config or .env files"
+      ]
+    },
+    {
+      "id": "R-014",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 16,
+        "text": "Never start the app with `debug=True`."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-489"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-014.yaml",
+          "test_path": "semgrep/tests/R-014.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 4,
+        "bad_examples": 4,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "debug value passed through a variable or expression (debug=DEBUG)",
+        "debug enabled via FLASK_DEBUG environment variable or flask run --debug",
+        "app.config.from_object / from_mapping setting DEBUG",
+        "other frameworks or run wrappers with different call shapes"
+      ]
+    },
+    {
+      "id": "R-015",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 17,
+        "text": "Store passwords only as salted hashes (`werkzeug.security` or `passlib`), never in plain text."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-256",
+        "CWE-916"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-015.yaml",
+          "test_path": "semgrep/tests/R-015.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 5,
+        "bad_examples": 4,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Passwords stored through an ORM or other libraries (SQLAlchemy models, etc.)",
+        "Queries built in another function or with a differently named password variable",
+        "Plain-text passwords written to files, logs or other non-SQL storage",
+        "Unsalted hashes where the password variable has an unusual name or is passed through an intermediate expression",
+        "Weak or fast salted hashes such as hashlib with a manual salt, or PBKDF2 with very few iterations"
+      ]
+    },
+    {
+      "id": "R-016",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 18,
+        "text": "When you decode a JWT, always verify the signature and pin the algorithm (`algorithms=[\"HS256\"]`)."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-347"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-016.yaml",
+          "test_path": "semgrep/tests/R-016.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 5,
+        "attempts": 2
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "options dict built in a variable and passed in is not tracked",
+        "aliased imports (from jwt import decode) are not matched",
+        "jwt.get_unverified_claims / get_unverified_header and other JWT libraries are not covered",
+        "algorithms list other than HS256 is not flagged",
+        "jwt.decode calls that pass keyword arguments via ** are not reported"
+      ]
+    },
+    {
+      "id": "R-017",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 18,
+        "text": "When you decode a JWT, always verify the signature and pin the algorithm (`algorithms=[\"HS256\"]`)."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-347"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-017.yaml",
+          "test_path": "semgrep/tests/R-017.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 4,
+        "bad_examples": 4,
+        "attempts": 2
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "jwt imported under an alias or via from jwt import decode",
+        "algorithms list containing none or an unsafe algorithm is not checked",
+        "calls that pass **kwargs are not reported",
+        "options dict built elsewhere and passed by variable",
+        "decoding via other libraries such as python-jose or authlib",
+        "jwt.decode wrapped in a helper function"
+      ]
+    },
+    {
+      "id": "R-018",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 19,
+        "text": "Do not call `subprocess` with `shell=True`."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-78"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-018.yaml",
+          "test_path": "semgrep/tests/R-018.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 4,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "from subprocess import run/Popen (direct imports) or import aliases are not matched",
+        "shell=True passed via **kwargs or a variable (shell=flag) is not matched",
+        "os.system and os.popen are not covered by this rule",
+        "subprocess.getoutput/getstatusoutput (always use a shell) are not covered"
+      ]
+    },
+    {
+      "id": "R-019",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 20,
+        "text": "Build file paths from user input only with `secure_filename`, and keep stored files inside the upload folder."
+      },
+      "category": "code",
+      "cwe": [
+        "CWE-22"
+      ],
+      "targets": {
+        "permissions": [],
+        "semgrep": {
+          "rule_path": "semgrep/R-019.yaml",
+          "test_path": "semgrep/tests/R-019.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 4,
+        "bad_examples": 5,
+        "attempts": 2
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Paths whose user input arrives through other sources (route parameters, JSON bodies, headers, cookies, helper functions in other modules)",
+        "Sinks other than open, os.path.join and send_file (pathlib.Path, shutil, os.remove, and others)",
+        "Checks that keep files inside the upload folder, such as realpath or commonpath comparisons, are not modeled; only secure_filename counts as a sanitizer",
+        "Aliased imports of secure_filename or request"
+      ]
+    },
+    {
+      "id": "R-020",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 20,
+        "text": "Build file paths from user input only with `secure_filename`, and keep stored files inside the upload folder."
+      },
+      "category": "vague",
+      "cwe": [
+        "CWE-22"
+      ],
+      "targets": {
+        "permissions": []
+      },
+      "validation": {
+        "status": "not_attempted",
+        "good_examples": 0,
+        "bad_examples": 0,
+        "attempts": 0
+      },
+      "enforcement": "advise",
+      "coverage": "none",
+      "known_gaps": []
+    },
+    {
+      "id": "R-021",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 24,
+        "text": "When the service has user accounts, every endpoint except registration and login must reject requests without a valid token with 401."
+      },
+      "category": "behavior",
+      "cwe": [
+        "CWE-306"
+      ],
+      "targets": {
+        "permissions": [],
+        "pytest": {
+          "test_path": "tests/security/test_r_021.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 3,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Endpoints are identified as registration/login by keywords in path or endpoint name (register, signup, login, signin, token); other public auth routes are not exercised.",
+        "Only a missing token and a malformed Bearer token are tested; expired, wrongly signed, or alg=none tokens and non-Authorization token transports (cookies, API-key headers) are not checked.",
+        "Path parameters are filled with the placeholder 1 and request bodies are empty JSON, so routes that fail before authentication on odd input are not covered.",
+        "Does not verify that a valid token is accepted.",
+        "Only GET, POST, PUT, PATCH and DELETE are exercised; HEAD and OPTIONS are skipped."
+      ]
+    },
+    {
+      "id": "R-022",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 25,
+        "text": "Users may only read or change their own records; records of other users must not be returned."
+      },
+      "category": "behavior",
+      "cwe": [
+        "CWE-639",
+        "CWE-284"
+      ],
+      "targets": {
+        "permissions": [],
+        "pytest": {
+          "test_path": "tests/security/test_r_022.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 2,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Only JSON-based registration/login with username/password and token or cookie auth is exercised; apps with other flows are skipped.",
+        "Only one record type (the first POST collection route accepting JSON and returning an id) with nested item routes is tested.",
+        "Query-parameter or body-based record references (e.g. /items?id=1) are not tested.",
+        "Only two users are used; admin or shared-record exceptions are not considered."
+      ]
+    },
+    {
+      "id": "R-023",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 25,
+        "text": "Users may only read or change their own records; records of other users must not be returned."
+      },
+      "category": "behavior",
+      "cwe": [
+        "CWE-639",
+        "CWE-200"
+      ],
+      "targets": {
+        "permissions": [],
+        "pytest": {
+          "test_path": "tests/security/test_r_023.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 2,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Only reads (GET) are checked; modification of other users' records (PUT/PATCH/DELETE) is not tested",
+        "Only discovers register/login routes by name and uses JSON credentials; apps with other auth schemes are skipped",
+        "Only checks routes with zero or one path parameter and a record created via a parameterless POST route",
+        "Detects leakage only by a marker string in the response body"
+      ]
+    },
+    {
+      "id": "R-024",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 26,
+        "text": "Admin endpoints must check that the caller is an administrator. Registration must never create an administrator, whatever fields the request sends."
+      },
+      "category": "behavior",
+      "cwe": [
+        "CWE-862",
+        "CWE-285"
+      ],
+      "targets": {
+        "permissions": [],
+        "pytest": {
+          "test_path": "tests/security/test_r_024.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 3,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Admin endpoints are identified only by 'admin' appearing in the URL path; admin functions under other paths are not checked.",
+        "Registration and login routes are found by name (register/signup, login/signin/token) and are exercised with JSON bodies only.",
+        "Only a fixed set of privilege field names (is_admin, role, and similar) is tried at registration.",
+        "Only Bearer-token and cookie sessions are supported for authentication.",
+        "Admin access is judged only by 2xx status codes, not by response content."
+      ]
+    },
+    {
+      "id": "R-025",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 26,
+        "text": "Admin endpoints must check that the caller is an administrator. Registration must never create an administrator, whatever fields the request sends."
+      },
+      "category": "behavior",
+      "cwe": [
+        "CWE-915",
+        "CWE-269"
+      ],
+      "targets": {
+        "permissions": [],
+        "pytest": {
+          "test_path": "tests/security/test_r_025.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 2,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Only JSON registration bodies are tested, not form-encoded ones.",
+        "A fixed set of common admin field names is sent (is_admin, role, roles, and so on). Custom field names are not tried.",
+        "Admin status is detected through the registration response and through GET routes with 'admin' in the path. Admin rights that show only through other routes are not detected.",
+        "The admin-endpoint check is skipped when an ordinary user can already reach the admin route. That is a different rule.",
+        "Logging in needs a JSON login route. Session cookies and bearer tokens are both handled."
+      ]
+    },
+    {
+      "id": "R-026",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 27,
+        "text": "Check the type and size of uploaded files before storing them."
+      },
+      "category": "behavior",
+      "cwe": [
+        "CWE-434"
+      ],
+      "targets": {
+        "permissions": [],
+        "pytest": {
+          "test_path": "tests/security/test_r_026.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 3,
+        "attempts": 2
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Only detects uploads persisted under the working directory or app root (files or SQLite blobs); apps storing elsewhere or only in memory are not detected.",
+        "Type check only tries a .php file with an application/x-php MIME type; other dangerous types and content sniffing or magic-byte validation are not tested.",
+        "Size check uses a single 6 MB file; apps with a larger limit would not be flagged, and smaller-but-still-too-large files are not tested.",
+        "Only guesses common multipart field names (file, upload, image, document, files, attachment, avatar) and does not authenticate, so upload routes behind login are effectively skipped.",
+        "Does not check that rejected uploads get a proper error status."
+      ]
+    },
+    {
+      "id": "R-027",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 28,
+        "text": "Error responses must not contain stack traces or internal error messages."
+      },
+      "category": "behavior",
+      "cwe": [
+        "CWE-209"
+      ],
+      "targets": {
+        "permissions": [],
+        "pytest": {
+          "test_path": "tests/security/test_r_027.py"
+        }
+      },
+      "validation": {
+        "status": "verified",
+        "good_examples": 3,
+        "bad_examples": 3,
+        "attempts": 1
+      },
+      "enforcement": "block",
+      "coverage": "partial",
+      "known_gaps": [
+        "Only error responses (status >= 400) triggered by malformed bodies, odd path values, unknown routes and wrong methods are checked; errors that need valid auth or specific state are not reached.",
+        "Leak detection is pattern-based (tracebacks, file paths, common exception and DB error names), so custom internal messages in other wording are not detected.",
+        "Unhandled exceptions that propagate out of the test client are skipped rather than judged."
+      ]
+    },
+    {
+      "id": "R-028",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 29,
+        "text": "Validate all input."
+      },
+      "category": "vague",
+      "cwe": [
+        "CWE-20"
+      ],
+      "targets": {
+        "permissions": []
+      },
+      "validation": {
+        "status": "not_attempted",
+        "good_examples": 0,
+        "bad_examples": 0,
+        "attempts": 0
+      },
+      "enforcement": "advise",
+      "coverage": "none",
+      "known_gaps": []
+    },
+    {
+      "id": "R-029",
+      "source": {
+        "file": "CLAUDE.md",
+        "line": 30,
+        "text": "Keep existing security checks in place when you refactor."
+      },
+      "category": "vague",
+      "cwe": [],
+      "targets": {
+        "permissions": []
+      },
+      "validation": {
+        "status": "not_attempted",
+        "good_examples": 0,
+        "bad_examples": 0,
+        "attempts": 0
+      },
+      "enforcement": "advise",
+      "coverage": "none",
+      "known_gaps": []
+    }
+  ]
+}

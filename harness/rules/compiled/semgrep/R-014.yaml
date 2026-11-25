@@ -1,0 +1,15 @@
+rules:
+  - id: R-014
+    message: >-
+      sdguard R-014: The app is started with debug mode enabled; remove debug=True and control debugging outside the code (for example a production server and no debugger).
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-489"]
+      source: "CLAUDE.md:16"
+    pattern-either:
+      - pattern: $APP.run(..., debug=True, ...)
+      - pattern: app.debug = True
+      - pattern: $APP.debug = True
+      - pattern: $APP.config["DEBUG"] = True
+      - pattern: $APP.config.update(..., DEBUG=True, ...)

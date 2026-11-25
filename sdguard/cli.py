@@ -43,6 +43,36 @@ def build_parser() -> argparse.ArgumentParser:
     permissions.add_argument(
         "--dry-run", action="store_true", help="print the result instead of writing it"
     )
+
+    compile_ = commands.add_parser(
+        "compile", help="compile the security rules of instruction files into checks"
+    )
+    compile_.add_argument("files", type=Path, nargs="+", help="CLAUDE.md, AGENTS.md ...")
+    compile_.add_argument(
+        "--out", type=Path, default=Path(".sdguard"), help="package folder (default: .sdguard)"
+    )
+    compile_.add_argument(
+        "--project-root",
+        type=Path,
+        default=Path("."),
+        help="folder the source paths in the rule set are relative to (default: .)",
+    )
+    compile_.add_argument("--model", default="sonnet", help="model for claude -p")
+    compile_.add_argument("--claude", default="claude", help="claude CLI binary")
+    compile_.add_argument(
+        "--behavior-runner",
+        choices=("docker", "local", "none"),
+        default="docker",
+        help="where LLM-written behavior tests are validated: a network-less container "
+        "(default), this process if it already has no network, or not at all",
+    )
+    compile_.add_argument("--behavior-image", default="sdguard-validate:latest")
+    compile_.add_argument("--max-attempts", type=int, default=3, choices=(1, 2, 3))
+    compile_.add_argument(
+        "--no-keyword-filter",
+        action="store_true",
+        help="send every statement to the model, not only those that look security related",
+    )
     return parser
 
 
@@ -109,10 +139,58 @@ def run_permissions(rules: Path, settings: Path, state: Path | None, dry_run: bo
     return 0
 
 
+def run_compile(args: argparse.Namespace) -> int:
+    # Imported here so that "sdguard permissions" does not load the compiler.
+    from sdguard.compiler.behavior_runner import (
+        BehaviorRunner,
+        DisabledRunner,
+        DockerRunner,
+        LocalRunner,
+    )
+    from sdguard.compiler.compile import CompileError, compile_files, write_package
+    from sdguard.compiler.llm import ClaudeCli
+
+    def progress(message: str) -> None:
+        print(f"sdguard: {message}", file=sys.stderr, flush=True)
+
+    with tempfile.TemporaryDirectory(prefix="sdguard-behavior-") as behavior_work:
+        runner: BehaviorRunner
+        if args.behavior_runner == "docker":
+            runner = DockerRunner(Path(behavior_work), image=args.behavior_image)
+        elif args.behavior_runner == "local":
+            runner = LocalRunner()
+        else:
+            runner = DisabledRunner()
+        try:
+            result = compile_files(
+                args.files,
+                ClaudeCli(model=args.model, binary=args.claude),
+                runner,
+                project_root=args.project_root,
+                max_attempts=args.max_attempts,
+                keyword_filter=not args.no_keyword_filter,
+                progress=progress,
+                work_dir=Path(behavior_work),
+            )
+        except CompileError as exc:
+            print(f"sdguard: compile failed: {exc}", file=sys.stderr)
+            return 2
+    write_package(result, args.out)
+    ruleset = result.ruleset
+    print(
+        f"sdguard: {len(ruleset.rules)} rules, {len(ruleset.enforced)} verified and enforced, "
+        f"{len(ruleset.advisory)} advice; see {args.out / 'report.md'}",
+        file=sys.stderr,
+    )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "permissions":
         return run_permissions(args.rules, args.settings, args.state, args.dry_run)
+    if args.command == "compile":
+        return run_compile(args)
     return 0
 
 

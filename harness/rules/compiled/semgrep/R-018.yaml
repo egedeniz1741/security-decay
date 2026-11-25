@@ -1,0 +1,15 @@
+rules:
+  - id: R-018
+    message: >-
+      sdguard R-018: subprocess is called with shell=True, which allows shell injection; pass an argument list and leave shell at its default of False.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-78"]
+      source: "CLAUDE.md:19"
+    pattern-either:
+      - pattern: subprocess.run(..., shell=True, ...)
+      - pattern: subprocess.call(..., shell=True, ...)
+      - pattern: subprocess.check_call(..., shell=True, ...)
+      - pattern: subprocess.check_output(..., shell=True, ...)
+      - pattern: subprocess.Popen(..., shell=True, ...)

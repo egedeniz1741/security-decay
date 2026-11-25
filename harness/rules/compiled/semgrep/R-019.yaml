@@ -1,0 +1,30 @@
+rules:
+  - id: R-019
+    message: >-
+      sdguard R-019: a file path is built from user input without secure_filename; wrap the user-supplied name in werkzeug.utils.secure_filename before joining it to the upload folder.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-22"]
+      source: "CLAUDE.md:20"
+    mode: taint
+    pattern-sources:
+      - pattern: request.args.get(...)
+      - pattern: request.args[...]
+      - pattern: request.form.get(...)
+      - pattern: request.form[...]
+      - pattern: request.values.get(...)
+      - pattern: request.values[...]
+      - pattern: request.files[...]
+      - pattern: request.files.get(...)
+    pattern-sanitizers:
+      - pattern: secure_filename(...)
+      - pattern: werkzeug.utils.secure_filename(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: open($P, ...)
+          - focus-metavariable: $P
+      - pattern: os.path.join(...)
+      - patterns:
+          - pattern: send_file($P, ...)
+          - focus-metavariable: $P

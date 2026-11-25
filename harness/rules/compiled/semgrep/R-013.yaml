@@ -1,0 +1,24 @@
+rules:
+  - id: R-013
+    message: >-
+      sdguard R-013: a secret, password or key is hard-coded as a string literal in the source; read it from an environment variable (os.environ) instead.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-798"]
+      source: "CLAUDE.md:15"
+    pattern-either:
+      - patterns:
+          - pattern: $VAR = "..."
+          - pattern-not: $VAR = ""
+          - metavariable-regex:
+              metavariable: $VAR
+              regex: '(?i)^(\w*_)?(secret|secret_key|password|passwd|pwd|api_key|apikey|private_key|auth_token|access_key)$'
+      - patterns:
+          - pattern: $APP.config[$K] = "..."
+          - pattern-not: $APP.config[$K] = ""
+          - metavariable-regex:
+              metavariable: $K
+              regex: '(?i)^["'']\w*(secret|password|api_key|private_key)\w*["'']$'
+      - pattern: jwt.encode($PAYLOAD, "...", ...)
+      - pattern: jwt.decode($TOKEN, "...", ...)

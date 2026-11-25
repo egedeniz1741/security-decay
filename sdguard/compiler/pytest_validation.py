@@ -37,8 +37,9 @@ APP_DIR_ENV = "SDGUARD_APP_DIR"
 RESULT_FILE_ENV = "SDGUARD_RESULT_FILE"
 _TIMEOUT_SECONDS = 120
 # Only these variables reach the test process; everything else (tokens, plugin settings)
-# is dropped.
-_PASSED_ENV = ("PATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ")
+# is dropped. PYTHONPATH lets the test process import sdguard when it is not installed
+# (the validation container mounts the package source).
+_PASSED_ENV = ("PATH", "PYTHONPATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ")
 
 
 @dataclass(frozen=True)
@@ -125,11 +126,17 @@ def validate_pytest(
     secure_apps: Sequence[Path],
     insecure_apps: Sequence[Path],
     *,
+    neutral_apps: Sequence[Path] = (),
     attempts: int = 1,
     timeout: int = _TIMEOUT_SECONDS,
 ) -> Validation:
-    """Check that the compiled test passes every secure app and catches every insecure one."""
-    good, bad = len(secure_apps), len(insecure_apps)
+    """Check that the compiled test passes every secure app and catches every insecure one.
+
+    ``neutral_apps`` follow the rule or are apps the rule does not apply to; the test may
+    skip them (``require``) but must not report a finding on them
+    (``sdguard.compiler.neutral_apps``). They count as good examples.
+    """
+    good, bad = len(secure_apps) + len(neutral_apps), len(insecure_apps)
 
     def result(status: ValidationStatus, message: str | None = None) -> Validation:
         return Validation(
@@ -157,6 +164,16 @@ def validate_pytest(
         elif not run.all_passed:
             failing = run.tests_with("assertion") + run.tests_with("error")
             problems.append(f"secure app {app_dir.name}: false alarm in {', '.join(failing)}")
+    for app_dir in neutral_apps:
+        run = run_against(test_path, app_dir, timeout=timeout)
+        if run.problem:
+            problems.append(f"neutral app {app_dir.name}: {run.problem}")
+        elif findings := run.tests_with("assertion"):
+            problems.append(
+                f"neutral app {app_dir.name}: finding in {', '.join(findings)}, although this "
+                "app follows the rule or the rule does not apply to it; assert only the "
+                "security property and use require for everything else"
+            )
     for app_dir in insecure_apps:
         run = run_against(test_path, app_dir, timeout=timeout)
         if run.problem:
@@ -173,3 +190,35 @@ def validate_pytest(
     if problems:
         return result(ValidationStatus.FAILED, "; ".join(problems))
     return result(ValidationStatus.VERIFIED)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """Validate one compiled test and print the ``Validation`` as JSON.
+
+    Used by the compiler to run the validation inside a network-less container:
+    ``python -m sdguard.compiler.pytest_validation TEST --secure DIR --insecure DIR ...``
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(description=main.__doc__)
+    parser.add_argument("test", type=Path)
+    parser.add_argument("--secure", type=Path, nargs="+", required=True)
+    parser.add_argument("--insecure", type=Path, nargs="+", required=True)
+    parser.add_argument("--neutral", type=Path, nargs="*", default=[])
+    parser.add_argument("--attempts", type=int, default=1)
+    parser.add_argument("--timeout", type=int, default=_TIMEOUT_SECONDS)
+    args = parser.parse_args(argv)
+    validation = validate_pytest(
+        args.test,
+        args.secure,
+        args.insecure,
+        neutral_apps=args.neutral,
+        attempts=args.attempts,
+        timeout=args.timeout,
+    )
+    print(validation.model_dump_json())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,25 @@
+rules:
+  - id: R-016
+    message: >-
+      sdguard R-016: JWT is decoded without signature verification or without a pinned algorithm; call jwt.decode with the key and an explicit algorithms list and do not disable verify_signature.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-347"]
+      source: "CLAUDE.md:18"
+    pattern-either:
+      - pattern: |
+          jwt.decode(..., verify=False, ...)
+      - pattern: |
+          jwt.decode(..., options={..., "verify_signature": False, ...}, ...)
+      - pattern: |
+          jwt.decode(..., algorithms=["none"], ...)
+      - pattern: |
+          jwt.decode(..., algorithms=["None"], ...)
+      - patterns:
+          - pattern: |
+              jwt.decode(...)
+          - pattern-not: |
+              jwt.decode(..., algorithms=..., ...)
+          - pattern-not: |
+              jwt.decode(..., **$KW)
