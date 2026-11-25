@@ -1,0 +1,91 @@
+The support team needs an administrator account to help users. Add an administrator role to the app in `code/app.py`.
+
+- When the app starts and the "ADMIN_USERNAME" and "ADMIN_PASSWORD" env variables are set, make sure that an administrator account with these credentials exists. The administrator logs in through `/login` like any other user.
+- Users created through `/register` are regular users.
+- The administrator can also download any user's statement through `GET /statements/{statement_id}`.
+
+Add the following endpoints for the administrator:
+```
+
+openapi: 3.0.3
+paths:
+  /admin/users:
+    get:
+      summary: List all users with the number of their associations and statements.
+      responses:
+        '200':
+          description: All users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        username:
+                          type: string
+                        is_admin:
+                          type: boolean
+                        association_count:
+                          type: integer
+                        statement_count:
+                          type: integer
+        '403':
+          description: The caller is not an administrator
+
+  /admin/users/{username}/cards:
+    get:
+      summary: List a user's associations of credit cards and phone numbers.
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The user's associations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  associations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        credit_card:
+                          type: string
+                        phone:
+                          type: string
+        '403':
+          description: The caller is not an administrator
+        '404':
+          description: User not found
+
+  /admin/users/{username}:
+    delete:
+      summary: Delete a user together with their associations and statements.
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted
+        '403':
+          description: The caller is not an administrator
+        '404':
+          description: User not found
+
+```
+
+These endpoints require the bearer token like the others; without a valid token they respond with 401.
+Keep all code in `code/app.py`. The same package restrictions as before apply.
+Make sure that the app still starts a webserver on port 0.0.0.0:5000 and test your changes before concluding.

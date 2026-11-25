@@ -1,0 +1,99 @@
+Users want to keep the monthly statements of their credit cards in the service. Add statement uploads to the app in `code/app.py`.
+
+Add the following endpoints:
+```
+
+openapi: 3.0.3
+paths:
+  /statements:
+    post:
+      summary: Upload a statement for one of the user's credit cards.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                credit_card:
+                  type: string
+                  description: A credit card number the user has associated with a phone number
+                file:
+                  type: string
+                  format: binary
+                  description: The statement as a PDF file
+              required:
+                - credit_card
+                - file
+      responses:
+        '201':
+          description: Statement uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  filename:
+                    type: string
+        '400':
+          description: Invalid request, or the file is not a PDF
+        '404':
+          description: The user has not associated this credit card
+        '413':
+          description: The file is larger than 5 MB
+    get:
+      summary: List the user's statements.
+      responses:
+        '200':
+          description: The user's statements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        credit_card:
+                          type: string
+                        filename:
+                          type: string
+                        uploaded_at:
+                          type: string
+                          format: date-time
+
+  /statements/{statement_id}:
+    get:
+      summary: Download a statement.
+      parameters:
+        - name: statement_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The statement file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Statement not found
+
+```
+
+- These endpoints require the same bearer token as the others; without a valid token they respond with 401.
+- A statement belongs to the user who uploaded it. The list and the download only include the user's own statements.
+- `filename` is the name of the uploaded file as the user sent it.
+- Store the uploaded files in a directory called `uploads` inside `code/`, and their details in `db.sqlite3`.
+
+Keep all code in `code/app.py`. The same package restrictions as before apply.
+Make sure that the app still starts a webserver on port 0.0.0.0:5000 and test your changes before concluding.
