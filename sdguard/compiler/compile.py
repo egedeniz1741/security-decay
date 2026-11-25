@@ -42,6 +42,7 @@ from sdguard.compiler import prompts
 from sdguard.compiler.behavior_runner import BehaviorRunner
 from sdguard.compiler.extract import Candidate, extract_candidates
 from sdguard.compiler.llm import Llm, LlmError, LlmUnavailable
+from sdguard.compiler.neutral_apps import NEUTRAL_APPS
 from sdguard.compiler.permission_validation import validate_permissions
 from sdguard.compiler.schemas import (
     ActionTranslation,
@@ -379,10 +380,16 @@ class _Session:
         for name, text in apps.items():
             (folder / name).mkdir()
             (folder / name / "app.py").write_text(text, encoding="utf-8")
+        neutral = []
+        for name, source in NEUTRAL_APPS.items():
+            target = folder / f"neutral_{name}"
+            shutil.copytree(source, target, ignore=shutil.ignore_patterns("__pycache__"))
+            neutral.append(target)
         _readable(folder, self.work)
         validation = self.runner.validate(
             test, [folder / "secure"],
-            [folder / n for n in apps if n.startswith("insecure_")], attempts=attempt,
+            [folder / n for n in apps if n.startswith("insecure_")],
+            neutral=neutral, attempts=attempt,
         )  # fmt: skip
         validation = _require_gaps(validation, answer.coverage, answer.known_gaps)
         test_path = f"tests/security/{test_name}"

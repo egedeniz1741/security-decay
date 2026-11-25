@@ -327,7 +327,8 @@ def test_compile_end_to_end_with_a_repair(tmp_path: Path) -> None:
     behavior = rules["R-003"]
     assert behavior.targets.pytest is not None
     assert behavior.targets.pytest.test_path == "tests/security/test_r_003.py"
-    assert (behavior.validation.good_examples, behavior.validation.bad_examples) == (1, 1)
+    # one secure reference app and the two neutral apps
+    assert (behavior.validation.good_examples, behavior.validation.bad_examples) == (3, 1)
     assert "examples/R-003/insecure_1/app.py" in result.files
 
     assert ruleset.sources[0].path == "instructions.md"
@@ -384,6 +385,23 @@ def test_partial_coverage_without_gaps_is_sent_back(tmp_path: Path) -> None:
     enforced = result.ruleset.enforced[0]
     assert enforced.known_gaps == ["'git push -f' is not covered."]
     assert enforced.targets.permissions[0].deny == ["Bash(git push --force:*)"]
+
+
+def test_a_behavior_test_that_asserts_more_than_its_rule_is_rejected(tmp_path: Path) -> None:
+    """The guarded neutral app answers unknown routes with 401; asserting 404 is overreach."""
+    overreach = read("R-003-test.py") + (
+        "\n\ndef test_unknown_route_is_404(client):\n"
+        "    assert client.get('/no-such-route').status_code == 404\n"
+    )
+    rule = CLASSIFICATION["rules"][2]
+    llm = ScriptedLlm(
+        {"classify": [{"rules": [rule], "not_security": [10, 11, 14]}],
+         "R-001": [dict(BEHAVIOR, test_file=overreach), BEHAVIOR]}
+    )  # fmt: skip
+    result = run(llm, tmp_path)
+    assert "neutral app neutral_guarded: finding in test_unknown_route_is_404" in llm.calls[2][1]
+    assert result.ruleset.rules[0].validation.attempts == 2
+    assert result.ruleset.rules[0].enforcement is Enforcement.BLOCK
 
 
 def test_behavior_rules_are_not_run_without_a_sandbox(tmp_path: Path) -> None:

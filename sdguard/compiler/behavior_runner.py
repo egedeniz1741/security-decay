@@ -53,7 +53,13 @@ def _not_attempted(message: str, good: int, bad: int, attempts: int) -> Validati
 
 class BehaviorRunner(Protocol):
     def validate(
-        self, test: Path, secure: Sequence[Path], insecure: Sequence[Path], *, attempts: int
+        self,
+        test: Path,
+        secure: Sequence[Path],
+        insecure: Sequence[Path],
+        *,
+        neutral: Sequence[Path] = (),
+        attempts: int,
     ) -> Validation: ...
 
 
@@ -62,9 +68,15 @@ class DisabledRunner:
     reason: str = "behavior validation was turned off (--behavior-runner none)"
 
     def validate(
-        self, test: Path, secure: Sequence[Path], insecure: Sequence[Path], *, attempts: int
+        self,
+        test: Path,
+        secure: Sequence[Path],
+        insecure: Sequence[Path],
+        *,
+        neutral: Sequence[Path] = (),
+        attempts: int,
     ) -> Validation:
-        return _not_attempted(self.reason, len(secure), len(insecure), attempts)
+        return _not_attempted(self.reason, len(secure) + len(neutral), len(insecure), attempts)
 
 
 @dataclass(frozen=True)
@@ -75,16 +87,24 @@ class LocalRunner:
     timeout: int = _TIMEOUT_SECONDS
 
     def validate(
-        self, test: Path, secure: Sequence[Path], insecure: Sequence[Path], *, attempts: int
+        self,
+        test: Path,
+        secure: Sequence[Path],
+        insecure: Sequence[Path],
+        *,
+        neutral: Sequence[Path] = (),
+        attempts: int,
     ) -> Validation:
         if self.require_isolation and (interfaces := non_loopback_interfaces()):
             return _not_attempted(
                 f"network interfaces present ({', '.join(interfaces)}); {SANDBOX_HINT}",
-                len(secure),
+                len(secure) + len(neutral),
                 len(insecure),
                 attempts,
             )
-        return validate_pytest(test, secure, insecure, attempts=attempts, timeout=self.timeout)
+        return validate_pytest(
+            test, secure, insecure, neutral_apps=neutral, attempts=attempts, timeout=self.timeout
+        )
 
 
 @dataclass(frozen=True)
@@ -100,7 +120,13 @@ class DockerRunner:
     timeout: int = _TIMEOUT_SECONDS
 
     def command(
-        self, test: Path, secure: Sequence[Path], insecure: Sequence[Path], *, attempts: int
+        self,
+        test: Path,
+        secure: Sequence[Path],
+        insecure: Sequence[Path],
+        *,
+        neutral: Sequence[Path] = (),
+        attempts: int,
     ) -> list[str]:
         root = self.work_dir.resolve()
         package = Path(sdguard.__file__).resolve().parent
@@ -127,18 +153,25 @@ class DockerRunner:
             "python", "-P", "-m", "sdguard.compiler.pytest_validation", inside(test),
             "--secure", *[inside(p) for p in secure],
             "--insecure", *[inside(p) for p in insecure],
+            "--neutral", *[inside(p) for p in neutral],
             "--attempts", str(attempts),
             "--timeout", str(self.timeout),
         ]  # fmt: skip
 
     def validate(
-        self, test: Path, secure: Sequence[Path], insecure: Sequence[Path], *, attempts: int
+        self,
+        test: Path,
+        secure: Sequence[Path],
+        insecure: Sequence[Path],
+        *,
+        neutral: Sequence[Path] = (),
+        attempts: int,
     ) -> Validation:
-        good, bad = len(secure), len(insecure)
+        good, bad = len(secure) + len(neutral), len(insecure)
         cli = shutil.which(self.cli)
         if cli is None:
             return _not_attempted(f"{self.cli} was not found; {SANDBOX_HINT}", good, bad, attempts)
-        command = self.command(test, secure, insecure, attempts=attempts)
+        command = self.command(test, secure, insecure, neutral=neutral, attempts=attempts)
         command[0] = cli
         # The container's unprivileged user must be able to enter the mounted folder; it
         # holds only the attempt's generated files (see compile._readable).

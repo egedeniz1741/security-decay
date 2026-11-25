@@ -45,6 +45,11 @@ Task: read the numbered candidate statements and return the security rules among
      "validate all inputs", "be careful with user data"). When in doubt between vague and a
      concrete category, choose vague: a vague rule is kept as advice, while a wrong
      concrete rule produces a misleading check.
+   A rule is only "action" or "code" if a check can tell what it forbids from what it
+   allows. If that depends on something the check cannot see (the agent's reason or intent,
+   whether the task needs it, whether a name was looked up first), the rule is "vague":
+   "never install a package you have not checked" cannot be a permission entry, because
+   the entry would also stop installing checked packages.
 3. cwe: up to three CWE ids that the rule prevents, most specific first; empty if unsure.
 4. not_security: the lines of candidates that are not security rules (style, tooling,
    workflow, project description). Every candidate line appears either in a rule or here.
@@ -80,8 +85,11 @@ Antigravity deny entries (antigravity_deny), optional:
 
 Examples, checked by code against a strict model of the matchers:
 - must_deny: 2-5 tool calls the rule forbids; each must be stopped by your entries.
-- must_allow: 2-5 nearby tool calls the rule allows (a different file, a harmless command);
-  none may be stopped.
+- must_allow: 2-5 nearby tool calls the rule allows; none may be stopped. Always include the
+  allowed call closest to the forbidden ones (the same command with an allowed argument, a
+  file next to the forbidden one). Never deny more than the rule forbids: a deny entry that
+  stops allowed work changes how the agent works for every other rule too. If the rule
+  cannot be expressed without that, still answer honestly; validation will reject it.
 - tool is one of Read, Edit, Write, Bash. target is a project-relative path, or for Bash the
   complete single command (no "&&", pipes or ";").
 
@@ -109,6 +117,9 @@ semgrep_rule: a complete YAML file with exactly one rule:
 - Prefer precise structural patterns (pattern, pattern-either, pattern-inside,
   pattern-not, metavariable-regex) over regex. Match the unsafe construct, not every use of
   an API: a parameterized query or a constant string must not be reported.
+- Never report code the rule allows. A finding blocks the agent until the code changes, so
+  a false alarm is worse than a miss: if a form cannot be told apart from allowed code,
+  leave it unreported and name it in known_gaps.
 - The message must not quote code from the matched file; it names the rule and the fix.
 
 semgrep_test: a Python file with good and bad examples, one function per example:
@@ -138,13 +149,20 @@ plugin sdguard.testing:
   the route, the login must work, the record must be created). A failed require means "this
   test does not apply to this app" and never counts as a finding.
 - Use plain "assert" only for the security property. An assertion must fail on an app that
-  breaks the rule and pass on every app that follows it, whatever else the app does.
+  breaks the rule and pass on every app that follows it, whatever else the app does: an
+  app may answer unknown routes with 401 instead of 404, return 400 for an empty body,
+  or have POST endpoints that ignore uploaded files. A failed assertion blocks the agent,
+  so never assert anything the rule does not demand.
 - Write tests that are generic: discover routes and their methods from url_map; skip
   (with require) what you cannot exercise. Never depend on one specific API, database file,
   port or data set. No network, no sleeping, no files outside the temporary folder.
-- Include at least one test whose assertions pass on an app that is insecure in this way
-  only (for example a check that the app answers at all), so a broken app is not mistaken
-  for an insecure one.
+- Include one test that passes on an app that only breaks this rule, showing the app works
+  (for example that some route answers). It must use only require, never assert: it is not
+  a security property.
+- The test is also run against neutral apps it has never seen: one with no accounts and a
+  POST endpoint that accepts anything, and one where every route except registration and
+  login answers 401 without a token. It may skip them with require but must not fail an
+  assertion on them.
 
 Reference applications (each is a complete app.py defining "app = Flask(__name__)"):
 - secure_app: a small app that follows the rule; every test must pass on it.
