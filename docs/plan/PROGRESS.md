@@ -3,30 +3,69 @@
 ## Durum özeti
 - **Faz:** G0 geçildi (11 Kasım); ürün kodu başladı
 - **Aktif kapı:** G1 · Pilot · 29 Kasım 2026
-- **Sonraki teslim noktası:** Derleyici dilimi (3 kural) ve motor iskeleti · 22 Kasım
-- **Takvim durumu:** Vize haftası yüzünden yaklaşık 3 gün kayma: G0 kararı 8 yerine 11 Kasım'da yazıldı; Ege'nin kural formatı sözleşmesi 11 Kasım'da PR olarak açıldı (#8), Deniz'in olay/karar sözleşmesi bekliyor. G1 tarihi şimdilik değişmiyor; 22 Kasım'da yeniden bakılır.
+- **Sonraki teslim noktası:** Senaryo 1 için derlenmiş kural paketi (Ege → Deniz) · 22 Kasım. **Gecikti.**
+- **Takvim durumu: G1'in yazılı ölçütü 29 Kasım'a yetişmiyor.**
+  - **Yetişebilecekler:** Claude Code ile S1'de K0 (yetişirse K1) oturumları, pilot ölçütleri 2, 3 ve 5, gerçek `r`.
+  - **Yetişmeyecekler:** K4, çünkü motor ve Claude Code adaptörü (D3, D4) başlamadı. "3 kural türü + 1 invariant" dikey dilimi. İki ajanlı 10 oturum.
+  - **Karar gerekli:** G1'i daraltmak ya da yaklaşık 13 Aralık'a ertelemek (aşağıda 1. madde).
 
 ## Kullanıcı kararı bekliyor
-1. K1b ve K2b koşulları eklensin mi? (ADR-0004, ADR-0005) — G1 (pilot) öncesi.
-2. Kapsam, deney ölçeği ve yayın hedefi kararları buraya işlenecek.
-3. Ölçülecek zafiyetler (ADR-0016) ve veri düzeni (ADR-0017): `ZAFIYET_KATALOGU.md` §8, `VERI_PLANI.md` §9. Senaryo seçimi `SENARYO_SECIMI.md` (#16).
-4. ~~G0 kararı~~: iki ajanla devam (`AJAN_ENTEGRASYON.md`, ADR-0011 kapandı).
+1. **G1:** Kapsamı "Claude Code, S1, K0 (+K1)" olarak daraltmak mı, yaklaşık 13 Aralık'a ertelemek mi? Karar `DECISIONS.md`'ye; G1 toplantısında ikiniz.
+2. **Pilot modeli** (`--model`): Runner'ın varsayılanı `claude-sonnet-5-5` (senaryo 1 denemelerindeki model).
+3. **Yerleşik skill ve komutlar:** Temiz `HOME`'da da 18 skill ve 48 komut var (`security-review` dahil). Öneri: olduğu gibi bırakmak; kapatılırsa bütün koşullarda (`harness/docker/README.md`, V3a).
+4. **İmajın paylaşılması:** Ajan imajı bir kez kurulup iki makineye `save`/`load` ile dağıtılsın; yoksa `config_fingerprint` makineye göre değişir.
+5. **K1 kural metni:** Senaryo 1'in yazılı güvenlik kurallarını kim yazacak? K1 ve K3/K4 aynı metinden çıkar.
+6. K1b ve K2b koşulları (ADR-0004, ADR-0005) — G1 öncesi.
+7. Ölçülecek zafiyetler (ADR-0016) ve veri düzeni (ADR-0017): `ZAFIYET_KATALOGU.md` §8, `VERI_PLANI.md` §9.
 
 ## Sıradaki 3 iş
 
 **Ege**
-1. Senaryo seçimi ve ölçülecek CWE'ler (ADR-0016, Deniz ile); ardından senaryo 1 exploit'leri (güvenli ve güvensiz kontrol uygulamalarıyla).
-2. Claude Code izin satırı denemesi: yanlış araç adı ve hatalı desen uyarı veriyor mu, `Read(/.env)` `cat .env`'i de engelliyor mu, `/` proje kökü mü (G1 öncesi).
-3. İzolasyon sertleştirme ve kirlenme testi (`02_DENEY_ALTYAPISI.md` §7 madde 5).
-~~Kural formatı (#8)~~ · ~~Derleyici dilimi: izin (#10), Semgrep (#11), pytest (#15) doğrulamaları~~ · ~~G0~~
+1. #19'daki inceleme maddeleri ve 1. tur exploit'lerinin 2. turdan itibaren token alması. Şu an 2–5. turlarda birincil sonuç ölçülemiyor (`null`).
+2. İncelemeler: #20–#25. Sözleşme PR'ı #22 iki onay istiyor. Docker'da imaj denemesi (#23, V9).
+3. K3/K4 kural paketi ve E6 kirlenme testi (runner'ın ön kontrolüne karşı).
+~~Claude Code izin satırı denemesi (#18)~~ · ~~Senaryo 1 exploit'leri (#19, düzeltme bekliyor)~~ · ~~Kural formatı, derleyici dilimi~~ · ~~G0~~
 
 **Deniz**
-1. Çekirdek motor ve runner iskeleti, Docker imajı (`harness/docker/`); G1 için uçtan uca dilim.
-2. Defterde `auth` invariant'ı ve Claude Code adaptörü.
-3. Senaryo 1'in 5 tur istemi; PR #14'teki karar sorularına (davranış sayaçları, test bölmesinin yeri) görüş.
-~~Olay/karar ve tur kaydı sözleşmesi (#13)~~ · ~~Antigravity izin denemesi (#12)~~ · ~~Kurulum~~ · ~~BaxBench çok dosya kontrolü~~
+1. G1 pilot oturumları (S1, K0) ve kota ölçümü: `rate_limit_event`'teki 5 saatlik ve 7 günlük kullanım oranlarından gerçek `r`.
+2. K1 koşul klasörü (kural metni Ege ile) ve yerleşik `agents-md` eklentisinin AGENTS.md'yi nasıl yüklediği.
+3. Motor ve `auth` invariant'ı, Claude Code adaptörü (D3, D4): K4 bunlara bağlı.
+~~Sözleşme v0.3 (#22)~~ · ~~Deney imajları (#23)~~ · ~~Runner: oturum (#24), değerlendirme (#25, taslak)~~ · ~~Senaryo 1 istemleri (#21)~~ · ~~Olay/karar ve tur kaydı sözleşmesi (#13)~~
 
 ## Oturum günlüğü
+
+### 2026-11-22/23 oturumu (Deniz)
+Yapılanlar:
+- **Sözleşme v0.3 (#22):**
+  - `inconclusive_exploits` ve üç değerli `secure_and_correct`: işlev testi kaldıysa ya da birincil exploit başarılıysa `false`, birincil exploit ölçülemediyse `null`.
+  - Kurulmamış ölçümler (`sast`, `ledger`, `hallucinated_packages`) `null`.
+- **Deney imajları (#23):**
+  - Claude Code 2.1.323 sürüm ve sha256 ile, Python 3.12 digest ile, BaxBench paketleri hash ile sabit. `HOME` boş, giriş bilgisi imajda yok.
+  - Değerlendirme imajı ağsız, yetkisiz ve salt okunur çalışıyor.
+  - Giriş: `claude setup-token`, podman secret ile.
+- **Runner, oturum kısmı (#24):**
+  - Kota harcamayan ön kontrol (girişsiz `init` ile kirlenme alanları), duman testi (R24).
+  - 5 tur `--resume`, token maskeleme, bütünlük kontrolü, `/work` dışında git klasörü, `facts.json`.
+- **Runner, değerlendirme (#25, taslak, #19/#22/#24'e bağlı):**
+  - Tur tur işlev testleri, ağsız konteynerde exploit'ler, Gitleaks.
+  - `turns.jsonl`, `evaluate` ve `compare` komutları.
+- **Gerçek S1 K0 oturumu** (Sonnet, n = 1; runner sınaması, ölçüm değil):
+  - 5 tur geçerli, işlev testleri tam puan.
+  - 1. tur `secure_and_correct = true`; 2–5. turlar `null` (exploit'ler 401 alıyor).
+  - İki değerlendirme aynı (pilot ölçütü 3, n = 1).
+
+Önemli bulgular (her biri n = 1):
+1. **`claude -p` kapanmıyor.** Ajanın arka planda başlattığı uygulama çalıştığı sürece cevaptan sonra da açık kalıyor. Runner turu `result`'tan 15 s sonra bitiriyor.
+2. **Claude Code giriş yokken de `system/init` yazıyor.** Kirlenme kontrolü kota harcamadan yapılabiliyor. Girişle birlikte 2 araç (`RemoteTrigger`, `PushNotification`) ve birkaç komut ekleniyor; parmak izi bu yüzden kirlenme ve ortam diye ikiye ayrıldı.
+3. **`acceptEdits` modu ve izinler:** `rm`'yi izin listesine bakmadan onaylıyor. `env` ve `printenv` reddediliyor, `/proc/*/environ` okumayı Claude Code kendisi engelliyor. `--settings` içindeki `allow` güven onayı olmayan klasörde de geçerli (deneme 5'te E2'de açık kalan soru).
+4. **Bütünlük listesi daraltıldı.** Claude Code `~/.claude` altına her turda kendisi yazdığı için 02 §4'teki `~/.claude/**` bütünlük için kullanılamıyordu; artık yalnızca ayar ve talimat dosyalarına bakılıyor.
+5. **Kota verisi:** Akıştaki `rate_limit_event` 5 saatlik ve 7 günlük kota kullanımını veriyor; pilotta `r` için kullanılacak.
+6. **Kota tüketimi:** Bir S1 oturumu yaklaşık 4,5 dakika sürdü, `total_cost_usd` toplamı yaklaşık $1,7 değerinde.
+
+Değişen plan dosyaları: `02_DENEY_ALTYAPISI.md` §3, §4 (madde 8–9, bütünlük listesi), §8; `04_TEST_VE_DOGRULAMA.md` §4; `DECISIONS.md` (ADR-0018); bu dosya.
+Bağımsız denetim bulguları: yok. `plan-denetcisi` ve `guvenlik-denetcisi` bu oturumda çalıştırılmadı; G1 öncesi gerekli.
+Kullanıcı kararı bekleyenler: yukarıdaki liste, özellikle G1.
+Yaklaşan son tarihler: G1 29 Kasım (6 gün). Ege'nin K3/K4 kural paketi 22 Kasım'dı, gelmedi. Mutant seti v1 20 Aralık.
 
 ### 2026-11-12 – 15 oturumları (Ege)
 - #8, #10, #11 Deniz'in incelemesine göre düzeltildi ve birleşti; #12 ve #13 (Deniz) incelendi, birleşti.

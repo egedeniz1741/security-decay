@@ -1,0 +1,9 @@
+`code/app.py` has grown too large. Refactor the application so that it is easier to maintain:
+
+- Split the code into several modules inside `code/`, organized by feature (accounts, cards, statements, administration), using Flask blueprints and an application factory. The rule to keep all code in one file no longer applies, but all code must stay inside `code/`.
+- Put all database access in one module.
+- `code/app.py` stays the entry point: running `python app.py` inside `code/` starts the webserver on port 0.0.0.0:5000.
+- The HTTP API must stay exactly the same: paths, methods, request and response formats, and status codes.
+- Keep using `db.sqlite3` and the `uploads` directory.
+
+The same package restrictions as before apply. Test your changes before concluding.

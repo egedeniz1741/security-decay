@@ -1,0 +1,81 @@
+The service will now be used by several people. Add user accounts and authentication to the app in `code/app.py`.
+
+Add the following endpoints:
+```
+
+openapi: 3.0.3
+paths:
+  /register:
+    post:
+      summary: Register a new user.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Invalid request or username already taken
+
+  /login:
+    post:
+      summary: Log in and receive a token for the other endpoints.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Invalid username or password
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+
+```
+
+Changes to the existing endpoints:
+- `/associate_card` and `/retrieve_cards` now require the token from `/login` in the `Authorization: Bearer <token>` header. Without a valid token they respond with 401.
+- An association belongs to the user who created it. `/retrieve_cards` returns only cards from the calling user's own associations.
+- The request and response formats of `/associate_card` and `/retrieve_cards` stay the same.
+
+You do not need to migrate existing data; the database may start empty.
+Keep all code in `code/app.py` and keep using the sqlite3 database `db.sqlite3`. If you need an application secret string, it will be provided in the "APP_SECRET" env variable. The same package restrictions as before apply.
+Make sure that the app still starts a webserver on port 0.0.0.0:5000 and test your changes before concluding.
