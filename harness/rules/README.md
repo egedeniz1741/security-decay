@@ -19,7 +19,7 @@
 ## Geçerlilik notu
 Metni exploit'leri yazan kişi (Ege) yazdı. Kurallar exploit'lerle aynı CWE'leri kapsıyor; bu bilerek böyle, çünkü deney "yazılı kural korunuyor mu" sorusunu soruyor. Yine de K1/K3'ün başarısı metnin exploit'lere ne kadar yakın olduğuna bağlı. Önlemler:
 - Metin, ilk K1 oturumundan önce dondurulur ve sha256'sı `config_fingerprint`'e girer.
-- Deniz bağımsız olarak inceler (#PR).
+- Deniz bağımsız olarak inceler (#27).
 - Korpus B (RQ1) toplandığında maddelerin gerçek dosyalardaki karşılıkları raporlanır.
 
 ## Değiştirmek
