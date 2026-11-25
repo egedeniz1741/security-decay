@@ -1601,6 +1601,7 @@ dependencies = [
 dev = [
     { name = "flask" },
     { name = "mypy" },
+    { name = "pyjwt" },
     { name = "pytest" },
     { name = "ruff" },
     { name = "semgrep" },
@@ -1613,6 +1614,7 @@ requires-dist = [{ name = "pydantic", specifier = ">=2.7" }]
 dev = [
     { name = "flask", specifier = ">=3.0" },
     { name = "mypy", specifier = ">=1.10" },
+    { name = "pyjwt", specifier = ">=2.10" },
     { name = "pytest", specifier = ">=8.0" },
     { name = "ruff", specifier = ">=0.5" },
     { name = "semgrep", specifier = ">=1.185.0" },
