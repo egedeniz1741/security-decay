@@ -14,10 +14,14 @@ built so that the model can only answer:
 - ``--no-session-persistence``: nothing is written to the session history;
 - ``--system-prompt``: the compiler's instructions replace the default coding-agent prompt.
 
-The flags are in ``claude --help`` of Claude Code 2.1.332. Where the structured answer
-appears in the ``--output-format json`` result (``structured_output``) is not yet checked
-against a real run (spike: docs/plan/AJAN_ENTEGRASYON.md); the parser also accepts the
-answer as JSON text in ``result``.
+Spike 06 (Claude Code 2.1.318, Haiku, n = 1 per step; spikes/claude-code/06-derleme-cagrisi):
+- every flag above exists;
+- the answer arrives in ``structured_output`` (and as the same JSON text in ``result``);
+- with ``--tools ""`` the only tool left is Claude Code's own ``StructuredOutput``; asked to
+  run ``ls /``, the model could not and answered 0;
+- nothing was written to the empty working folder.
+The parser still accepts the answer as JSON text in ``result`` in case a version drops
+``structured_output``.
 
 The subscription token never passes through sdguard: the child process inherits the
 environment and finds its own login. Nothing from the environment is logged.

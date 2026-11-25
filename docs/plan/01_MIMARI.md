@@ -54,7 +54,7 @@
 
 LLM çağrısı kullanıcının kendi aboneliğiyle `claude -p` alt süreci olarak yapılır; API anahtarı gerekmez, token sdguard'dan geçmez (`compiler/llm.py`). Çağrı modele hiçbir araç vermez (`--tools ""`), MCP ve kullanıcı ayarlarını yüklemez, boş geçici klasörde çalışır. Kural metni bir repodan geldiği için güvenilmez kabul edilir: istemde yalnızca sınırlandırılmış bir veri bloğu olarak yer alır, cevap şemaya uymak zorundadır ve her artefakt kodla doğrulanır. Kötü niyetli bir metin en fazla zayıf bir kural üretebilir; o da raporda görünür.
 
-**Doğrulanacak (deneme 6, `spikes/claude-code/06-derleme-cagrisi/`):** Şemaya uyan cevabın sonuç JSON'unda hangi alanda geldiği ve `--tools ""` ile modelin gerçekten araç çağıramadığı. Ayrıştırıcı `structured_output` alanını ve `result` içindeki JSON metnini kabul ediyor.
+**Deneme 6** (`spikes/claude-code/06-derleme-cagrisi/`, Claude Code 2.1.318, Haiku, adım başına n = 1, 25 Kasım): bütün bayraklar var; cevap `structured_output` alanında geliyor; `--tools ""` ile geriye yalnızca Claude Code'un kendi `StructuredOutput` aracı kalıyor ve model `ls /` çalıştıramadı; boş klasöre bir şey yazılmadı. Ayrıştırıcı yedek olarak `result` içindeki JSON metnini de kabul ediyor.
 
 Antigravity'nin `agy -p` ile derleme yolu henüz yok.
 
