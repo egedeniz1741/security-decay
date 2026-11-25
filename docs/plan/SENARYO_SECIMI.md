@@ -1,7 +1,17 @@
-# Senaryo seçimi önerisi
+# Senaryo seçimi
 
-> Durum: **öneri v0.1** · 16 Kasım 2026 · Sahibi: Deniz (D1, D5) · Onay: Ege · Karar: ayrım koşulunca `DECISIONS.md`'ye yazılır
+> Durum: **kabul** · öneri 16 Kasım, karar 18 Kasım 2026 (#16, ADR-0019) · Sahibi: Deniz (D1, D5) · Onay: Ege
 > Deneme düzeni, betikler ve yamalar: `spikes/senaryo-uygunluk/`. Bütün deneme sonuçları n = 1 (§4).
+
+## Karar (18 Kasım)
+- **Havuz:** Önerilen 6 senaryo. ProductCatalog yalnızca bir havuz senaryosu pilotta teknik olarak koşulamazsa (U1–U3) yedekten girer. Bu durumda değişiklik `SAPMALAR.md`'ye yazılır. Tur uyumu gerekçesiyle değiştirilmez (Ege, #16).
+- **Ayrım:** Tohum `20261116`, 15 ayrımdan 14'ü geçerli. Ege onaydan sonra bir kez koştu; Deniz birleşmiş dosyalarla aynı sonucu aldı.
+  - **Geliştirme:** CreditCardService, Wiki
+  - **Test:** Forum, Recipes, RecommendationService, ShoppingCartService
+- **Senaryo 1: CreditCardService.** "Alfabetik ilk" kuralı korundu (seçenek A). Çekilişten sonra tur uyumu gerekçesiyle Wiki'ye geçmek sonuca göre seçim olurdu; iki geliştirme senaryosu da zaten kullanılacak. 3. tur (dosya yükleme) için kart ekstresi ya da kimlik belgesi yükleme istemi yazılır.
+- **Test senaryoları artık kilitli.** Bu dört senaryo araç geliştirmede kullanılmaz (CLAUDE.md kuralı, ADR-0008). Uygunluk denemesinde bunlar için üretilen agy kayıtları ve kodlar repoda değil; G3'e kadar açılmaz. Tur istemleri ve exploit'leri test bölmesine yazılır (`VERI_PLANI.md` §5, ADR-0017).
+- **BaxBench yamaları** deney imajına giriyor. `None` hatası upstream'e bildirilmedi; depo bakımsız görünüyor (`02_DENEY_ALTYAPISI.md` §5).
+- **agy kotası:** Plan şimdilik değişmiyor. Kota 23 Kasım'da açılınca yeniden bakılacak.
 
 ## 1. Öneri
 - **Havuz (6 senaryo):** Forum, Wiki, Recipes, RecommendationService, ShoppingCartService, CreditCardService.
@@ -96,7 +106,7 @@ python3 spikes/senaryo-uygunluk/split.py spikes/senaryo-uygunluk/pool.json 20261
 - Betik geçerli ayrımları (iki bölmede de CWE-79 ve CWE-89) listeler ve tohumla birini seçer.
 - Aynı tohum her zaman aynı ayrımı verir (denendi).
 - Havuz değişirse (ör. CreditCardService yerine ProductCatalog) `pool.json` güncellenir, tohum aynı kalır.
-- Gerçek havuzla ve bu tohumla henüz koşulmadı.
+- 18 Kasım'da, onaydan sonra bir kez koşuldu; sonuç en üstteki "Karar" bölümünde.
 
 ## 7. Sınırlılıklar
 - Her senaryo n = 1; "birkaç kez deneme" kota yüzünden yapılamadı. ProductCatalog hiç denenmedi.
@@ -104,8 +114,9 @@ python3 spikes/senaryo-uygunluk/split.py spikes/senaryo-uygunluk/pool.json 20261
 - M5 (tur uyumu) yargıya dayalı. Gerekçeleri tabloda.
 - Denemelerde izin listesi geniş (`command(*)`); deneydeki sabit listeyle sonuçlar farklı olabilir (§5.2–5.3).
 
-## 8. Karar bekleyenler
-1. Havuz bu 6 senaryo mu? CreditCardService'in tur uyumu düşük. ProductCatalog (orta uyum, denenmemiş) kota açılınca denenip onun yerine alınabilir.
-2. Tohum `20261116` kabul mü?
-3. İki BaxBench yaması deney imajına girsin mi? Wiki/RecommendationService hatası upstream'e bildirilsin mi?
-4. agy kotası pilotu nasıl etkiliyor? Ayrı bir karar; `kaynak-planlayici` ile pilot ve ana deney takvimi yeniden hesaplanmalı (R3).
+## 8. Öneri aşamasındaki sorular
+16 Kasım'da açık olan dört soru 18 Kasım'da kapandı; cevaplar en üstteki "Karar" bölümünde:
+1. havuz,
+2. tohum,
+3. yamalar ve upstream bildirimi,
+4. agy kotası.
