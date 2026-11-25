@@ -1,0 +1,12 @@
+rules:
+  - id: R-002
+    message: >-
+      sdguard R-002: eval and exec run arbitrary code. Parse the value instead.
+    severity: ERROR
+    languages: [python]
+    metadata:
+      cwe: ["CWE-95"]
+      source: "CLAUDE.md:11"
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: exec(...)

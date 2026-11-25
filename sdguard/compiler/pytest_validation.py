@@ -37,8 +37,9 @@ APP_DIR_ENV = "SDGUARD_APP_DIR"
 RESULT_FILE_ENV = "SDGUARD_RESULT_FILE"
 _TIMEOUT_SECONDS = 120
 # Only these variables reach the test process; everything else (tokens, plugin settings)
-# is dropped.
-_PASSED_ENV = ("PATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ")
+# is dropped. PYTHONPATH lets the test process import sdguard when it is not installed
+# (the validation container mounts the package source).
+_PASSED_ENV = ("PATH", "PYTHONPATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ")
 
 
 @dataclass(frozen=True)
@@ -173,3 +174,29 @@ def validate_pytest(
     if problems:
         return result(ValidationStatus.FAILED, "; ".join(problems))
     return result(ValidationStatus.VERIFIED)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """Validate one compiled test and print the ``Validation`` as JSON.
+
+    Used by the compiler to run the validation inside a network-less container:
+    ``python -m sdguard.compiler.pytest_validation TEST --secure DIR --insecure DIR ...``
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(description=main.__doc__)
+    parser.add_argument("test", type=Path)
+    parser.add_argument("--secure", type=Path, nargs="+", required=True)
+    parser.add_argument("--insecure", type=Path, nargs="+", required=True)
+    parser.add_argument("--attempts", type=int, default=1)
+    parser.add_argument("--timeout", type=int, default=_TIMEOUT_SECONDS)
+    args = parser.parse_args(argv)
+    validation = validate_pytest(
+        args.test, args.secure, args.insecure, attempts=args.attempts, timeout=args.timeout
+    )
+    print(validation.model_dump_json())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

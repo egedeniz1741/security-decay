@@ -40,16 +40,23 @@
 
 ### 2.1 Derleyici (`sdguard compile`)
 
+`sdguard compile CLAUDE.md --out .sdguard` (kod: `sdguard/compiler/compile.py`). Her aşamanın kodu ve kaydı ayrı; LLM yalnızca sınıflandırma ve çeviride, gerisi deterministik.
+
 | Aşama | Ne yapar | Nasıl |
 |---|---|---|
-| Ayrıştırma | Markdown'ı başlık ve madde düzeyinde parçalar; güvenlikle ilgili olanları seçer | Kural tabanlı ön filtre + LLM sınıflandırma |
-| Atomikleştirme | "SQL parametreli olmalı ve kullanıcı girdisi loglanmamalı" → 2 kural | LLM, `--json-schema` ile yapılandırılmış çıktı |
-| Katman ataması | eylem → izin; kod → Semgrep; davranış → pytest; muğlak → tavsiye | LLM önerir, kural tabanlı doğrulayıcı onaylar |
-| Çeviri | Her katman için artefakt üretir | `claude -p --output-format json --json-schema <ir.schema.json>` |
-| Doğrulama | Semgrep kuralı için `# ruleid:` ve `# ok:` işaretli iyi/kötü örnek, `semgrep --test` (`compiler/semgrep_validation.py`); pytest testi her güvenli referans uygulamada geçmeli, her güvensizde en az bir assertion ile kalmalı, çökme tespit sayılmaz (`compiler/pytest_validation.py`, eklenti `sdguard.testing`); izin kuralı için ajan başına satır denetimi (sözleşme) | Deterministik. pytest doğrulaması LLM'in yazdığı testi çalıştırır: deneyde ağsız konteynerde koşar |
-| Onarım döngüsü | Doğrulama başarısızsa hata mesajıyla en fazla 2 yeniden deneme, sonra "tavsiye" | Sınırlı, kayda girer |
+| Ayrıştırma | Markdown'ı madde ve paragraf düzeyinde parçalar, satır numarası ve başlıklarla. Kod blokları, tablolar, yorumlar, ön bilgi atlanır | Kod (`compiler/extract.py`). Anahtar kelime ön filtresi yalnızca açıkça ilgisiz maddeleri ayırır; ayrılanlar raporda listelenir |
+| Sınıflandırma ve atomikleştirme | "SQL parametreli olmalı ve kullanıcı girdisi loglanmamalı" → 2 kural; her kurala kategori (`action`/`code`/`behavior`/`vague`) ve CWE | Dosya başına bir LLM çağrısı. Cevaptaki her satır numarası gerçek bir maddeye ait olmalı, yoksa onarım |
+| Çeviri | eylem → iki ajanın izin satırları ve iyi/kötü örnek araç çağrıları; kod → Semgrep kuralı ve işaretli test dosyası; davranış → pytest dosyası, bir güvenli ve 1–3 güvensiz referans uygulama; muğlak → çağrı yok, tavsiye | Kural başına bir LLM çağrısı, kategoriye özel şema |
+| Doğrulama | İzin: satırlar her kötü örneği durdurmalı, hiçbir iyi örneği durdurmamalı (`compiler/permission_validation.py`, ajanların eşleyicisinin **dar** modeli: belge boşluk bırakıyorsa daha az eşleştiği varsayılır, kural hiçbir zaman olduğundan güçlü görünmez). Semgrep: `semgrep --test`, kural kimliği farkındalıklı işaret sayımı (`compiler/semgrep_validation.py`). pytest: her güvenli referansta bütün testler geçmeli, her güvensizde test dosyasındaki bir assertion kalmalı ve en az bir test geçmeli (`compiler/pytest_validation.py`, eklenti `sdguard.testing`) | Deterministik. pytest doğrulaması LLM'in yazdığı kodu çalıştırdığı için yalnızca ağsız, yetkisiz, salt okunur bir konteynerde koşar (`compiler/behavior_runner.py`, `docker/sdguard-validate.Containerfile`); Docker yoksa davranış kuralları `not_attempted` kalır |
+| Onarım döngüsü | Doğrulama başarısızsa doğrulayıcının mesajı ve önceki cevapla en fazla 2 yeniden deneme, sonra "tavsiye". Son başarısız deneme `rejected/` altında saklanır | Sınırlı, `compile-log.jsonl`'a girer |
+| Zorlama | Doğrulanan her kural `block`: izin satırı aracı reddeder, Semgrep bulgusu ya da kalan davranış testi turun bitmesini engeller | Sabit politika (`ENFORCEMENT`), LLM karar vermez |
+| Paket | `rules.ir.json`, `semgrep/`, `tests/security/`, `examples/` (referans uygulamalar, izin örnekleri), `advisory.md`, `report.md`, `compile-log.jsonl` | Önce geçici klasöre yazılır, sonra yalnızca derleyicinin kendi dosyaları değiştirilir |
 
-LLM çağrısı kullanıcının kendi ajan aboneliğiyle (`claude -p` ya da `agy -p`) yapılır; API anahtarı gerekmez.
+LLM çağrısı kullanıcının kendi aboneliğiyle `claude -p` alt süreci olarak yapılır; API anahtarı gerekmez, token sdguard'dan geçmez (`compiler/llm.py`). Çağrı modele hiçbir araç vermez (`--tools ""`), MCP ve kullanıcı ayarlarını yüklemez, boş geçici klasörde çalışır. Kural metni bir repodan geldiği için güvenilmez kabul edilir: istemde yalnızca sınırlandırılmış bir veri bloğu olarak yer alır, cevap şemaya uymak zorundadır ve her artefakt kodla doğrulanır. Kötü niyetli bir metin en fazla zayıf bir kural üretebilir; o da raporda görünür.
+
+**Doğrulanacak (deneme 6, `spikes/claude-code/06-derleme-cagrisi/`):** Şemaya uyan cevabın sonuç JSON'unda hangi alanda geldiği ve `--tools ""` ile modelin gerçekten araç çağıramadığı. Ayrıştırıcı `structured_output` alanını ve `result` içindeki JSON metnini kabul ediyor.
+
+Antigravity'nin `agy -p` ile derleme yolu henüz yok.
 
 ### 2.2 Kural formatı (IR) · sözleşme v0.1
 
